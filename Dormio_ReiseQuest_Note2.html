@@ -999,50 +999,39 @@
       }
     }
 
-    /* --- input[type=date] als iOS-sichere Datumswahl --- */
-    .day-date-input {
-      flex: 1 1 150px;
-      min-width: 150px;
-      padding: 10px 12px;
-      border-radius: 13px;
-      border: 1px solid rgba(255,255,255,.22);
-      background-color: #334155;
-      color: #ffffff;
-      color-scheme: dark;
-      font: inherit;
-      font-size: 16px;   /* verhindert Auto-Zoom auf iOS */
-      min-height: 48px;
-      cursor: pointer;
+    /* --- Datum-Chips: iOS-sichere Tagesauswahl ohne native Controls --- */
+    .date-chips-wrap { margin-top: 10px; }
+    .date-chips-label { font-size: .82rem; color: var(--muted); margin-bottom: 6px; }
+    .date-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
     }
-    .day-date-input:focus {
-      outline: 3px solid rgba(102,224,255,.35);
-      outline-offset: 2px;
+    .date-chip {
+      appearance: none;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.07);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 7px 11px;
+      font-size: .82rem;
+      font-weight: 700;
+      cursor: pointer;
+      min-height: 40px;
+      line-height: 1;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      transition: background .12s, border-color .12s;
+      white-space: nowrap;
+    }
+    .date-chip:active { opacity: .75; }
+    .date-chip.chip-selected {
+      background: linear-gradient(135deg, rgba(102,224,255,.32), rgba(255,213,79,.22));
       border-color: rgba(102,224,255,.55);
+      color: #fff;
     }
-    /* WebKit-Kalender-Icon in Weiß */
-    .day-date-input::-webkit-calendar-picker-indicator {
-      filter: invert(1);
-      opacity: .75;
-      cursor: pointer;
-    }
-
     @media (max-width: 760px) {
-      select,
-      .slot-select,
-      .bucket-inputs select,
-      #customIdeaDate,
-      #customIdeaSlot,
-      #customIdeaType {
-        min-height: 48px;
-        font-size: 16px;
-        padding: 12px 14px !important;
-        border-radius: 14px !important;
-      }
-      .day-date-input {
-        min-height: 52px;
-        width: 100%;
-        flex: 1 1 100%;
-      }
+      .date-chip { font-size: .79rem; padding: 8px 10px; min-height: 44px; }
     }
 
   
@@ -3579,44 +3568,38 @@
             </div>
             <button class="remove-btn" data-remove-key="${key}">✕</button>
           </div>
-          <div class="actions" style="margin-top:12px;">
-            <input type="date" data-assign-key="${key}" class="day-date-input"
-              min="2026-07-27" max="2026-08-10"
-              title="Urlaubstag auswählen" />
-            <button class="btn ghost" data-assign-btn="${key}">➕ Einplanen</button>
+          <div class="date-chips-wrap">
+            <div class="date-chips-label">📅 Tag antippen zum Einplanen:</div>
+            <div class="date-chips">
+              ${buildStayDates().map(d => {
+                const dk = dayKey(d);
+                const lbl = d.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit' });
+                const isOn = (state.dayPlans[dk] || []).includes(key);
+                return `<button type="button" class="date-chip${isOn ? ' chip-selected' : ''}" data-chip-key="${key}" data-chip-date="${dk}">${lbl}</button>`;
+              }).join('')}
+            </div>
           </div>`;
         savedIdeasEl.appendChild(card);
       });
       document.querySelectorAll('[data-remove-key]').forEach(btn => btn.onclick = () => removeIdea(btn.dataset.removeKey));
-      // Auto-assign on date change (mobile UX – no separate button needed)
-      document.querySelectorAll('[data-assign-key]').forEach(input => {
-        input.onchange = () => {
-          const key = input.dataset.assignKey;
-          if (!input.value) return;
-          state.dayPlans[input.value] = state.dayPlans[input.value] || [];
-          if (!state.dayPlans[input.value].includes(key)) {
-            state.dayPlans[input.value].push(key);
-            addScore(4);
+      document.querySelectorAll('.date-chip[data-chip-key]').forEach(chip => {
+        chip.onclick = () => {
+          const key = chip.dataset.chipKey;
+          const date = chip.dataset.chipDate;
+          if (chip.classList.contains('chip-selected')) {
+            state.dayPlans[date] = (state.dayPlans[date] || []).filter(k => k !== key);
+            chip.classList.remove('chip-selected');
             persist();
-            toastMsg('Zum Tagesplan hinzugefügt 📅');
+            toastMsg('Aus dem Tagesplan entfernt');
           } else {
-            toastMsg('Für diesen Tag schon eingeplant ✅');
-          }
-        };
-      });
-      document.querySelectorAll('[data-assign-btn]').forEach(btn => {
-        btn.onclick = () => {
-          const key = btn.dataset.assignBtn;
-          const input = document.querySelector(`[data-assign-key="${key}"]`);
-          if (!input.value) { toastMsg('Bitte zuerst einen Urlaubstag wählen.'); return; }
-          state.dayPlans[input.value] = state.dayPlans[input.value] || [];
-          if (!state.dayPlans[input.value].includes(key)) {
-            state.dayPlans[input.value].push(key);
-            addScore(4);
+            state.dayPlans[date] = state.dayPlans[date] || [];
+            if (!state.dayPlans[date].includes(key)) {
+              state.dayPlans[date].push(key);
+              addScore(4);
+            }
+            chip.classList.add('chip-selected');
             persist();
-            toastMsg('Zum Tagesplan hinzugefügt 📅');
-          } else {
-            toastMsg('Für diesen Tag schon eingeplant ✅');
+            toastMsg(`Für ${chip.textContent} eingeplant 📅`);
           }
         };
       });
@@ -4229,30 +4212,39 @@
           </div>
           ${idea.address ? `<div class="navline">${navLink(idea.address, idea.mapUrl || idea.address)}</div>` : ''}
           ${idea.note ? `<p class="small">${idea.note}</p>` : ''}
-          <div class="actions">
-            <input type="date" data-family-assign="${idea.id}" class="day-date-input"
-              min="2026-07-27" max="2026-08-10"
-              title="Urlaubstag auswählen" />
-            <select data-family-slot="${idea.id}" class="slot-select" style="flex:0.8;min-width:145px;">
+          <div class="date-chips-wrap">
+            <div class="date-chips-label">📅 Tag antippen zum Einplanen:</div>
+            <div class="date-chips">
+              ${buildStayDates().map(d => {
+                const dk = dayKey(d);
+                const lbl = d.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit' });
+                const isOn = (state.familyDayPlans[dk] || []).some(e => (typeof e === 'string' ? e : e.id) === idea.id);
+                return `<button type="button" class="date-chip${isOn ? ' chip-selected' : ''}" data-fchip-id="${idea.id}" data-fchip-date="${dk}">${lbl}</button>`;
+              }).join('')}
+            </div>
+          </div>
+          <div class="actions" style="margin-top:8px;">
+            <select data-family-slot="${idea.id}" class="slot-select" style="flex:1;min-width:145px;">
               ${['Morgen','Vormittag','Nachmittag','Abend','Ganzer Tag','Flexibel','Fix/Termin'].map(s => `<option value="${s}" ${idea.slot === s ? 'selected' : ''}>${s}</option>`).join('')}
             </select>
-            <button class="btn secondary" data-family-assign-btn="${idea.id}">➕ Einplanen</button>
           </div>
         </div>
       `).join('');
       document.querySelectorAll('[data-remove-bucket]').forEach(btn => btn.onclick = () => removeBucketIdea(btn.dataset.removeBucket));
-      // Auto-assign when date is picked (mobile-friendly: no extra button tap needed)
-      document.querySelectorAll('[data-family-assign]').forEach(input => {
-        input.onchange = () => {
-          if (!input.value) return;
-          const slotSel = document.querySelector(`[data-family-slot="${input.dataset.familyAssign}"]`);
-          assignBucketIdea(input.dataset.familyAssign, input.value, slotSel?.value || null);
+      document.querySelectorAll('.date-chip[data-fchip-id]').forEach(chip => {
+        chip.onclick = () => {
+          const id = chip.dataset.fchipId;
+          const date = chip.dataset.fchipDate;
+          const isOn = chip.classList.contains('chip-selected');
+          if (isOn) {
+            unassignBucketIdea(id, date);
+            chip.classList.remove('chip-selected');
+          } else {
+            const slotSel = document.querySelector(`[data-family-slot="${id}"]`);
+            assignBucketIdea(id, date, slotSel?.value || null);
+            chip.classList.add('chip-selected');
+          }
         };
-      });
-      document.querySelectorAll('[data-family-assign-btn]').forEach(btn => btn.onclick = () => {
-        const inp = document.querySelector(`[data-family-assign="${btn.dataset.familyAssignBtn}"]`);
-        const slotSel = document.querySelector(`[data-family-slot="${btn.dataset.familyAssignBtn}"]`);
-        assignBucketIdea(btn.dataset.familyAssignBtn, inp.value, slotSel?.value || null);
       });
     }
 
