@@ -696,6 +696,7 @@
       font: inherit;
     }
     .bucket-inputs textarea { grid-column: 1 / -1; min-height: 86px; resize: vertical; }
+    .bucket-inputs .date-chips-wrap { grid-column: 1 / -1; margin-top: 2px; }
     .bucket-list {
       display: grid;
       gap: 10px;
@@ -2346,9 +2347,11 @@
                 <option value="Kinderidee">🎈 Kinderidee</option>
               </select>
               <input id="customIdeaAddress" placeholder="Adresse oder Ort für Navi, optional" />
-              <select id="customIdeaDate">
-                <option value="">📅 Datum später auswählen</option>
-              </select>
+              <input type="hidden" id="customIdeaDate" value="">
+              <div class="date-chips-wrap" id="customIdeaDateChips">
+                <div class="date-chips-label">📅 Urlaubstag antippen (optional):</div>
+                <div class="date-chips"></div>
+              </div>
               <input id="customIdeaTime" placeholder="Uhrzeit, z. B. 10:00 oder frei lassen" />
               <select id="customIdeaSlot">
                 <option value="Morgen">🌅 Morgen</option>
@@ -4089,13 +4092,30 @@
 
 
 
-    function fillCustomIdeaDateSelect() {
-      const select = document.getElementById('customIdeaDate');
-      if (!select) return;
-      const current = select.value;
-      select.innerHTML = '<option value="">📅 Datum später auswählen</option>' +
-        buildStayDates().map(d => `<option value="${dayKey(d)}">${fmtDate(d)}</option>`).join('');
-      if (current) select.value = current;
+    function fillCustomIdeaDateChips() {
+      const wrap = document.getElementById('customIdeaDateChips');
+      if (!wrap) return;
+      const row = wrap.querySelector('.date-chips');
+      if (!row) return;
+      const hidden = document.getElementById('customIdeaDate');
+      row.innerHTML = buildStayDates().map(d => {
+        const dk = dayKey(d);
+        const lbl = d.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit' });
+        return `<button type="button" class="date-chip" data-ideadate="${dk}">${lbl}</button>`;
+      }).join('');
+      row.querySelectorAll('.date-chip').forEach(chip => {
+        chip.onclick = () => {
+          const dk = chip.dataset.ideadate;
+          if (chip.classList.contains('chip-selected')) {
+            chip.classList.remove('chip-selected');
+            if (hidden) hidden.value = '';
+          } else {
+            row.querySelectorAll('.date-chip').forEach(c => c.classList.remove('chip-selected'));
+            chip.classList.add('chip-selected');
+            if (hidden) hidden.value = dk;
+          }
+        };
+      });
     }
 
     function updateSaveStatus() {
@@ -4355,8 +4375,9 @@
         assignBucketIdea(id, selectedDate, slot);
       }
       ['customIdeaTitle','customIdeaAddress','customIdeaTime','customIdeaNote'].forEach(id => { const x = document.getElementById(id); if (x) x.value = ''; });
-      const dateSelect = document.getElementById('customIdeaDate');
-      if (dateSelect) dateSelect.value = '';
+      const dateHidden = document.getElementById('customIdeaDate');
+      if (dateHidden) dateHidden.value = '';
+      document.querySelectorAll('#customIdeaDateChips .date-chip').forEach(c => c.classList.remove('chip-selected'));
       const slotSelect = document.getElementById('customIdeaSlot');
       if (slotSelect) slotSelect.value = 'Morgen';
     }
@@ -4593,7 +4614,7 @@
     }
 
     function bindFamilyPlanner() {
-      fillCustomIdeaDateSelect();
+      fillCustomIdeaDateChips();
       fillTodayPreviewSelect();
 
       const smartTop = document.getElementById('smartPlanBtn');
