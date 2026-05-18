@@ -214,6 +214,17 @@
     .top-city { background: linear-gradient(135deg, #4a148c, #5e35b1 45%, #7e57c2 100%); }
     .top-nature { background: linear-gradient(135deg, #1b5e20, #43a047 45%, #b2ff59 120%); }
     .top-history { background: linear-gradient(135deg, #5d4037, #8d6e63 50%, #ffcc80 140%); }
+    .top-kids { background: linear-gradient(135deg, #e65100, #ff6d00 40%, #ffd740 120%); }
+    .top-cinema { background: linear-gradient(135deg, #1a237e, #3949ab 42%, #7c4dff 100%); }
+    .top-water { background: linear-gradient(135deg, #006064, #0097a7 44%, #80deea 110%); }
+    .top-culture { background: linear-gradient(135deg, #b71c1c, #e53935 44%, #ffab40 120%); }
+    .ort-table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+    .ort-table th { padding: 10px 12px; text-align: left; background: rgba(255,255,255,.08); }
+    .ort-table td { padding: 9px 12px; border-top: 1px solid rgba(255,255,255,.06); }
+    .ort-table td:last-child { text-align: right; color: var(--accent); font-weight: 700; }
+    .ort-highlights { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-top: 12px; }
+    @media (max-width: 980px) { .ort-highlights { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 600px) { .ort-highlights { grid-template-columns: 1fr; } }
     .filterbar { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
     .filter {
       border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.06);
@@ -1756,6 +1767,7 @@
     <div class="wrap tablist">
       <a class="tablink active" href="#route">🛣️ Route</a>
       <a class="tablink" href="#cockpit">🚀 Cockpit</a>
+      <a class="tablink" href="#ortinfo">🏝️ Ort & Infos</a>
       <a class="tablink" href="#events">🎉 Events</a>
       <a class="tablink" href="#trips">🧭 Tagesausflüge</a>
       <a class="tablink" href="#dog">🐶 Hundemodus</a>
@@ -1806,6 +1818,9 @@
             <div class="insight"><div class="insight-badge">🐶</div><div><strong>Hunderegel</strong><br><span class="small">Im Sommer am Strand tagsüber 10–18 Uhr mit Leine planen. Morgen und Abend sind entspannter.</span></div></div>
             <div class="insight"><div class="insight-badge">🎉</div><div><strong>Fixe Highlights</strong><br><span class="small">Sluis-Abendmärkte, Cadzand-Märkte und Fischereifest Breskens sind die besten Kalender-Anker.</span></div></div>
             <div class="insight"><div class="insight-badge">😴</div><div><strong>Nicht überplanen</strong><br><span class="small">Maximal 2–3 Programmpunkte pro Tag, sonst fühlt es sich nicht mehr nach Urlaub an.</span></div></div>
+            <div class="insight"><div class="insight-badge">👶</div><div><strong>Kinder-Highlights</strong><br><span class="small">Robbensafari Breskens, Waterland Neeltje Jans und Groede Driftkarts sind die Top-3 für Kinder in der Region.</span></div></div>
+            <div class="insight"><div class="insight-badge">🎬</div><div><strong>Regen-Backup</strong><br><span class="small">Bioscoop Terneuzen (25 Min.) oder Kinepolis Brügge (40 Min.) für verregnete Tage einplanen.</span></div></div>
+            <div class="insight"><div class="insight-badge">🐚</div><div><strong>Mosselen-Saison!</strong><br><span class="small">Ab Juli gibt's frische Zeeland-Muscheln in Breskens & Sluis – unbedingt probieren!</span></div></div>
           </div>
           <div class="today-picker">
             <select id="todayPreviewSelect"></select>
@@ -1892,6 +1907,217 @@
     </div>
   </section>
 
+  <section class="panel" id="ortinfo">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <h2>🏝️ Urlaubsort & Umgebung</h2>
+          <p>Alles über Nieuwvliet-Bad, das Resort, die Region Zeeuws-Vlaanderen und was euch dort erwartet – auf einen Blick.</p>
+        </div>
+      </div>
+
+      <!-- Resort Details -->
+      <div class="card" style="margin-top:16px; background: linear-gradient(135deg, rgba(102,224,255,.1), rgba(255,213,79,.06));">
+        <h3>🏡 Dormio Strand Resort Nieuwvliet-Bad</h3>
+        <div class="quality-panel" style="margin-top:12px;">
+          <div class="quality-tile"><strong>🏖️ Strandnähe</strong><span>~700 m / ~10 Min. zu Fuß durch die Dünen</span></div>
+          <div class="quality-tile"><strong>🏠 Anlage</strong><span>193 Ferienhäuser in Zeeländer Stil, 8 Höfe</span></div>
+          <div class="quality-tile"><strong>🏊 Pool</strong><span>Indoorpool im Resort, ganzjährig</span></div>
+          <div class="quality-tile"><strong>🚲 Verleih</strong><span>City- & E-Bikes, Tandems, Bollerwagen, Gokarts an der Rezeption</span></div>
+          <div class="quality-tile"><strong>⚡ E-Auto</strong><span>Ladesäulen auf dem Resort-Gelände</span></div>
+          <div class="quality-tile"><strong>🐶 Hund</strong><span>6 € / Hund / Nacht – immer vorher anmelden!</span></div>
+          <div class="quality-tile"><strong>📅 Check-in / -out</strong><span>Check-in ab 16:00 Uhr, Check-out bis 10:30 Uhr</span></div>
+          <div class="quality-tile"><strong>🍦 Snack & Spiel</strong><span>Snackcorner, Spielplätze und Grillmöglichkeit im Resort</span></div>
+        </div>
+        <div class="navline" style="margin-top:14px;">
+          <a class="meta" href="https://www.google.com/maps/search/?api=1&query=Baanstpoldersedijk%204%2C%204504%20PR%20Nieuwvliet%2C%20Niederlande" target="_blank" rel="noreferrer">📍 Baanstpoldersedijk 4, 4504 PR Nieuwvliet</a>
+          <a class="meta" href="https://www.dormio.nl/nl/resort/nieuwvliet-bad/" target="_blank" rel="noreferrer">🔗 Dormio Resort-Seite</a>
+        </div>
+      </div>
+
+      <!-- Region & Distanztabelle -->
+      <div class="grid cols-2" style="margin-top:16px;">
+        <div class="card">
+          <h3>🌍 Die Region: Zeeuws-Vlaanderen</h3>
+          <p class="small" style="margin-top:8px;">Ihr befindet euch im äußersten Südwesten der Niederlande – genauer in <strong>Zeeuws-Vlaanderen</strong> (Seeländisch-Flandern). Diese besondere Ecke ist auf drei Seiten von Belgien umgeben und daher stark belgisch-flämisch geprägt. Die Region ist bekannt für ihre endlosen Sandstrände, Polderlandschaften, mittelalterlichen Festungsstädte und die Nähe zu den Deltawerken.</p>
+          <div class="chip-row" style="margin-top:12px;">
+            <span class="chip">🇳🇱 Zeeland-Provinz</span>
+            <span class="chip">🇧🇪 belgische Grenze: ~5 km</span>
+            <span class="chip">🌊 Nordsee & Westerschelde</span>
+            <span class="chip">🦅 Vogelparadies Zwin</span>
+            <span class="chip">🧱 Festungsstädte</span>
+            <span class="chip">🚲 Top-Fahrradregion</span>
+            <span class="chip">🦭 Seehunde in der Schelde</span>
+            <span class="chip">🐚 Beste Muschelküste Europas</span>
+          </div>
+          <div class="info-box" style="margin-top:12px;">
+            <strong>🌊 Gezeiten beachten!</strong>
+            <p class="small" style="margin-top:6px;">Die Küste ist stark tidebeeinflusst – Ebbe und Flut wechseln ca. alle 6 Stunden. Bei Ebbe wird deutlich mehr Strand frei. Aktuelle Gezeiten: <a href="https://www.knmi.nl/nederland-nu/getijden" target="_blank" rel="noreferrer">KNMI Gezeiten-Infos</a></p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>📏 Entfernungen ab Resort</h3>
+          <table class="ort-table" style="margin-top:8px;">
+            <thead><tr><th>Ziel</th><th style="text-align:right;">Fahrtzeit*</th></tr></thead>
+            <tbody>
+              <tr><td>🏖️ Strand De Nolle</td><td>~10 Min. zu Fuß</td></tr>
+              <tr><td>🏘️ Cadzand-Bad</td><td>10–15 Min.</td></tr>
+              <tr><td>🛍️ Sluis</td><td>15–20 Min.</td></tr>
+              <tr><td>⚓ Breskens</td><td>20–25 Min.</td></tr>
+              <tr><td>🦢 Zwin Natur Park 🇧🇪</td><td>20–25 Min.</td></tr>
+              <tr><td>🌊 Knokke-Heist 🇧🇪</td><td>20–30 Min.</td></tr>
+              <tr><td>🎯 Groede Podium</td><td>10–15 Min.</td></tr>
+              <tr><td>🏛️ Brügge 🇧🇪</td><td>35–45 Min.</td></tr>
+              <tr><td>⛵ Gent 🇧🇪</td><td>45–55 Min.</td></tr>
+              <tr><td>🏰 Middelburg</td><td>50–60 Min.</td></tr>
+              <tr><td>🎢 Neeltje Jans</td><td>55–65 Min.</td></tr>
+            </tbody>
+          </table>
+          <p class="small" style="margin-top:8px;">*Ohne Stau, Richtzeiten. Belgien ist oft schneller als NL-intern, da direktere Wege.</p>
+        </div>
+      </div>
+
+      <!-- Kinder-Highlights -->
+      <div class="card" style="margin-top:16px; background: linear-gradient(135deg, rgba(255,109,0,.09), rgba(255,213,79,.07));">
+        <h3>👶 Highlights für Kinder in der Region</h3>
+        <div class="ort-highlights">
+          <div class="info-box">
+            <strong>🦭 Robbensafari</strong>
+            <p class="small" style="margin-top:6px;">Bootstour zu den Seehundbänken in der Westerschelde. Start ab Hafen Breskens (täglich in der Saison). Seehunde aus nächster Nähe – für Kinder ein absolutes Highlight!</p>
+            <div class="chip-row"><span class="chip">~25 Min. Fahrt</span><span class="chip">⛵ Bootstour</span></div>
+          </div>
+          <div class="info-box">
+            <strong>🎢 Waterland Neeltje Jans</strong>
+            <p class="small" style="margin-top:6px;">Erlebnispark auf einer echten Deltawerke-Insel: Walrosse & Robben hautnah, Wasserrutschen, Kletterpark, Riesenschaukel und originale Deltawerk-Technik. Ganzer Familientag!</p>
+            <div class="chip-row"><span class="chip">~55 Min. Fahrt</span><span class="chip">🌊 Wasserpark</span></div>
+          </div>
+          <div class="info-box">
+            <strong>🔍 Fossile Haifischzähne</strong>
+            <p class="small" style="margin-top:6px;">Am Strand von Nieuwvliet-Bad werden echte fossile Haifischzähne angespült! Mit einem kleinen Sieb und Geduld kann man welche finden – der beste Strandschatz.</p>
+            <div class="chip-row"><span class="chip">direkt am Strand</span><span class="chip">kostenlos</span></div>
+          </div>
+          <div class="info-box">
+            <strong>🎯 Groede Podium</strong>
+            <p class="small" style="margin-top:6px;">Driftkarts, Trampolinpark und Spiel-Bunkeranlage. Super für einen aktiven Halbtag mit Kindern und nur kurze Fahrt entfernt. In den Ferien erweitertes Programm.</p>
+            <div class="chip-row"><span class="chip">~10 Min. Fahrt</span><span class="chip">🚗 Driftkart</span></div>
+          </div>
+          <div class="info-box">
+            <strong>🦢 Zwin Kinder-Programm</strong>
+            <p class="small" style="margin-top:6px;">In den Sommerferien bietet der Zwin Natur Park täglich Kinder-Aktivitäten: Naturwerkstätten, geführte Touren, Vogelbeobachtung und interaktive Erlebnisse für alle Altersgruppen.</p>
+            <div class="chip-row"><span class="chip">~25 Min. Fahrt</span><span class="chip">🌿 Natur</span></div>
+          </div>
+          <div class="info-box">
+            <strong>🏰 Burg Gravensteen Gent</strong>
+            <p class="small" style="margin-top:6px;">Mittelalterliche Wasserburg mitten in Gent – vollständig begehbar mit Zinnen, Folterkammer und tollem Stadtpanorama. Für Kinder ein echtes Burg-Erlebnis!</p>
+            <div class="chip-row"><span class="chip">~50 Min. Fahrt</span><span class="chip">🏰 Burg</span></div>
+          </div>
+          <div class="info-box">
+            <strong>🔭 MuZEEum Vlissingen</strong>
+            <p class="small" style="margin-top:6px;">Interaktives Meeresmuseum mit echtem U-Boot zum Besteigen, Marinetechnik und Fischereigeschichte. Beeindruckend für Kinder und Eltern gleichermassen.</p>
+            <div class="chip-row"><span class="chip">~60 Min. Fahrt</span><span class="chip">⚓ U-Boot</span></div>
+          </div>
+          <div class="info-box">
+            <strong>🎬 Open-Air-Kino / Bioscoop</strong>
+            <p class="small" style="margin-top:6px;">Bioscoop (Kino) in Terneuzen ca. 25 Min. entfernt, Kinepolis in Brügge ca. 40 Min. In den Sommermonaten oft Open-Air-Filmabende in der Region. Perfekt für Regentage oder Abende!</p>
+            <div class="chip-row"><span class="chip">25–40 Min. Fahrt</span><span class="chip">🎥 Kino</span></div>
+          </div>
+          <div class="info-box">
+            <strong>🚲 Radtour: Deich & Polder</strong>
+            <p class="small" style="margin-top:6px;">Zeeland ist flach und perfekt für Familienradtouren. E-Bikes direkt aus dem Resort ausleihen und auf dem gut ausgeschilderten Routennetz losfahren. Für alle Altersgruppen!</p>
+            <div class="chip-row"><span class="chip">Start am Resort</span><span class="chip">🌊 Deichblick</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Regen & Essen -->
+      <div class="grid cols-2" style="margin-top:16px;">
+        <div class="card">
+          <h3>🌧️ Regentag-Optionen</h3>
+          <div class="info-box" style="margin-top:8px;">
+            <strong>🎬 Kino-Optionen</strong>
+            <p class="small" style="margin-top:6px;">
+              <strong>Kinepolis Brügge</strong> – großes Multiplex, auch Familienfilme im Original. Ca. 40 Min.<br/>
+              <strong>Bioscoop Terneuzen</strong> – kleineres Kino, ca. 25 Min. Fahrt.<br/>
+              In der Saison: Open-Air-Kino in Cadzand, Sluis oder Knokke.
+            </p>
+          </div>
+          <div class="info-box" style="margin-top:10px;">
+            <strong>🏛️ Museen & Drinnen-Spaß</strong>
+            <p class="small" style="margin-top:6px;">
+              🔭 MuZEEum Vlissingen (U-Boot, ~60 Min.)<br/>
+              📜 Museum Het Bolwerk IJzendijke (~25 Min.)<br/>
+              🍫 Schokoladenmuseum Brügge (immer ein Erfolg)<br/>
+              🏊 Resort-Indoorpool (kostenlos im Urlaub!)
+            </p>
+          </div>
+          <div class="info-box" style="margin-top:10px;">
+            <strong>🎯 Indoor-Aktivitäten</strong>
+            <p class="small" style="margin-top:6px;">Bowling-Centra in der Region · Kletterhallen in Brügge oder Gent · Speelparadijs / Indoor-Spielparadies für die Kleinen</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>🍽️ Lokale Küche & Spezialitäten</h3>
+          <div class="chip-row" style="margin-top:8px;">
+            <span class="chip">🐚 Zeeuwse Mosselen – ab Juli!</span>
+            <span class="chip">🐟 Verse Vis in Breskens</span>
+            <span class="chip">🍟 Belgische Fritten (Original!)</span>
+            <span class="chip">🧇 Luikse Wafels</span>
+            <span class="chip">🍫 Belgische Schokolade</span>
+            <span class="chip">🥐 Stroopwafels</span>
+            <span class="chip">🍦 Strandeis am Boulevard</span>
+            <span class="chip">🐟 Hollandse Haring (frisch)</span>
+            <span class="chip">🦐 Zeeuwse Garnalen</span>
+          </div>
+          <div class="info-box" style="margin-top:14px;">
+            <strong>🐚 Muscheln-Saison ab Juli!</strong>
+            <p class="small" style="margin-top:6px;">Ab Juli beginnt die Mosselen-Saison. Die Zeeland-Muscheln aus den Scheldebuchten gelten als die besten Europas. Frisch und dampfend mit belgischen Fritten in Breskens, Cadzand oder Sluis. Ein absolutes Muss!</p>
+          </div>
+          <div class="info-box" style="margin-top:10px;">
+            <strong>🛒 Einkaufen & Supermarkte</strong>
+            <p class="small" style="margin-top:6px;">
+              <strong>Albert Heijn</strong> in Oostburg (~10 Min.) und Breskens<br/>
+              <strong>Jumbo</strong> in Sluis<br/>
+              Lokale Bäcker, Käseläden und Fischhandel in Sluis & Cadzand
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Praktische Tipps -->
+      <div class="card" style="margin-top:16px;">
+        <h3>📱 Praktische Tipps für die Region</h3>
+        <div class="grid cols-3" style="margin-top:12px;">
+          <div class="info-box">
+            <strong>📶 Internet & Handy</strong>
+            <p class="small" style="margin-top:6px;">EU-Roaming gilt in NL und Belgien – keine Extra-Kosten. Resort hat WLAN. Deutsche SIM-Karten funktionieren problemlos auf beiden Seiten der Grenze.</p>
+          </div>
+          <div class="info-box">
+            <strong>💳 Bezahlen</strong>
+            <p class="small" style="margin-top:6px;">In NL wird fast ausschließlich mit Karte (PIN/Debit) bezahlt. In Belgien ist beides möglich. Strandpavilions akzeptieren meist Karte. Bargeld für Märkte und kleinere Stände empfohlen.</p>
+          </div>
+          <div class="info-box">
+            <strong>🏥 Notfallnummern</strong>
+            <p class="small" style="margin-top:6px;"><strong>NL Notruf:</strong> 112<br/><strong>NL Hausarzt-Bereitschaft:</strong> 0900-1616<br/><strong>BE Notruf:</strong> 112 oder 100<br/>Nächstes Krankenhaus: ZorgSaam Oostburg</p>
+          </div>
+          <div class="info-box">
+            <strong>⛽ Tanken</strong>
+            <p class="small" style="margin-top:6px;">In NL ist Benzin teurer als in Belgien. Es lohnt sich, über die Grenze nach Knokke oder De Panne zu fahren. Nächste NL-Tankstellen in Cadzand oder Sluis.</p>
+          </div>
+          <div class="info-box">
+            <strong>🌡️ Wetter & Strand</strong>
+            <p class="small" style="margin-top:6px;">Zeeland hat mehr Wind als das Binnenland. Juli/Aug: 18–24°C, Wasser ~19–21°C. Auch bei Bewölkung verbrennt man! Immer Sonnencreme, auch im Wind. Gezeitenkalender hilft für Strandplanung.</p>
+          </div>
+          <div class="info-box">
+            <strong>⛴️ Fähre Breskens–Vlissingen</strong>
+            <p class="small" style="margin-top:6px;">Wer nach Nordzeeeland möchte: Die Fast-Ferry zwischen Breskens und Vlissingen spart fast 1 Stunde Umfahrung. Fahrräder werden mitgenommen! Guter Einstieg für Middelburg-Ausflug.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="panel" id="events">
     <div class="wrap">
       <div class="section-head">
@@ -1918,6 +2144,7 @@
           <button class="filter" data-filter="familie">Familie</button>
           <button class="filter" data-filter="geschichte">Geschichte</button>
           <button class="filter" data-filter="regen">Regen-Backup</button>
+          <button class="filter" data-filter="kinder">👶 Kinder</button>
         </div>
       </div>
       <div class="grid cols-3" style="margin-top:16px;" id="tripGrid"></div>
@@ -2167,10 +2394,23 @@
         <div class="check-box">
           <h3>🎟️ Ausflüge</h3>
           <label class="check-item"><input type="checkbox" class="pack-check"/>Bequeme Kleidung für Stadttage</label>
-          <label class="check-item"><input type="checkbox" class="pack-check"/>Fernglas für Zwin / Natur</label>
+          <label class="check-item"><input type="checkbox" class="pack-check"/>Fernglas für Zwin / Natur / Robben</label>
           <label class="check-item"><input type="checkbox" class="pack-check"/>Kamera / Smartphone-Speicher frei</label>
           <label class="check-item"><input type="checkbox" class="pack-check"/>Rucksack für Tagesausflüge</label>
           <label class="check-item"><input type="checkbox" class="pack-check"/>Kleingeld / Karten für Märkte</label>
+          <label class="check-item"><input type="checkbox" class="pack-check"/>Tickets Neeltje Jans vorab online buchen</label>
+          <label class="check-item"><input type="checkbox" class="pack-check"/>Zwin / Robbensafari Zeiten vorab prüfen</label>
+        </div>
+        <div class="check-box">
+          <h3>👶 Für die Kinder</h3>
+          <label class="check-item"><input type="checkbox" class="pack-check"/>Sieb / Eimer zum Haifischzahn-Suchen</label>
+          <label class="check-item"><input type="checkbox" class="pack-check"/>Strandspielzeug: Sandformen, Schaufel</label>
+          <label class="check-item"><input type="checkbox" class="pack-check"/>Schwimmflügel / Schwimmweste</label>
+          <label class="check-item"><input type="checkbox" class="pack-check"/>Sonnencreme LSF 50+ für Kinder</label>
+          <label class="check-item"><input type="checkbox" class="pack-check"/>Windschutz / Strandmuschel</label>
+          <label class="check-item"><input type="checkbox" class="pack-check"/>Reisekrankheitsmittel für die Fahrt</label>
+          <label class="check-item"><input type="checkbox" class="pack-check"/>Lieblingsspielzeug / Kuscheltier</label>
+          <label class="check-item"><input type="checkbox" class="pack-check"/>Regenzeug – Zeeland ist windig!</label>
         </div>
         <div class="check-box">
           <h3>🏡 Resort-Tipps</h3>
@@ -2272,7 +2512,13 @@
           <li><strong>Groede Podium:</strong> <a href="https://www.groedepodium.nl/de/openingstijden" target="_blank" rel="noreferrer">Öffnungszeiten</a></li>
           <li><strong>Museum Het Bolwerk:</strong> <a href="https://www.museumhetbolwerk.nl/" target="_blank" rel="noreferrer">Museum Het Bolwerk</a></li>
           <li><strong>Events im Zeitraum:</strong> <a href="https://www.cadzand.org/de/veranstaltung/254/markt-in-cadzand.html" target="_blank" rel="noreferrer">Markt in Cadzand</a> · <a href="https://www.cadzand.org/nl/evenement/165/avondmarkten-in-sluis.html" target="_blank" rel="noreferrer">Avondmarkten Sluis 2026</a> · <a href="https://www.cadzand.org/de/veranstaltung/191/fischereifest-in-breskens.html" target="_blank" rel="noreferrer">Fischereifest Breskens 2026</a></li>
-          <li><strong>Hund & Strand:</strong> <a href="https://nieuwvliet.org/nl/strand.php" target="_blank" rel="noreferrer">Nieuwvliet Strandregeln</a> · <a href="https://nieuwvliet.org/nl/strand/19/-t-poldertje.html" target="_blank" rel="noreferrer">Strandzugang ’t Poldertje</a> · <a href="https://nieuwvliet.org/nl/strand/15/de-nolle.html" target="_blank" rel="noreferrer">Strandzugang De Nolle</a> · <a href="https://cadzand.org/de/strand.php" target="_blank" rel="noreferrer">Cadzand Strandregeln</a></li>
+          <li><strong>Hund & Strand:</strong> <a href="https://nieuwvliet.org/nl/strand.php" target="_blank" rel="noreferrer">Nieuwvliet Strandregeln</a> · <a href="https://nieuwvliet.org/nl/strand/19/-t-poldertje.html" target="_blank" rel="noreferrer">Strandzugang ‘t Poldertje</a> · <a href="https://nieuwvliet.org/nl/strand/15/de-nolle.html" target="_blank" rel="noreferrer">Strandzugang De Nolle</a> · <a href="https://cadzand.org/de/strand.php" target="_blank" rel="noreferrer">Cadzand Strandregeln</a></li>
+          <li><strong>Kinder-Highlights:</strong> <a href="https://www.neeltjejans.nl/" target="_blank" rel="noreferrer">Waterland Neeltje Jans</a> · <a href="https://www.zwin.be/en/activities" target="_blank" rel="noreferrer">Zwin Vakantie-Activiteiten</a> · <a href="https://www.groedepodium.nl/" target="_blank" rel="noreferrer">Groede Podium Driftkarts</a></li>
+          <li><strong>Kino in der Region:</strong> <a href="https://www.kinepolis.be/nl/nl/bruges" target="_blank" rel="noreferrer">Kinepolis Brügge</a> · <a href="https://www.filmladder.nl/terneuzen" target="_blank" rel="noreferrer">Bioscoop Terneuzen</a></li>
+          <li><strong>Weitere Tagesausflüge:</strong> <a href="https://www.visitmiddelburg.nl/" target="_blank" rel="noreferrer">Middelburg</a> · <a href="https://www.muzeeumvlissingen.nl/" target="_blank" rel="noreferrer">MuZEEum Vlissingen (U-Boot)</a> · <a href="https://visit.gent.be/" target="_blank" rel="noreferrer">Visit Gent</a> · <a href="https://www.knokke-heist.be/" target="_blank" rel="noreferrer">Knokke-Heist</a></li>
+          <li><strong>Robben & Natur:</strong> <a href="https://www.breskens.nl/" target="_blank" rel="noreferrer">Breskens – Robbensafari-Infos</a> · <a href="https://www.zeeuwsestreekproducten.nl/" target="_blank" rel="noreferrer">Zeeuwse Streekproducten (Mosselen)</a></li>
+          <li><strong>Radfahren:</strong> <a href="https://www.routeyou.com/nl-nl/location/bike/3/Netherlands/Zeeland" target="_blank" rel="noreferrer">Fietsroutes Zeeland</a> · <a href="https://www.fietsroutenetwerk.be/" target="_blank" rel="noreferrer">Fietsen in België (Zeeland-Flandern)</a></li>
+          <li><strong>Region & Gezeiten:</strong> <a href="https://www.knmi.nl/nederland-nu/getijden" target="_blank" rel="noreferrer">KNMI Gezeiten-Infos</a> · <a href="https://www.vvvzeeland.nl/" target="_blank" rel="noreferrer">VVV Zeeland Touristinfo</a> · <a href="https://www.zeeland.com/" target="_blank" rel="noreferrer">Zeeland.com</a></li>
         </ul>
         <div class="footer-note">
           <strong>Speicherung:</strong> Der Familienplan wird per localStorage lokal im Browser gespeichert. Für Gerätewechsel, Browserdaten-Löschung oder iPhone-Wechsel bitte zusätzlich die JSON-Sicherungsdatei exportieren/importieren.<br><br><strong>Wo ich spekuliere / schätze:</strong> Einige <em>Fahrzeiten ab Resort</em> im Spiel sind grobe praktische Schätzwerte für die Autofahrt ohne Stau. Die visualisierte Route ist ebenfalls nur eine plausible Reiseroute und keine Live-Navigation. Bei Veranstaltungen habe ich nur Dinge aufgenommen, die für euren Zeitraum publiziert oder als wiederkehrende Sommertermine sichtbar waren; spätere Änderungen durch Veranstalter sind natürlich möglich.
@@ -2433,6 +2679,166 @@
           description: 'Falls ihr am letzten Urlaubstag noch Zeit habt: Marktspaziergang am Meer als entspannter Ausklang.',
           score: 8,
           url: 'https://www.cadzand.org/de/veranstaltung/254/markt-in-cadzand.html'
+        },
+        {
+          id: 'evt-zwin-kids',
+          title: 'Zwin Vakantie-Activiteiten 🧒',
+          date: '2026-07-27',
+          dateLabel: 'Täglich in den Sommerferien',
+          location: 'Zwin Natur Park, Knokke-Heist',
+          address: 'Graaf Léon Lippensdreef 8, 8300 Knokke-Heist, Belgien',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=Zwin%20Natur%20Park%20Knokke-Heist%20Belgien',
+          time: 'Täglich 09:00–18:00 (Sommerferien)',
+          type: 'Kinder',
+          topClass: 'top-kids',
+          icon: '🦢',
+          description: 'In den Sommerferien bietet der Zwin täglich Kinder-Aktivitäten: Naturwerkstätten, geführte Strandwanderungen, Vogelbeobachtung und interaktive Ferienprogramme. Panoramaturm und Salzwiesenerlebnis für die ganze Familie – nur 25 Min. entfernt.',
+          score: 12,
+          url: 'https://www.zwin.be/en/activities'
+        },
+        {
+          id: 'evt-robben-breskens',
+          title: 'Robbensafari – Seehunde hautnah 🦭',
+          date: '2026-07-27',
+          dateLabel: 'Täglich in der Saison',
+          location: 'Hafen Breskens, Niederlande',
+          address: 'Haven, 4511 Breskens, Niederlande',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=Haven%20Breskens%20Zeehonden%20Safari',
+          time: 'Mehrere Abfahrten täglich (Zeiten vorab prüfen)',
+          type: 'Natur',
+          topClass: 'top-nature',
+          icon: '🦭',
+          description: 'Bootstouren zu den Seehundbänken in der Westerschelde – eines der schönsten Naturerlebnisse Zeelands! Seehunde auf ihren Sandbänken aus nächster Nähe beobachten. Für Kinder unvergesslich, für Erwachsene genauso. Start ab Hafen Breskens, täglich.',
+          score: 14,
+          url: 'https://www.breskens.nl/'
+        },
+        {
+          id: 'evt-kino-terneuzen',
+          title: 'Bioscoop Terneuzen – Regentag-Kino 🎬',
+          date: '2026-07-27',
+          dateLabel: 'Täglich (ganzen Urlaub verfügbar)',
+          location: 'Terneuzen, Niederlande',
+          address: 'Arsenaalstraat 15, 4531 BK Terneuzen, Niederlande',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=Bioscoop%20Terneuzen',
+          time: 'Nachmittags & Abends (Zeiten prüfen)',
+          type: 'Kino',
+          topClass: 'top-cinema',
+          icon: '🎬',
+          description: 'Regentag-Rettung! Kino in Terneuzen zeigt aktuelle Familienfilme, ca. 25 Min. Fahrt. Kinepolis Brügge (ca. 40 Min.) bietet die größere Auswahl – auch Originalfassungen mit Untertiteln. Aktuelle Spielpläne immer vorab online checken!',
+          score: 8,
+          url: 'https://www.filmladder.nl/terneuzen'
+        },
+        {
+          id: 'evt-kinepolis-bruges',
+          title: 'Kinepolis Brügge – Familienfilm 🎥',
+          date: '2026-07-27',
+          dateLabel: 'Täglich (ganzen Urlaub verfügbar)',
+          location: 'Brügge, Belgien',
+          address: 'Groenestraat 100, 8000 Brugge, Belgien',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=Kinepolis%20Brugge%20Groenestraat',
+          time: 'Nachmittags & Abends (verschiedene Vorstellungen)',
+          type: 'Kino',
+          topClass: 'top-cinema',
+          icon: '🎥',
+          description: 'Großes Multiplex-Kino in Brügge – aktuelle Familienfilme, oft auch im Original mit NL-Untertiteln. Gut kombinierbar mit einem Brügge-Stadtbummel oder als reiner Regen-Ausflug. Tickets und Spielplan immer vorab online checken.',
+          score: 9,
+          url: 'https://www.kinepolis.be/nl/nl/bruges'
+        },
+        {
+          id: 'evt-mosselen',
+          title: 'Mosselen-Saison Zeeland! 🐚',
+          date: '2026-07-27',
+          dateLabel: 'Ab Juli in der ganzen Region',
+          location: 'Breskens, Cadzand, Sluis & Restaurants der Region',
+          address: 'Haven, 4511 Breskens, Niederlande',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=Mosselen%20Restaurant%20Breskens',
+          time: 'Ganzer Sommer – solange der Vorrat reicht!',
+          type: 'Kulinarik',
+          topClass: 'top-fish',
+          icon: '🐚',
+          description: 'Ab Juli Mosselen-Zeit! Die Zeeland-Muscheln aus den Scheldebuchten gelten als die besten Europas. Frisch und dampfend mit belgischen Fritten serviert – in Breskens, Cadzand und Sluis. Für die ganze Familie ein kulinarisches Erlebnis, das man im Urlaub nicht verpassen sollte!',
+          score: 10,
+          url: 'https://www.zeeuwsestreekproducten.nl/'
+        },
+        {
+          id: 'evt-groede-ferien',
+          title: 'Groede Podium – Driftkarts & Trampolin 🎯',
+          date: '2026-07-27',
+          dateLabel: 'Täglich in den Sommerferien',
+          location: 'Groede Podium, Groede',
+          address: 'Gerard de Moorsweg 4, 4503 PD Groede, Niederlande',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=Groede%20Podium%20Groede%20Niederlande',
+          time: 'Täglich geöffnet – Zeiten vorab prüfen',
+          type: 'Kinder',
+          topClass: 'top-kids',
+          icon: '🎯',
+          description: 'Direkt ums Eck vom Resort: Spiel- und Bunkeranlage, Driftkarts und Trampolinpark. In den Sommerferien erweitertes Angebot für Kinder und Familien. Super für einen spontanen Halbtag-Ausflug – keine lange Anfahrt nötig!',
+          score: 11,
+          url: 'https://www.groedepodium.nl/'
+        },
+        {
+          id: 'evt-neeltje-jans',
+          title: 'Waterland Neeltje Jans 🎢',
+          date: '2026-07-27',
+          dateLabel: 'Täglich geöffnet (Sommer-Saison)',
+          location: 'Neeltje Jans, Vrouwenpolder',
+          address: 'Weg over de Banjaard, 4328 Vrouwenpolder, Niederlande',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=Waterland%20Neeltje%20Jans%20Vrouwenpolder',
+          time: 'Täglich ca. 10:00–17:00 (Zeiten variieren)',
+          type: 'Kinder',
+          topClass: 'top-kids',
+          icon: '🎢',
+          description: 'Das Zeeland-Highlight für Familien: Erlebnispark auf einer echten Deltawerke-Insel. Walrosse & Robben hautnah erleben, Wasserrutschen, Kletterpark, Riesenschaukel und das Originalwerk der Deltawerke. Ein kompletter Familientag – ca. 55–65 Min. Fahrt vom Resort.',
+          score: 15,
+          url: 'https://www.neeltjejans.nl/'
+        },
+        {
+          id: 'evt-sandsculp',
+          title: 'Sandskulpturen Küste 🏖️',
+          date: '2026-07-27',
+          dateLabel: 'Sommer (genauen Standort vor Ort erfragen)',
+          location: 'Knokke-Heist oder Blankenberge, Belgien',
+          address: 'Strand Knokke-Heist, Albert I-laan, 8300 Knokke-Heist, Belgien',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=Sand%20Sculptures%20Knokke-Heist%20Strand',
+          time: 'Ganztags sichtbar, kostenlos',
+          type: 'Kinder',
+          topClass: 'top-kids',
+          icon: '🏖️',
+          description: 'Gigantische Sandskulpturen am belgischen Küstenstrand – jährliches Highlight mit wechselnden Themen und unfassbar detaillierten Kunstwerken aus reinem Sand. Kostenlos zum Bestaunen, für Kinder und Erwachsene gleichermaßen faszinierend!',
+          score: 9,
+          url: 'https://www.knokke-heist.be/'
+        },
+        {
+          id: 'evt-openlucht-kino',
+          title: 'Open-Air-Kino / Openluchtcinema 🌟',
+          date: '2026-08-05',
+          dateLabel: 'Ausgewählte Sommerabende (Termin vor Ort erfragen)',
+          location: 'Cadzand-Bad, Sluis oder Knokke-Heist',
+          address: 'Duinplein, Cadzand-Bad, Niederlande',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=Openlucht%20Cinema%20Zeeuws-Vlaanderen',
+          time: 'Ab Einbruch der Dunkelheit (ca. 21:30 Uhr)',
+          type: 'Kino',
+          topClass: 'top-cinema',
+          icon: '🌟',
+          description: 'Kino unterm Sternenhimmel an der Küste! In den Sommermonaten gibt es in der Region regelmäßig Open-Air-Filmabende. Für Kinder ein tolles Erlebnis, für Eltern romantisch. Genaue Termine immer bei der lokalen Touristinfo erfragen – diese Events tauchen kurzfristig auf!',
+          score: 11,
+          url: 'https://www.vvvzeeland.nl/'
+        },
+        {
+          id: 'evt-sluis-evening-3',
+          title: 'Avondmarkten in Sluis – 3. Termin',
+          date: '2026-08-11',
+          dateLabel: 'Di, 11.08.2026 (Abreisetag!)',
+          location: 'Groote Markt, Sluis',
+          address: 'Groote Markt, 4524 CD Sluis, Niederlande',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=Groote%20Markt%2C%204524%20CD%20Sluis%2C%20Niederlande',
+          time: '11:00–22:00',
+          type: 'Sommerabend',
+          topClass: 'top-market',
+          icon: '🛒',
+          description: 'Dritter Avondmarkt in Sluis – fällt auf euren Abreisetag. Falls ihr nicht super früh los müsst: ein letzter Bummel über den Markt, Mittagessen und dann Richtung Heimat. Ein wunderbarer Abschluss des Urlaubs!',
+          score: 8,
+          url: 'https://www.sluisonline.nl/avondmarkten'
         }
       ],
       trips: [
@@ -2579,7 +2985,112 @@
           why: 'Nur sinnvoll, wenn euer Cocker Spaniel Menschenmengen, Musik und Markttrubel gut abkann.',
           url: 'https://www.sluisonline.nl/avondmarkten',
           score: 6
-        }      ],
+        },
+        {
+          id: 'trip-neeltje-jans',
+          title: 'Waterland Neeltje Jans 🎢',
+          address: 'Weg over de Banjaard, 4328 Vrouwenpolder, Niederlande',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=Waterland%20Neeltje%20Jans%20Vrouwenpolder',
+          desc: 'Spektakulärer Familien-Erlebnispark auf einer echten Deltawerke-Insel: Walrosse & Seehunde hautnah, Wasserrutschen, Kletterpark und originale Deltawerk-Technik.',
+          tags: ['familie', 'natur', 'kinder'],
+          tagLabels: ['🎢 Erlebnispark', '🦭 Tiere', '👶 Kinder'],
+          eta: 'ca. 55–65 Min. ab Resort*',
+          why: 'Absolutes Familien-Highlight in Zeeland. Für Kinder ein kompletter Erlebnistag – Walrosse, Wasserrutschen und echte Deltawerke sind unschlagbar.',
+          url: 'https://www.neeltjejans.nl/',
+          score: 15
+        },
+        {
+          id: 'trip-middelburg',
+          title: 'Middelburg – Hauptstadt Zeeland 🏛️',
+          address: 'Markt 75, 4331 LG Middelburg, Niederlande',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=Markt%20Middelburg%20Zeeland',
+          desc: 'Traumhafte mittelalterliche Hauptstadt Zeelands mit prächtigem Rathaus, mächtiger Abteikirche, charmanten Grachten und einem lebhaften Wochenmarkt.',
+          tags: ['stadt', 'geschichte', 'regen'],
+          tagLabels: ['🏛️ Stadt', '📜 Geschichte', '🌧️ Regen-Backup'],
+          eta: 'ca. 50–60 Min. ab Resort*',
+          why: 'Lohnt sich für einen ganzen Tag. Das Rathaus gilt als eines der schönsten der Niederlande. Kombinierbar mit Fähre Breskens–Vlissingen.',
+          url: 'https://www.visitmiddelburg.nl/',
+          score: 11
+        },
+        {
+          id: 'trip-vlissingen',
+          title: 'Vlissingen & MuZEEum ⚓',
+          address: 'Bellamypark 19, 4381 CG Vlissingen, Niederlande',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=MuZEEum%20Vlissingen',
+          desc: 'Hafenstadt mit breitem Sandstrand und dem MuZEEum: interaktives Meeresmuseum mit echtem U-Boot zum Besteigen, Marinetechnik und Fischereigeschichte.',
+          tags: ['stadt', 'geschichte', 'regen', 'kinder'],
+          tagLabels: ['⚓ Küste', '🔭 Museum', '👶 Kinder'],
+          eta: 'ca. 55–65 Min. ab Resort*',
+          why: 'Das echte U-Boot im MuZEEum ist für Kinder ein absolutes Highlight. Gut kombinierbar mit Strandbummel oder Fähre ab Breskens.',
+          url: 'https://www.muzeeumvlissingen.nl/',
+          score: 11
+        },
+        {
+          id: 'trip-knokke',
+          title: 'Knokke-Heist – Belgisches Seebad 🏖️',
+          address: 'Zeedijk, 8300 Knokke-Heist, Belgien',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=Zeedijk%20Knokke-Heist%20Belgien',
+          desc: 'Belgisches Nobel-Seebad direkt nebenan: breiter Sandstrand, Boutiquen-Promenade, gute Fritten und im Sommer Sandskulpturen und Beach-Events.',
+          tags: ['natur', 'familie', 'kinder'],
+          tagLabels: ['🏖️ Strand', '🛍️ Bummel', '🐚 Muscheln'],
+          eta: 'ca. 20–30 Min. ab Resort*',
+          why: 'Sehr nahe und ganz anderes Flair als die niederländische Seite. Belgische Atmosphäre, breitere Promenade, beste Fritten und Sandskulpturen im Sommer.',
+          url: 'https://www.knokke-heist.be/',
+          score: 10
+        },
+        {
+          id: 'trip-gent',
+          title: 'Gent – Burg & Grachten 🏰',
+          address: 'Korenmarkt, 9000 Gent, Belgien',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=Korenmarkt%20Gent%20Belgien',
+          desc: 'Lebendigere Alternative zu Brügge: spektakuläre Burg Gravensteen, Grachtenboote, mittelalterliches Zentrum und echtes belgisches Stadtleben. Für Kinder ist die Burg unvergesslich.',
+          tags: ['stadt', 'geschichte', 'regen', 'kinder'],
+          tagLabels: ['🏰 Burg', '🏛️ Stadt', '🌧️ Regen-Backup'],
+          eta: 'ca. 45–55 Min. ab Resort*',
+          why: 'Tolle Alternative zu Brügge. Burg Gravensteen ist für Kinder fantastisch. Mehr städtisches Flair, weniger Touristenmassen als Brügge.',
+          url: 'https://visit.gent.be/',
+          score: 12
+        },
+        {
+          id: 'trip-seal-tour',
+          title: 'Robbensafari – Seehunde hautnah 🦭',
+          address: 'Haven, 4511 Breskens, Niederlande',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=Zeehonden%20bootreis%20Breskens',
+          desc: 'Bootsausflug zu den Seehundbänken in der Westerschelde – eines der unvergesslichsten Naturerlebnisse der ganzen Küste. Seehunde auf ihren Sandbänken aus nächster Nähe!',
+          tags: ['natur', 'familie', 'kinder'],
+          tagLabels: ['🦭 Robben', '⛵ Bootstour', '👶 Kinder'],
+          eta: 'ab Hafen Breskens (ca. 25 Min. Fahrt)*',
+          why: 'Für Kinder und Erwachsene unvergesslich. Touren starten täglich in der Saison ab Breskens. Zeiten immer vorab prüfen!',
+          url: 'https://www.breskens.nl/',
+          score: 14
+        },
+        {
+          id: 'trip-fiets',
+          title: 'Küsten-Radtour: Deich & Polder 🚲',
+          address: 'Start: Dormio Resort Nieuwvliet-Bad',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=Fietsroute%20Nieuwvliet%20Zeeland%20Kust',
+          desc: 'Zeeland ist Fahrradparadies: flach, bestens beschildert und mit spektakulären Deich- und Küstenpanoramas. Mit E-Bikes aus dem Resort-Verleih in die Polderlandschaft.',
+          tags: ['natur', 'familie', 'kinder'],
+          tagLabels: ['🚲 Radtour', '🌊 Deich', '🌿 Polder'],
+          eta: 'Start direkt am Resort – flexibel',
+          why: 'Top-Option für einen aktiven Familientag. E-Bikes für alle Altersgruppen aus dem Resort-Verleih. Touren Richtung Cadzand, Sluis oder Küste.',
+          url: 'https://www.routeyou.com/nl-nl/location/bike/3/Netherlands/Zeeland',
+          score: 10
+        },
+        {
+          id: 'trip-groede-kids',
+          title: 'Groede Podium – Driftkarts & Trampolin 🎯',
+          address: 'Gerard de Moorsweg 4, 4503 PD Groede, Niederlande',
+          mapUrl: 'https://www.google.com/maps/search/?api=1&query=Groede%20Podium%20Driftkarts',
+          desc: 'Nur wenige Minuten vom Resort: Driftkarts, Trampolinpark und Spiel-Bunkeranlage. In den Sommerferien erweitertes Kinder-Programm. Perfekt für einen spontanen Aktiv-Halbttag.',
+          tags: ['familie', 'kinder'],
+          tagLabels: ['🎯 Action', '👶 Kinder', '🚗 Driftkart'],
+          eta: 'ca. 10–15 Min. ab Resort*',
+          why: 'Ideal für energiegeladene Kinder. Keine lange Anfahrt, viel Spaß. Auch für einen Zwischenstopp nach dem Strand geeignet.',
+          url: 'https://www.groedepodium.nl/',
+          score: 12
+        }
+      ],
       quizPool: [
         {
           id: 'q-strand-distanz',
@@ -2742,6 +3253,69 @@
           options: ['Deltawerke (riesige Sturmflutsperren)', 'Die höchsten Berge der NL', 'Die größten Vulkane Europas'],
           answer: 0,
           explain: 'Die Deltawerke sind ein gewaltiges System aus Dämmen und Sperrwerken – Folge der schweren Flut von 1953.'
+        },
+        {
+          id: 'q-neeltje-jans',
+          cat: 'Natur',
+          level: 'mittel',
+          q: 'Was ist das besondere am Erlebnispark Waterland Neeltje Jans für Familien?',
+          options: ['Walrosse & Robben hautnah + Wasserrutschen auf einer echten Deltawerke-Insel', 'Nur eine riesige Achterbahn', 'Ein Unterwassertunnel nach Belgien'],
+          answer: 0,
+          explain: 'Neeltje Jans liegt auf einer künstlichen Insel der Deltawerke. Walrosse, Robben, Wasserrutschen, Kletterpark – ein unvergesslicher Familientag in Zeeland, ca. 55 Min. vom Resort.'
+        },
+        {
+          id: 'q-mosselen-saison',
+          cat: 'Events',
+          level: 'leicht',
+          q: 'Welche Zeeland-Spezialität startet jedes Jahr im Juli ihre beste Saison?',
+          options: ['Zeeuwse Mosselen (Muscheln)', 'Hollandse Käse', 'Zeeland-Schokolade'],
+          answer: 0,
+          explain: 'Ab Juli beginnt die Mosselen-Saison! Die Zeeland-Muscheln aus den Scheldebuchten gelten als die besten Europas – mit Fritten in Breskens oder Sluis ein Muss!'
+        },
+        {
+          id: 'q-haifischzahn',
+          cat: 'Strand & Tiere',
+          level: 'mittel',
+          q: 'Was für Fossilien können Kinder am Strand vor Nieuwvliet-Bad manchmal tatsächlich finden?',
+          options: ['Fossile Haifischzähne', 'Dinosauriereier', 'Goldnuggets'],
+          answer: 0,
+          explain: 'An der Küste Zeelands werden regelmäßig fossile Haifischzähne angespült – ein tolles Strandprojekt für Kinder! Ein kleines Sieb hilft beim Suchen.'
+        },
+        {
+          id: 'q-kino-options',
+          cat: 'Resort',
+          level: 'leicht',
+          q: 'Was ist eine gute Option für einen Regentag mit Kindern in der Region?',
+          options: ['Kinepolis Brügge oder Bioscoop Terneuzen (ca. 25–40 Min.)', 'Es gibt kein Kino in der Nähe', 'Nur Netflix im Resort'],
+          answer: 0,
+          explain: 'Bioscoop Terneuzen ist ca. 25 Min. entfernt, Kinepolis Brügge ca. 40 Min. – beide zeigen aktuelle Familienfilme. Auch Open-Air-Kino im Sommer möglich!'
+        },
+        {
+          id: 'q-robbensafari',
+          cat: 'Natur',
+          level: 'leicht',
+          q: 'Von welchem Ort starten die Bootstouren zu den Seehundbänken in der Westerschelde?',
+          options: ['Hafen Breskens', 'Hafen Rotterdam', 'Hafen Antwerpen'],
+          answer: 0,
+          explain: 'Vom Hafen Breskens (ca. 25 Min. vom Resort) starten täglich Robbensafaris zu den Seehundbänken in der Westerschelde – für Kinder absolut unvergesslich!'
+        },
+        {
+          id: 'q-gent-burg',
+          cat: 'Belgien & NL',
+          level: 'mittel',
+          q: 'Welche mittelalterliche Burg mitten in einer belgischen Großstadt ist besonders für Kinder spannend und liegt ca. 50 Min. vom Resort?',
+          options: ['Burg Gravensteen in Gent', 'Schloss Versailles', 'Burg Hohenzollern'],
+          answer: 0,
+          explain: 'Burg Gravensteen in Gent – vollständig begehbar mit Zinnen, Folterkammer und Stadtpanorama. Für Kinder ein echtes mittelalterliches Erlebnis, ca. 50 Min. vom Resort!'
+        },
+        {
+          id: 'q-faehre',
+          cat: 'Route',
+          level: 'schwer',
+          q: 'Welche Fähre spart fast eine Stunde Fahrzeit wenn man von Breskens nach Nordzeeeland möchte?',
+          options: ['Fast-Ferry Breskens–Vlissingen', 'Die Fähre Rotterdam–London', 'Eine Fähre gibt es nicht'],
+          answer: 0,
+          explain: 'Die Fast-Ferry zwischen Breskens und Vlissingen spart fast 1 Stunde Umfahrung. Fahrräder werden mitgenommen – ideal für einen Ausflug nach Middelburg!'
         }
       ]
     };
