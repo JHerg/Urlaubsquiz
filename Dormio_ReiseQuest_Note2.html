@@ -999,6 +999,33 @@
       }
     }
 
+    /* --- input[type=date] als iOS-sichere Datumswahl --- */
+    .day-date-input {
+      flex: 1 1 150px;
+      min-width: 150px;
+      padding: 10px 12px;
+      border-radius: 13px;
+      border: 1px solid rgba(255,255,255,.22);
+      background-color: #334155;
+      color: #ffffff;
+      color-scheme: dark;
+      font: inherit;
+      font-size: 16px;   /* verhindert Auto-Zoom auf iOS */
+      min-height: 48px;
+      cursor: pointer;
+    }
+    .day-date-input:focus {
+      outline: 3px solid rgba(102,224,255,.35);
+      outline-offset: 2px;
+      border-color: rgba(102,224,255,.55);
+    }
+    /* WebKit-Kalender-Icon in Weiß */
+    .day-date-input::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      opacity: .75;
+      cursor: pointer;
+    }
+
     @media (max-width: 760px) {
       select,
       .slot-select,
@@ -1010,6 +1037,11 @@
         font-size: 16px;
         padding: 12px 14px !important;
         border-radius: 14px !important;
+      }
+      .day-date-input {
+        min-height: 52px;
+        width: 100%;
+        flex: 1 1 100%;
       }
     }
 
@@ -3548,28 +3580,43 @@
             <button class="remove-btn" data-remove-key="${key}">✕</button>
           </div>
           <div class="actions" style="margin-top:12px;">
-            <select data-assign-key="${key}" style="flex:1;min-width:200px;padding:10px 12px;border-radius:12px;border:none;background:rgba(255,255,255,.08);color:white;">
-              <option value="">Zu Tag hinzufügen…</option>
-              ${buildStayDates().map(d => `<option value="${dayKey(d)}">${fmtDate(d)}</option>`).join('')}
-            </select>
+            <input type="date" data-assign-key="${key}" class="day-date-input"
+              min="2026-07-27" max="2026-08-10"
+              title="Urlaubstag auswählen" />
             <button class="btn ghost" data-assign-btn="${key}">➕ Einplanen</button>
           </div>`;
         savedIdeasEl.appendChild(card);
       });
       document.querySelectorAll('[data-remove-key]').forEach(btn => btn.onclick = () => removeIdea(btn.dataset.removeKey));
-      document.querySelectorAll('[data-assign-btn]').forEach(btn => {
-        btn.onclick = () => {
-          const key = btn.dataset.assignBtn;
-          const select = document.querySelector(`select[data-assign-key="${key}"]`);
-          if (!select.value) { toastMsg('Bitte zuerst einen Urlaubstag wählen.'); return; }
-          state.dayPlans[select.value] = state.dayPlans[select.value] || [];
-          if (!state.dayPlans[select.value].includes(key)) {
-            state.dayPlans[select.value].push(key);
+      // Auto-assign on date change (mobile UX – no separate button needed)
+      document.querySelectorAll('[data-assign-key]').forEach(input => {
+        input.onchange = () => {
+          const key = input.dataset.assignKey;
+          if (!input.value) return;
+          state.dayPlans[input.value] = state.dayPlans[input.value] || [];
+          if (!state.dayPlans[input.value].includes(key)) {
+            state.dayPlans[input.value].push(key);
             addScore(4);
             persist();
             toastMsg('Zum Tagesplan hinzugefügt 📅');
           } else {
-            toastMsg('Für diesen Tag schon eingeplant');
+            toastMsg('Für diesen Tag schon eingeplant ✅');
+          }
+        };
+      });
+      document.querySelectorAll('[data-assign-btn]').forEach(btn => {
+        btn.onclick = () => {
+          const key = btn.dataset.assignBtn;
+          const input = document.querySelector(`[data-assign-key="${key}"]`);
+          if (!input.value) { toastMsg('Bitte zuerst einen Urlaubstag wählen.'); return; }
+          state.dayPlans[input.value] = state.dayPlans[input.value] || [];
+          if (!state.dayPlans[input.value].includes(key)) {
+            state.dayPlans[input.value].push(key);
+            addScore(4);
+            persist();
+            toastMsg('Zum Tagesplan hinzugefügt 📅');
+          } else {
+            toastMsg('Für diesen Tag schon eingeplant ✅');
           }
         };
       });
@@ -4183,10 +4230,9 @@
           ${idea.address ? `<div class="navline">${navLink(idea.address, idea.mapUrl || idea.address)}</div>` : ''}
           ${idea.note ? `<p class="small">${idea.note}</p>` : ''}
           <div class="actions">
-            <select data-family-assign="${idea.id}" style="flex:1;min-width:170px;padding:10px 12px;border-radius:12px;border:none;background:rgba(255,255,255,.08);color:white;">
-              <option value="">Tag auswählen …</option>
-              ${buildStayDates().map(d => `<option value="${dayKey(d)}">${fmtDate(d)}</option>`).join('')}
-            </select>
+            <input type="date" data-family-assign="${idea.id}" class="day-date-input"
+              min="2026-07-27" max="2026-08-10"
+              title="Urlaubstag auswählen" />
             <select data-family-slot="${idea.id}" class="slot-select" style="flex:0.8;min-width:145px;">
               ${['Morgen','Vormittag','Nachmittag','Abend','Ganzer Tag','Flexibel','Fix/Termin'].map(s => `<option value="${s}" ${idea.slot === s ? 'selected' : ''}>${s}</option>`).join('')}
             </select>
@@ -4195,10 +4241,18 @@
         </div>
       `).join('');
       document.querySelectorAll('[data-remove-bucket]').forEach(btn => btn.onclick = () => removeBucketIdea(btn.dataset.removeBucket));
+      // Auto-assign when date is picked (mobile-friendly: no extra button tap needed)
+      document.querySelectorAll('[data-family-assign]').forEach(input => {
+        input.onchange = () => {
+          if (!input.value) return;
+          const slotSel = document.querySelector(`[data-family-slot="${input.dataset.familyAssign}"]`);
+          assignBucketIdea(input.dataset.familyAssign, input.value, slotSel?.value || null);
+        };
+      });
       document.querySelectorAll('[data-family-assign-btn]').forEach(btn => btn.onclick = () => {
-        const sel = document.querySelector(`select[data-family-assign="${btn.dataset.familyAssignBtn}"]`);
-        const slotSel = document.querySelector(`select[data-family-slot="${btn.dataset.familyAssignBtn}"]`);
-        assignBucketIdea(btn.dataset.familyAssignBtn, sel.value, slotSel?.value || null);
+        const inp = document.querySelector(`[data-family-assign="${btn.dataset.familyAssignBtn}"]`);
+        const slotSel = document.querySelector(`[data-family-slot="${btn.dataset.familyAssignBtn}"]`);
+        assignBucketIdea(btn.dataset.familyAssignBtn, inp.value, slotSel?.value || null);
       });
     }
 
