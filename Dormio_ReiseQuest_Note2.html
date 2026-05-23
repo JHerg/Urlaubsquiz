@@ -2,223 +2,503 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Dormio Urlaub 2026</title>
 <style>
+/* ── RESET & VARIABLES ─────────────────────────────────────── */
 :root {
-  --bg: #07111f;
-  --surf: rgba(255,255,255,.08);
-  --bord: rgba(255,255,255,.10);
-  --txt: #eef2ff;
-  --muted: rgba(238,242,255,.50);
+  --bg:     #07111f;
+  --surf:   rgba(255,255,255,.08);
+  --bord:   rgba(255,255,255,.11);
+  --txt:    #eef2ff;
+  --muted:  rgba(238,242,255,.50);
   --accent: #38bdf8;
-  --green: #34d399;
+  --green:  #34d399;
   --yellow: #fbbf24;
-  --red: #f87171;
-  --r: 14px;
-  --nav: 62px;
+  --red:    #f87171;
+  --r:      14px;
+  --nav-h:  58px;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background:var(--bg);color:var(--txt);
-  min-height:100dvh;
-  padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom));
-  overflow-x:hidden;
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--txt);
+  min-height: 100vh;
+  /* space for fixed bottom nav + iPhone home indicator */
+  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 20px) + 4px);
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* NAV */
-.nav{
-  position:fixed;bottom:0;left:0;right:0;
-  height:calc(var(--nav) + env(safe-area-inset-bottom));
-  padding-bottom:env(safe-area-inset-bottom);
-  background:#0b1829;border-top:1px solid var(--bord);
-  display:flex;z-index:99;
+/* ── BOTTOM NAV ─────────────────────────────────────────────── */
+.nav {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  /* full height = nav bar + safe-area (home indicator) */
+  height: calc(var(--nav-h) + env(safe-area-inset-bottom, 20px));
+  /* push buttons up above home indicator */
+  padding-bottom: env(safe-area-inset-bottom, 20px);
+  background: #0b1829;
+  border-top: 1px solid var(--bord);
+  display: flex;
+  align-items: stretch;
+  z-index: 9999;          /* always on top */
+  /* prevent tap delay */
+  touch-action: manipulation;
 }
-.nav-btn{
-  flex:1;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;gap:2px;border:none;background:none;
-  color:var(--muted);font-size:.68rem;font-weight:600;
-  cursor:pointer;-webkit-tap-highlight-color:transparent;
-  touch-action:manipulation;padding:6px 4px;
+.nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  /* iOS: must be at least 44px touch target */
+  min-height: 44px;
+  border: none;
+  background: transparent;
+  color: rgba(238,242,255,.45);
+  font-family: inherit;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .01em;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  /* no outline on focus (handled by .active color) */
+  outline: none;
+  padding: 6px 2px 4px;
+  transition: color .15s ease;
+  /* prevent text selection on double-tap */
+  user-select: none;
+  -webkit-user-select: none;
 }
-.nav-btn.on{color:var(--accent)}
-.nav-btn span{font-size:1.45rem;line-height:1}
+.nav-btn.active { color: var(--accent); }
+.nav-icon { font-size: 1.4rem; line-height: 1; display: block; }
 
-/* TABS */
-.tab{display:none}.tab.on{display:block}
-.wrap{max-width:640px;margin:0 auto;padding:0 14px}
+/* ── TABS (sections) ────────────────────────────────────────── */
+.tab-section { display: none; }
+.tab-section.active { display: block; }
 
-/* HEADER BAND */
-.hero{background:linear-gradient(135deg,rgba(56,189,248,.10),rgba(251,191,36,.06));
-  border-bottom:1px solid var(--bord);padding:16px 14px 14px}
-.hero h1{font-size:1.35rem;font-weight:800}
-.hero-sub{color:var(--muted);font-size:.82rem;margin-top:3px}
-.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
-.chip{background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.22);
-  color:var(--accent);border-radius:999px;padding:4px 11px;font-size:.76rem;font-weight:600}
+/* ── LAYOUT ─────────────────────────────────────────────────── */
+.wrap { max-width: 600px; margin: 0 auto; padding: 0 14px; }
 
-/* CARDS */
-.card{background:var(--surf);border:1px solid var(--bord);
-  border-radius:var(--r);padding:14px;margin-bottom:10px}
-.card h3{font-size:.9rem;font-weight:700;margin-bottom:10px;color:var(--accent)}
-
-/* ROWS */
-.row{display:flex;align-items:flex-start;gap:10px;
-  padding:9px 0;border-bottom:1px solid var(--bord);font-size:.86rem}
-.row:last-child{border:none;padding-bottom:0}
-.row-icon{font-size:1.1rem;flex:0 0 22px;margin-top:1px}
-.row b{display:block;font-weight:700}
-.row span{color:var(--muted);font-size:.79rem}
-
-/* FILTER ROW */
-.filters{display:flex;gap:7px;overflow-x:auto;padding:12px 14px 0;scrollbar-width:none}
-.filters::-webkit-scrollbar{display:none}
-.f-btn{flex:0 0 auto;background:var(--surf);border:1px solid var(--bord);
-  color:var(--txt);border-radius:999px;padding:7px 13px;font-size:.8rem;
-  font-weight:600;cursor:pointer;white-space:nowrap;
-  -webkit-tap-highlight-color:transparent;touch-action:manipulation}
-.f-btn.on{background:rgba(56,189,248,.15);border-color:rgba(56,189,248,.35);color:var(--accent)}
-
-/* ITEM CARDS */
-.item{background:var(--surf);border:1px solid var(--bord);
-  border-radius:var(--r);padding:13px;margin:8px 14px 0;
-  display:flex;gap:11px;align-items:flex-start}
-.item-ico{font-size:1.5rem;flex:0 0 36px;text-align:center;padding-top:1px}
-.item-body{flex:1;min-width:0}
-.item-title{font-weight:700;font-size:.93rem}
-.item-meta{color:var(--muted);font-size:.78rem;margin-top:3px;line-height:1.45}
-.item-plan-btn{
-  flex:0 0 auto;align-self:center;
-  background:rgba(56,189,248,.11);border:1px solid rgba(56,189,248,.2);
-  color:var(--accent);border-radius:10px;
-  padding:7px 9px;font-size:1.1rem;cursor:pointer;
-  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+/* ── HEADER BAND ─────────────────────────────────────────────── */
+.hero {
+  background: linear-gradient(135deg,rgba(56,189,248,.09),rgba(251,191,36,.05));
+  border-bottom: 1px solid var(--bord);
+  padding: 16px 14px 14px;
 }
-.item-plan-btn.on{background:rgba(52,211,153,.14);border-color:rgba(52,211,153,.28);color:var(--green)}
-.tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
-.tag{border-radius:999px;padding:2px 8px;font-size:.71rem;font-weight:700}
-.t-k{background:rgba(251,191,36,.12);color:var(--yellow);border:1px solid rgba(251,191,36,.2)}
-.t-n{background:rgba(52,211,153,.10);color:var(--green);border:1px solid rgba(52,211,153,.18)}
-.t-s{background:rgba(56,189,248,.10);color:var(--accent);border:1px solid rgba(56,189,248,.18)}
-.t-c{background:rgba(167,139,250,.10);color:#c4b5fd;border:1px solid rgba(167,139,250,.18)}
-.t-r{background:rgba(148,163,184,.10);color:#94a3b8;border:1px solid rgba(148,163,184,.18)}
-.t-f{background:rgba(251,146,60,.10);color:#fb923c;border:1px solid rgba(251,146,60,.18)}
+.hero h1 { font-size: 1.3rem; font-weight: 800; }
+.hero-sub { color: var(--muted); font-size: .81rem; margin-top: 3px; }
+.hero-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+.chip {
+  background: rgba(56,189,248,.12);
+  border: 1px solid rgba(56,189,248,.22);
+  color: var(--accent);
+  border-radius: 999px;
+  padding: 4px 11px;
+  font-size: .75rem;
+  font-weight: 600;
+}
 
-/* CALENDAR */
-.cal-day{background:var(--surf);border:1px solid var(--bord);
-  border-radius:var(--r);margin-bottom:8px;overflow:hidden}
-.cal-hd{display:flex;align-items:center;gap:10px;padding:11px 13px;
-  cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
-.cal-badge{background:rgba(255,255,255,.09);border-radius:9px;
-  padding:5px 9px;text-align:center;flex:0 0 44px}
-.cal-badge .n{font-size:1.15rem;font-weight:800;line-height:1}
-.cal-badge .d{font-size:.6rem;color:var(--muted);font-weight:700;text-transform:uppercase}
-.cal-info{flex:1}
-.cal-title{font-weight:700;font-size:.88rem}
-.cal-sub{font-size:.74rem;color:var(--muted);margin-top:1px}
-.cal-arr{color:var(--muted);font-size:.9rem;transition:transform .18s}
-.cal-arr.open{transform:rotate(180deg)}
-.cal-body{display:none;padding:0 13px 13px;border-top:1px solid var(--bord)}
-.cal-body.open{display:block}
-.cal-item-row{display:flex;align-items:center;gap:8px;padding:7px 0;
-  border-bottom:1px solid var(--bord);font-size:.84rem}
-.cal-item-row:last-of-type{border:none}
-.rm{background:none;border:none;color:var(--red);font-size:.95rem;
-  cursor:pointer;padding:4px;margin-left:auto;
-  -webkit-tap-highlight-color:transparent;touch-action:manipulation}
-.cal-note{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--bord);
-  border-radius:9px;padding:9px 11px;color:var(--txt);font:inherit;
-  font-size:.82rem;resize:none;min-height:52px;margin-top:8px;
-  -webkit-appearance:none}
-.cal-note::placeholder{color:var(--muted)}
-.cal-note:focus{outline:none;border-color:rgba(56,189,248,.4)}
-.today-dot{display:inline-block;width:7px;height:7px;
-  background:var(--yellow);border-radius:50%;margin-left:6px;vertical-align:middle}
+/* ── CARDS ────────────────────────────────────────────────────── */
+.card {
+  background: var(--surf);
+  border: 1px solid var(--bord);
+  border-radius: var(--r);
+  padding: 14px;
+  margin-bottom: 10px;
+}
+.card-title {
+  font-size: .86rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
 
-/* SHARE */
-.share-box{background:var(--surf);border:1px solid var(--bord);
-  border-radius:var(--r);padding:14px;margin-bottom:10px}
-.share-box pre{font-size:.75rem;color:var(--muted);white-space:pre-wrap;
-  word-break:break-word;max-height:260px;overflow-y:auto;margin:10px 0}
-.btn{display:block;width:100%;border:none;border-radius:var(--r);
-  padding:13px;font:inherit;font-size:.92rem;font-weight:700;
-  cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;margin-bottom:8px}
-.btn-p{background:var(--accent);color:#07111f}
-.btn-s{background:var(--surf);color:var(--txt);border:1px solid var(--bord)}
+/* ── INFO ROWS ───────────────────────────────────────────────── */
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--bord);
+  font-size: .85rem;
+  line-height: 1.4;
+}
+.row:last-child { border-bottom: none; padding-bottom: 2px; }
+.row-ico { font-size: 1.05rem; flex: 0 0 22px; padding-top: 1px; }
+.row b { display: block; font-weight: 700; }
+.row span { color: var(--muted); font-size: .78rem; }
+a.map-lnk {
+  display: inline-block;
+  color: var(--accent);
+  font-size: .77rem;
+  font-weight: 600;
+  text-decoration: none;
+  margin-top: 3px;
+}
 
-/* MODAL */
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.65);
-  z-index:200;display:flex;align-items:flex-end}
-.modal.hide{display:none}
-.sheet{background:#0e1e36;border:1px solid var(--bord);
-  border-radius:20px 20px 0 0;
-  padding:18px 14px calc(18px + env(safe-area-inset-bottom));
-  width:100%;max-height:78vh;overflow-y:auto}
-.sheet h4{font-size:.95rem;font-weight:700;margin-bottom:12px}
-.date-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px}
-.d-btn{background:var(--surf);border:1px solid var(--bord);color:var(--txt);
-  border-radius:10px;padding:10px 4px;font-size:.79rem;font-weight:600;
-  text-align:center;cursor:pointer;
-  -webkit-tap-highlight-color:transparent;touch-action:manipulation}
-.d-btn.on{background:rgba(52,211,153,.14);border-color:rgba(52,211,153,.28);color:var(--green)}
-.btn-close{width:100%;border:none;background:rgba(255,255,255,.06);
-  border-radius:10px;padding:11px;color:var(--muted);font:inherit;
-  font-size:.88rem;font-weight:600;cursor:pointer;
-  -webkit-tap-highlight-color:transparent;touch-action:manipulation}
+/* ── FILTER STRIP ────────────────────────────────────────────── */
+.filter-strip {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  padding: 12px 14px 2px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.filter-strip::-webkit-scrollbar { display: none; }
+.f-btn {
+  flex: 0 0 auto;
+  background: var(--surf);
+  border: 1px solid var(--bord);
+  color: var(--txt);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-family: inherit;
+  font-size: .8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: background .12s, color .12s, border-color .12s;
+}
+.f-btn.active {
+  background: rgba(56,189,248,.14);
+  border-color: rgba(56,189,248,.35);
+  color: var(--accent);
+}
 
-/* TOAST */
-.toast{position:fixed;bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 10px);
-  left:50%;transform:translateX(-50%) translateY(10px);
-  background:rgba(52,211,153,.93);color:#07111f;
-  padding:9px 18px;border-radius:999px;font-size:.84rem;font-weight:700;
-  opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;
-  white-space:nowrap;z-index:400}
-.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+/* ── ZIEL CARDS ──────────────────────────────────────────────── */
+#item-list { padding: 8px 14px 4px; }
+.item-card {
+  background: var(--surf);
+  border: 1px solid var(--bord);
+  border-radius: var(--r);
+  padding: 13px;
+  margin-bottom: 9px;
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+}
+.item-ico { font-size: 1.5rem; flex: 0 0 36px; text-align: center; padding-top: 1px; }
+.item-body { flex: 1; min-width: 0; }
+.item-title { font-weight: 700; font-size: .92rem; }
+.item-meta { color: var(--muted); font-size: .78rem; margin-top: 3px; line-height: 1.4; }
+.item-desc { color: var(--muted); font-size: .78rem; margin-top: 4px; line-height: 1.4; }
+.item-ok { color: var(--green); font-size: .77rem; margin-top: 4px; }
+.item-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 7px; }
+.tag {
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: .7rem;
+  font-weight: 700;
+}
+.t-y { background: rgba(251,191,36,.12); color: var(--yellow); border: 1px solid rgba(251,191,36,.2); }
+.t-b { background: rgba(56,189,248,.10); color: var(--accent); border: 1px solid rgba(56,189,248,.18); }
+.t-p { background: rgba(167,139,250,.10); color: #c4b5fd; border: 1px solid rgba(167,139,250,.18); }
+.t-g { background: rgba(52,211,153,.10); color: var(--green); border: 1px solid rgba(52,211,153,.18); }
+.t-s { background: rgba(148,163,184,.10); color: #94a3b8; border: 1px solid rgba(148,163,184,.18); }
 
-.sec-pad{padding:14px 0 4px}
-.no-res{text-align:center;color:var(--muted);padding:32px 16px;font-size:.86rem}
-a.map{color:var(--accent);font-size:.77rem;font-weight:600;
-  text-decoration:none;display:inline-block;margin-top:4px}
+.plan-btn {
+  flex: 0 0 auto;
+  align-self: center;
+  background: rgba(56,189,248,.10);
+  border: 1px solid rgba(56,189,248,.20);
+  color: var(--accent);
+  border-radius: 10px;
+  padding: 9px 10px;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  outline: none;
+  transition: background .12s, color .12s;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.plan-btn.added {
+  background: rgba(52,211,153,.14);
+  border-color: rgba(52,211,153,.28);
+  color: var(--green);
+}
+
+/* ── CALENDAR ────────────────────────────────────────────────── */
+.cal-day {
+  background: var(--surf);
+  border: 1px solid var(--bord);
+  border-radius: var(--r);
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+.cal-hd {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 13px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  outline: none;
+  min-height: 52px;
+}
+.cal-badge {
+  background: rgba(255,255,255,.09);
+  border-radius: 9px;
+  padding: 5px 9px;
+  text-align: center;
+  flex: 0 0 46px;
+}
+.cal-day-n { font-size: 1.15rem; font-weight: 800; line-height: 1; }
+.cal-day-w { font-size: .58rem; color: var(--muted); font-weight: 700; text-transform: uppercase; margin-top: 1px; }
+.cal-info { flex: 1; min-width: 0; }
+.cal-title { font-weight: 700; font-size: .87rem; }
+.cal-sub { font-size: .73rem; color: var(--muted); margin-top: 2px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.cal-arr { color: var(--muted); font-size: .85rem; flex: 0 0 auto; transition: transform .18s; }
+.cal-arr.open { transform: rotate(180deg); }
+.cal-body {
+  display: none;
+  padding: 2px 13px 13px;
+  border-top: 1px solid var(--bord);
+}
+.cal-body.open { display: block; }
+.cal-planned-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--bord);
+  font-size: .85rem;
+}
+.cal-planned-row:last-of-type { border: none; }
+.rm-btn {
+  background: none;
+  border: none;
+  color: var(--red);
+  font-size: .95rem;
+  cursor: pointer;
+  padding: 5px 6px;
+  margin-left: auto;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.cal-note {
+  display: block;
+  width: 100%;
+  background: rgba(255,255,255,.05);
+  border: 1px solid var(--bord);
+  border-radius: 9px;
+  padding: 9px 11px;
+  color: var(--txt);
+  font-family: inherit;
+  font-size: .82rem;
+  resize: none;
+  min-height: 52px;
+  margin-top: 9px;
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none;
+}
+.cal-note::placeholder { color: var(--muted); }
+.cal-note:focus { border-color: rgba(56,189,248,.4); }
+.today-dot {
+  display: inline-block;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--yellow);
+  vertical-align: middle;
+  margin-left: 5px;
+}
+
+/* ── MODAL (bottom sheet) ────────────────────────────────────── */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.65);
+  z-index: 99999;
+  display: flex;
+  align-items: flex-end;
+  /* prevent scroll-through */
+  overscroll-behavior: contain;
+}
+.modal[hidden] { display: none; }
+.sheet {
+  background: #0d1c33;
+  border-top: 1px solid var(--bord);
+  border-radius: 20px 20px 0 0;
+  padding: 18px 14px;
+  padding-bottom: calc(18px + env(safe-area-inset-bottom, 20px));
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.sheet-title { font-size: .95rem; font-weight: 700; margin-bottom: 12px; }
+.date-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 12px; }
+.date-btn {
+  background: var(--surf);
+  border: 1px solid var(--bord);
+  color: var(--txt);
+  border-radius: 10px;
+  padding: 10px 4px;
+  font-family: inherit;
+  font-size: .79rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: background .1s;
+}
+.date-btn.added {
+  background: rgba(52,211,153,.14);
+  border-color: rgba(52,211,153,.28);
+  color: var(--green);
+}
+.sheet-close {
+  width: 100%;
+  background: rgba(255,255,255,.06);
+  border: 1px solid var(--bord);
+  color: var(--muted);
+  border-radius: 10px;
+  padding: 12px;
+  font-family: inherit;
+  font-size: .88rem;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  outline: none;
+}
+
+/* ── SHARE / BUTTONS ─────────────────────────────────────────── */
+.btn {
+  display: block;
+  width: 100%;
+  border: none;
+  border-radius: var(--r);
+  padding: 13px;
+  font-family: inherit;
+  font-size: .9rem;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  outline: none;
+  margin-bottom: 8px;
+  transition: opacity .1s;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.btn:active { opacity: .8; }
+.btn-primary { background: var(--accent); color: #07111f; }
+.btn-ghost { background: var(--surf); color: var(--txt); border: 1px solid var(--bord); }
+.btn-danger { background: var(--surf); color: var(--red); border: 1px solid rgba(248,113,113,.25); }
+pre.plan-pre {
+  font-size: .74rem;
+  color: var(--muted);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 240px;
+  overflow-y: auto;
+  margin: 10px 0 2px;
+  padding: 10px;
+  background: rgba(255,255,255,.04);
+  border-radius: 9px;
+  border: 1px solid var(--bord);
+}
+
+/* ── TOAST ───────────────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 20px) + 12px);
+  transform: translateX(-50%) translateY(12px);
+  background: rgba(52,211,153,.93);
+  color: #07111f;
+  border-radius: 999px;
+  padding: 9px 18px;
+  font-size: .84rem;
+  font-weight: 700;
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 99998;
+  transition: opacity .2s ease, transform .2s ease;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── MISC ────────────────────────────────────────────────────── */
+.sec-wrap { padding: 14px 0 8px; }
+.no-results { text-align: center; color: var(--muted); padding: 36px 20px; font-size: .86rem; }
+.section-gap { height: 6px; }
 </style>
 </head>
 <body>
 
-<!-- BOTTOM NAV -->
-<nav class="nav">
-  <button class="nav-btn on" onclick="show('info',this)">
-    <span>📍</span>Info
+<!-- ════════════════════════════════════════════════
+     BOTTOM NAVIGATION
+     ════════════════════════════════════════════════ -->
+<nav class="nav" id="bottom-nav">
+  <button class="nav-btn active" data-tab="info">
+    <span class="nav-icon">📍</span>Info
   </button>
-  <button class="nav-btn" onclick="show('ziele',this)">
-    <span>🗺️</span>Ziele
+  <button class="nav-btn" data-tab="ziele">
+    <span class="nav-icon">🗺️</span>Ziele
   </button>
-  <button class="nav-btn" onclick="show('plan',this)">
-    <span>📅</span>Plan
+  <button class="nav-btn" data-tab="plan">
+    <span class="nav-icon">📅</span>Plan
   </button>
-  <button class="nav-btn" onclick="show('teilen',this)">
-    <span>📤</span>Teilen
+  <button class="nav-btn" data-tab="teilen">
+    <span class="nav-icon">📤</span>Teilen
   </button>
 </nav>
 
-<div class="toast" id="toast"></div>
+<!-- Toast -->
+<div class="toast" id="toast" aria-live="polite"></div>
 
-<!-- MODAL: DATUM WÄHLEN -->
-<div class="modal hide" id="modal" onclick="if(event.target===this)closeModal()">
-  <div class="sheet">
-    <h4 id="modal-title">Zu welchem Tag?</h4>
+<!-- ════════════════════════════════════════════════
+     MODAL – DATUM WÄHLEN
+     ════════════════════════════════════════════════ -->
+<div class="modal" id="modal" hidden>
+  <div class="sheet" id="modal-sheet">
+    <div class="sheet-title" id="modal-title">Zu welchem Tag einplanen?</div>
     <div class="date-grid" id="modal-dates"></div>
-    <button class="btn-close" onclick="closeModal()">Abbrechen</button>
+    <button class="sheet-close" id="modal-close">Abbrechen</button>
   </div>
 </div>
 
-<!-- ══════════════ TAB: INFO ══════════════ -->
-<div class="tab on" id="tab-info">
+<!-- ════════════════════════════════════════════════
+     TAB: INFO
+     ════════════════════════════════════════════════ -->
+<section class="tab-section active" id="tab-info">
   <div class="hero">
-    <div style="font-size:.75rem;color:var(--muted);margin-bottom:4px">📍 Nieuwvliet-Bad · Zeeland · NL</div>
+    <div style="font-size:.73rem;color:var(--muted);margin-bottom:4px">
+      📍 Nieuwvliet-Bad &nbsp;·&nbsp; Zeeland &nbsp;·&nbsp; Niederlande
+    </div>
     <h1>🏖️ Dormio Urlaub 2026</h1>
     <div class="hero-sub">Mo 27. Juli – Mo 10. August &nbsp;·&nbsp; 15 Tage</div>
-    <div class="chips">
+    <div class="hero-chips">
       <span class="chip">🐶 Hundestrand</span>
       <span class="chip">🧒 Kinder</span>
       <span class="chip">🌊 Nordseeküste</span>
@@ -226,404 +506,585 @@ a.map{color:var(--accent);font-size:.77rem;font-weight:600;
     </div>
   </div>
 
-  <div class="wrap sec-pad">
+  <div class="wrap sec-wrap">
 
     <div class="card">
-      <h3>📋 Buchung</h3>
-      <div class="row"><div class="row-icon">🏠</div><div>
-        <b>Dormio Strand Resort</b>
-        <span>Baanstpoldersedijk 4 · 4504 PR Nieuwvliet · Reserv. 36801</span>
-        <a class="map" href="https://maps.apple.com/?q=Dormio+Strand+Resort+Nieuwvliet" target="_blank">📍 In Maps öffnen</a>
-      </div></div>
-      <div class="row"><div class="row-icon">📆</div><div>
-        <b>Check-in Mo 27.07 ab 16:00</b>
-        <span>Check-out Mo 10.08 bis 10:30 Uhr</span>
-      </div></div>
-      <div class="row"><div class="row-icon">📞</div><div>
-        <b>Rezeption</b><span>+31 117 37 08 00</span>
-      </div></div>
+      <div class="card-title">📋 Buchung</div>
+      <div class="row">
+        <span class="row-ico">🏠</span>
+        <div>
+          <b>Dormio Strand Resort</b>
+          <span>Baanstpoldersedijk 4, 4504 PR Nieuwvliet · Reserv. 36801</span>
+          <a class="map-lnk" href="https://maps.apple.com/?q=Dormio+Strand+Resort+Nieuwvliet" target="_blank" rel="noopener">📍 In Maps öffnen</a>
+        </div>
+      </div>
+      <div class="row">
+        <span class="row-ico">📆</span>
+        <div>
+          <b>Check-in Mo 27.07 ab 16:00 Uhr</b>
+          <span>Check-out Mo 10.08 bis 10:30 Uhr</span>
+        </div>
+      </div>
+      <div class="row">
+        <span class="row-ico">📞</span>
+        <div>
+          <b>Rezeption</b>
+          <span>+31 117 37 08 00</span>
+        </div>
+      </div>
     </div>
 
     <div class="card">
-      <h3>🐶 Hund am Strand</h3>
-      <div class="row"><div class="row-icon">☀️</div><div>
-        <b>10–18 Uhr → Leinenpflicht</b><span>Am Hauptstrand tagsüber</span>
-      </div></div>
-      <div class="row"><div class="row-icon">🌅</div><div>
-        <b>Vor 10 & nach 18 Uhr frei</b><span>Freilauf möglich</span>
-      </div></div>
-      <div class="row"><div class="row-icon">🐾</div><div>
-        <b>Hundestrand</b><span>Ca. 500 m östlich der Hauptkasse</span>
-      </div></div>
+      <div class="card-title">🐶 Hund am Strand</div>
+      <div class="row">
+        <span class="row-ico">☀️</span>
+        <div><b>10–18 Uhr → Leinenpflicht</b><span>Am Hauptstrand tagsüber</span></div>
+      </div>
+      <div class="row">
+        <span class="row-ico">🌅</span>
+        <div><b>Vor 10 &amp; nach 18 Uhr frei</b><span>Freilauf möglich – beste Zeiten!</span></div>
+      </div>
+      <div class="row">
+        <span class="row-ico">🐾</span>
+        <div><b>Hundestrand</b><span>Ca. 500 m östlich der Hauptkasse</span></div>
+      </div>
     </div>
 
     <div class="card">
-      <h3>📅 Feste Termine im Urlaub</h3>
-      <div class="row"><div class="row-icon">🌙</div><div>
-        <b>Sluis Abendmarkt</b><span>Mi 29.07 &amp; Mi 05.08 · ab 18 Uhr · 20 Min.</span>
-      </div></div>
-      <div class="row"><div class="row-icon">🛒</div><div>
-        <b>Cadzand Wochenmarkt</b><span>Do 30.07 &amp; Do 06.08 · 9–13 Uhr · 10 Min.</span>
-      </div></div>
-      <div class="row"><div class="row-icon">🐟</div><div>
-        <b>Breskens Hafenmarkt</b><span>Fr 31.07 &amp; Fr 07.08 · 9–13 Uhr · 15 Min.</span>
-      </div></div>
-      <div class="row"><div class="row-icon">🦭</div><div>
-        <b>Robbensafari Breskens</b><span>Täglich Mai–Sept · Buchung empfohlen</span>
-      </div></div>
+      <div class="card-title">📅 Feste Termine im Urlaub</div>
+      <div class="row">
+        <span class="row-ico">🌙</span>
+        <div><b>Sluis Abendmarkt</b><span>Mi 29.07 &amp; Mi 05.08 · ab 18 Uhr · 20 Min.</span></div>
+      </div>
+      <div class="row">
+        <span class="row-ico">🛒</span>
+        <div><b>Cadzand Wochenmarkt</b><span>Do 30.07 &amp; Do 06.08 · 9–13 Uhr · 10 Min.</span></div>
+      </div>
+      <div class="row">
+        <span class="row-ico">🐟</span>
+        <div><b>Breskens Hafenmarkt</b><span>Fr 31.07 &amp; Fr 07.08 · 9–13 Uhr · 15 Min.</span></div>
+      </div>
+      <div class="row">
+        <span class="row-ico">🦭</span>
+        <div><b>Robbensafari Breskens</b><span>Täglich Mai–Sept · Buchung empfohlen!</span></div>
+      </div>
     </div>
 
     <div class="card">
-      <h3>🚗 Entfernungen</h3>
-      <div class="row"><div class="row-icon">📍</div><div><b>Cadzand-Bad</b><span>10 Min. · 8 km</span></div></div>
-      <div class="row"><div class="row-icon">📍</div><div><b>Groede</b><span>10 Min. · 7 km</span></div></div>
-      <div class="row"><div class="row-icon">📍</div><div><b>Breskens</b><span>15 Min. · 12 km</span></div></div>
-      <div class="row"><div class="row-icon">📍</div><div><b>Sluis</b><span>20 Min. · 15 km</span></div></div>
-      <div class="row"><div class="row-icon">📍</div><div><b>Knokke-Heist 🇧🇪</b><span>30 Min. · 22 km</span></div></div>
-      <div class="row"><div class="row-icon">📍</div><div><b>Brügge 🇧🇪</b><span>40 Min. · 32 km</span></div></div>
-      <div class="row"><div class="row-icon">📍</div><div><b>Vlissingen</b><span>40 Min. · 35 km</span></div></div>
-      <div class="row"><div class="row-icon">📍</div><div><b>Middelburg</b><span>45 Min. · 38 km</span></div></div>
-      <div class="row"><div class="row-icon">📍</div><div><b>Neeltje Jans</b><span>50 Min. · 55 km</span></div></div>
-      <div class="row"><div class="row-icon">📍</div><div><b>Gent 🇧🇪</b><span>60 Min. · 65 km</span></div></div>
+      <div class="card-title">🚗 Entfernungen ab Resort</div>
+      <div class="row"><span class="row-ico">📍</span><div><b>Cadzand-Bad</b><span>10 Min. · 8 km</span></div></div>
+      <div class="row"><span class="row-ico">📍</span><div><b>Groede / Driftkarts</b><span>10 Min. · 7 km</span></div></div>
+      <div class="row"><span class="row-ico">📍</span><div><b>Breskens (Hafen)</b><span>15 Min. · 12 km</span></div></div>
+      <div class="row"><span class="row-ico">📍</span><div><b>Sluis (Altstadt)</b><span>20 Min. · 15 km</span></div></div>
+      <div class="row"><span class="row-ico">📍</span><div><b>Knokke-Heist 🇧🇪</b><span>30 Min. · 22 km</span></div></div>
+      <div class="row"><span class="row-ico">📍</span><div><b>Brügge 🇧🇪</b><span>40 Min. · 32 km</span></div></div>
+      <div class="row"><span class="row-ico">📍</span><div><b>Vlissingen</b><span>40 Min. · 35 km</span></div></div>
+      <div class="row"><span class="row-ico">📍</span><div><b>Middelburg</b><span>45 Min. · 38 km</span></div></div>
+      <div class="row"><span class="row-ico">📍</span><div><b>Neeltje Jans</b><span>50 Min. · 55 km</span></div></div>
+      <div class="row"><span class="row-ico">📍</span><div><b>Gent 🇧🇪</b><span>60 Min. · 65 km</span></div></div>
     </div>
 
     <div class="card">
-      <h3>🍽️ Essen</h3>
-      <div class="row"><div class="row-icon">🐚</div><div>
-        <b>Zeeland-Muscheln</b><span>Ab Juli Saison! Breskens &amp; Sluis</span>
-      </div></div>
-      <div class="row"><div class="row-icon">🐟</div><div>
-        <b>Frischer Fisch &amp; Nordseekrabben</b><span>Hafenrestaurants Breskens</span>
-      </div></div>
-      <div class="row"><div class="row-icon">🍟</div><div>
-        <b>Belgische Pommes &amp; Schokolade</b><span>Überall in der Grenzregion</span>
-      </div></div>
-      <div class="row"><div class="row-icon">🧇</div><div>
-        <b>Stroopwafels &amp; Hagelslag</b><span>In jedem Albert Heijn</span>
-      </div></div>
+      <div class="card-title">🍽️ Essen in der Region</div>
+      <div class="row"><span class="row-ico">🐚</span><div><b>Zeeland-Muscheln</b><span>Ab Juli Saison! Breskens &amp; Sluis</span></div></div>
+      <div class="row"><span class="row-ico">🐟</span><div><b>Frischer Fisch &amp; Nordseekrabben</b><span>Hafenrestaurants Breskens</span></div></div>
+      <div class="row"><span class="row-ico">🍟</span><div><b>Belgische Pommes &amp; Schokolade</b><span>Überall in der Grenzregion</span></div></div>
+      <div class="row"><span class="row-ico">🧇</span><div><b>Stroopwafels &amp; Hagelslag</b><span>In jedem Albert Heijn</span></div></div>
     </div>
 
     <div class="card">
-      <h3>🆘 Notfallnummern</h3>
-      <div class="row"><div class="row-icon">🚑</div><div><b>Notruf (NL &amp; BE)</b><span>112</span></div></div>
-      <div class="row"><div class="row-icon">🏥</div><div><b>Hausarzt Notdienst NL</b><span>0900-1010 (nach 17 Uhr)</span></div></div>
+      <div class="card-title">🆘 Notfall</div>
+      <div class="row"><span class="row-ico">🚑</span><div><b>Notruf NL &amp; BE</b><span>112</span></div></div>
+      <div class="row"><span class="row-ico">🏥</span><div><b>Hausarzt-Notdienst NL</b><span>0900-1010 (nach 17 Uhr &amp; Wochenende)</span></div></div>
     </div>
 
+    <div class="section-gap"></div>
   </div>
-</div>
+</section>
 
-<!-- ══════════════ TAB: ZIELE ══════════════ -->
-<div class="tab" id="tab-ziele">
-  <div class="filters">
-    <button class="f-btn on" onclick="filter('alle',this)">Alle</button>
-    <button class="f-btn" onclick="filter('termin',this)">📅 Termin</button>
-    <button class="f-btn" onclick="filter('kids',this)">👶 Kids</button>
-    <button class="f-btn" onclick="filter('strand',this)">🌊 Strand</button>
-    <button class="f-btn" onclick="filter('stadt',this)">🏛️ Stadt</button>
-    <button class="f-btn" onclick="filter('natur',this)">🌿 Natur</button>
-    <button class="f-btn" onclick="filter('regen',this)">🌧️ Regen</button>
+<!-- ════════════════════════════════════════════════
+     TAB: ZIELE
+     ════════════════════════════════════════════════ -->
+<section class="tab-section" id="tab-ziele">
+  <div class="filter-strip">
+    <button class="f-btn active" data-filter="alle">Alle</button>
+    <button class="f-btn" data-filter="termin">📅 Termine</button>
+    <button class="f-btn" data-filter="kids">👶 Kids</button>
+    <button class="f-btn" data-filter="strand">🌊 Strand</button>
+    <button class="f-btn" data-filter="stadt">🏛️ Stadt</button>
+    <button class="f-btn" data-filter="natur">🌿 Natur</button>
+    <button class="f-btn" data-filter="regen">🌧️ Regen</button>
   </div>
-  <div id="item-list" style="padding-bottom:8px;"></div>
-</div>
+  <div id="item-list"></div>
+  <div class="section-gap"></div>
+</section>
 
-<!-- ══════════════ TAB: PLAN ══════════════ -->
-<div class="tab" id="tab-plan">
-  <div class="wrap sec-pad">
-    <p style="color:var(--muted);font-size:.81rem;margin-bottom:12px">
-      Tag antippen zum Öffnen &nbsp;·&nbsp; bei Zielen auf ➕ tippen zum Einplanen
+<!-- ════════════════════════════════════════════════
+     TAB: PLAN
+     ════════════════════════════════════════════════ -->
+<section class="tab-section" id="tab-plan">
+  <div class="wrap sec-wrap">
+    <p style="color:var(--muted);font-size:.8rem;margin-bottom:12px">
+      Tag antippen zum Öffnen &nbsp;·&nbsp; bei Zielen auf ➕ zum Einplanen
     </p>
-    <div id="cal-days"></div>
+    <div id="cal-container"></div>
+    <div class="section-gap"></div>
   </div>
-</div>
+</section>
 
-<!-- ══════════════ TAB: TEILEN ══════════════ -->
-<div class="tab" id="tab-teilen">
-  <div class="wrap sec-pad">
+<!-- ════════════════════════════════════════════════
+     TAB: TEILEN
+     ════════════════════════════════════════════════ -->
+<section class="tab-section" id="tab-teilen">
+  <div class="wrap sec-wrap">
     <div class="card">
-      <h3>📤 Plan teilen</h3>
-      <p style="color:var(--muted);font-size:.83rem;margin-bottom:12px;">
-        Euren Urlaubsplan als Text kopieren und per WhatsApp, iMessage oder E-Mail teilen.
+      <div class="card-title">📤 Plan teilen</div>
+      <p style="color:var(--muted);font-size:.82rem;margin-bottom:12px">
+        Urlaubsplan als Text kopieren und per WhatsApp oder iMessage schicken.
       </p>
-      <button class="btn btn-p" onclick="copyPlan()">📋 Plan in Zwischenablage kopieren</button>
-      <button class="btn btn-s" onclick="showPlanText()">👁️ Vorschau anzeigen</button>
-      <pre id="plan-preview" style="display:none;"></pre>
+      <button class="btn btn-primary" id="btn-copy">📋 Plan kopieren</button>
+      <button class="btn btn-ghost" id="btn-preview">👁️ Vorschau</button>
+      <pre class="plan-pre" id="plan-pre" hidden></pre>
     </div>
     <div class="card">
-      <h3>💾 Daten sichern</h3>
-      <p style="color:var(--muted);font-size:.83rem;margin-bottom:12px;">
-        Plan als Datei speichern und auf anderen Geräten importieren.
+      <div class="card-title">💾 Sicherung</div>
+      <p style="color:var(--muted);font-size:.82rem;margin-bottom:12px">
+        Plan als Datei sichern und auf anderen Geräten wiederherstellen.
       </p>
-      <button class="btn btn-s" onclick="exportJSON()">⬇️ Sicherungsdatei speichern</button>
-      <label class="btn btn-s" style="text-align:center;cursor:pointer;display:block;margin-bottom:8px;">
+      <button class="btn btn-ghost" id="btn-export">⬇️ Sicherung speichern</button>
+      <label class="btn btn-ghost" style="cursor:pointer" id="btn-import-label">
         ⬆️ Sicherung importieren
-        <input type="file" accept=".json" style="display:none" onchange="importJSON(event)">
+        <input type="file" accept=".json" id="import-input" style="display:none">
       </label>
-      <button class="btn btn-s" style="color:var(--red);border-color:rgba(248,113,113,.25)" onclick="clearAll()">🗑️ Plan zurücksetzen</button>
+      <button class="btn btn-danger" id="btn-reset">🗑️ Plan zurücksetzen</button>
     </div>
+    <div class="section-gap"></div>
   </div>
-</div>
+</section>
 
+<!-- ════════════════════════════════════════════════
+     JAVASCRIPT
+     ════════════════════════════════════════════════ -->
 <script>
-// ── DATA ──────────────────────────────────────────────────────────────
-const START = new Date(2026,6,27), END = new Date(2026,7,10);
-const KEY   = 'dormio26';
+'use strict';
+
+/* ── CONSTANTS ────────────────────────────────────────── */
+const TRIP_START = new Date(2026, 6, 27);   // 27 July 2026
+const TRIP_END   = new Date(2026, 7, 10);   // 10 Aug  2026
+const STORE_KEY  = 'dormio26';
 
 const ITEMS = [
-  {id:'e1',ic:'🌙',ti:'Sluis Abendmarkt',
-   me:'Mi 29.07 & Mi 05.08 · ab 18 Uhr · 20 Min.',
-   desc:'Abendmarkt in der mittelalterlichen Altstadt. Streetfood, Musik, Händler.',
-   tags:['termin','stadt'],fixDates:['2026-07-29','2026-08-05']},
-  {id:'e2',ic:'🛒',ti:'Cadzand Wochenmarkt',
-   me:'Do 30.07 & Do 06.08 · 9–13 Uhr · 10 Min.',
-   desc:'Frischer Fisch, Gemüse, Käse und Blumen. Bester Markt der Region.',
-   tags:['termin','strand','kids'],fixDates:['2026-07-30','2026-08-06']},
-  {id:'e3',ic:'🐟',ti:'Breskens Hafenmarkt',
-   me:'Fr 31.07 & Fr 07.08 · 9–13 Uhr · 15 Min.',
-   desc:'Fisch direkt vom Boot, Streetfood, Hafenatmosphäre.',
-   tags:['termin','natur'],fixDates:['2026-07-31','2026-08-07']},
-  {id:'t1',ic:'🦭',ti:'Robbensafari Breskens',
-   me:'Täglich · 15 Min. · ~1,5h Bootstour',
-   desc:'Seehunde in freier Wildbahn. Für Kinder unvergesslich – Buchung empfohlen!',
-   tags:['kids','natur']},
-  {id:'t2',ic:'🐦',ti:'Zwin Vogelpark',
-   me:'Täglich 9–18 Uhr · 25 Min.',
-   desc:'Grenzübergreifendes Naturschutzgebiet NL/BE. Watvögel, Naturerlebnispfad, Museum.',
-   tags:['natur','kids']},
-  {id:'t3',ic:'💧',ti:'Waterland Neeltje Jans',
-   me:'Täglich · 50 Min. · halber/ganzer Tag',
-   desc:'Wasserpark + Deltawerke-Erlebnis. Riesenrutsche, Robben füttern. Top für Kinder!',
-   tags:['kids','natur']},
-  {id:'t4',ic:'🚗',ti:'Groede Driftkarts & Spielpark',
-   me:'Täglich Apr–Sept · 10 Min.',
-   desc:'Driftkarts, Trampoline, Outdoor-Spielanlagen. Direkt um die Ecke.',
-   tags:['kids']},
-  {id:'t5',ic:'🏖️',ti:'Cadzand-Bad Strandtag',
-   me:'Jederzeit · 10 Min.',
-   desc:'Größerer Strand mit Strandpavilions und Beachbars. Mehr Betrieb als Nieuwvliet.',
-   tags:['strand','kids']},
-  {id:'t6',ic:'🚲',ti:'Küsten-Radtour',
-   me:'Jederzeit · ab Resort · ca. 25 km',
-   desc:'Nieuwvliet → Cadzand → Retranchement zurück. Flach, familienfreundlich, Räder im Resort.',
-   tags:['strand','natur']},
-  {id:'t7',ic:'🏰',ti:'Brügge Tagesausflug',
-   me:'Ganzer Tag · 40 Min.',
-   desc:'UNESCO-Weltkulturerbe: Grachten, Schokolade, gotische Kirchen. Muss!',
-   tags:['stadt','kids']},
-  {id:'t8',ic:'🏛️',ti:'Sluis Altstadtbummel',
-   me:'Täglich · 20 Min. · halber Tag',
-   desc:'Kleinste Stadt der Niederlande mit Windmühle und schönen Cafés.',
-   tags:['stadt']},
-  {id:'t9',ic:'⛵',ti:'Middelburg – Hauptstadt Zeeland',
-   me:'Täglich · 45 Min.',
-   desc:'Historische Hauptstadt mit Zeeuws Museum, Rathaus, Markttagen.',
-   tags:['stadt','kids']},
-  {id:'t10',ic:'🎬',ti:'Bioscoop Terneuzen',
-   me:'Täglich · 25 Min. · Regentag-Tipp',
-   desc:'Modernes Kino, aktuelle Filme. Perfekt für verregnete Tage.',
-   tags:['regen','kids']},
-  {id:'t11',ic:'🎥',ti:'Kinepolis Brügge',
-   me:'Täglich · 40 Min. · Regentag-Tipp',
-   desc:'Großes Multiplex. Originalsprachversionen. Kombinierbar mit Stadtbummel.',
-   tags:['regen','kids']},
-  {id:'t12',ic:'🌊',ti:'Knokke-Heist Belgischer Badeort',
-   me:'Täglich · 30 Min.',
-   desc:'Schickes belgisches Seebad mit Promenade und Shopping.',
-   tags:['strand','stadt']},
-  {id:'t13',ic:'🚤',ti:'Fähre Breskens → Vlissingen',
-   me:'Stündlich · 15 Min. + 20 Min. Überfahrt',
-   desc:'Schnellfähre über die Westerschelde. Vlissingen hat eine schöne Strandpromenade.',
-   tags:['natur','strand']},
-  {id:'t14',ic:'🎨',ti:'Gent Städtetrip',
-   me:'Ganzer Tag · 60 Min.',
-   desc:'Gravensteen-Burg, bunte Grachtenhäuser, tolle Gastronomie. Lohnt sich!',
-   tags:['stadt']},
+  // FIXED DATE EVENTS
+  { id:'e1', ic:'🌙', title:'Sluis Abendmarkt',
+    meta:'Mi 29.07 & Mi 05.08 · ab 18 Uhr · 20 Min.',
+    desc:'Abendmarkt in der mittelalterlichen Altstadt. Streetfood, Musik, Händler.',
+    tags:['termin','stadt'], fixDates:['2026-07-29','2026-08-05'] },
+  { id:'e2', ic:'🛒', title:'Cadzand Wochenmarkt',
+    meta:'Do 30.07 & Do 06.08 · 9–13 Uhr · 10 Min.',
+    desc:'Frischer Fisch, Gemüse, Käse und Blumen. Bester Markt der Region.',
+    tags:['termin','strand','kids'], fixDates:['2026-07-30','2026-08-06'] },
+  { id:'e3', ic:'🐟', title:'Breskens Hafenmarkt',
+    meta:'Fr 31.07 & Fr 07.08 · 9–13 Uhr · 15 Min.',
+    desc:'Fisch direkt vom Boot, Streetfood, Hafenatmosphäre.',
+    tags:['termin','natur'], fixDates:['2026-07-31','2026-08-07'] },
+  // KIDS
+  { id:'t1', ic:'🦭', title:'Robbensafari Breskens',
+    meta:'Täglich · 15 Min. · ca. 1,5 Std. Bootstour',
+    desc:'Seehunde in freier Wildbahn. Buchung empfohlen – für Kinder unvergesslich!',
+    tags:['kids','natur'] },
+  { id:'t2', ic:'💧', title:'Waterland Neeltje Jans',
+    meta:'Täglich · 50 Min. · halber/ganzer Tag',
+    desc:'Wasserpark + Deltawerke. Riesenrutsche, Robben füttern. Kinder-Highlight!',
+    tags:['kids','natur'] },
+  { id:'t3', ic:'🚗', title:'Groede Driftkarts & Spielpark',
+    meta:'Täglich Apr–Sept · 10 Min.',
+    desc:'Driftkarts, Trampoline, Outdoor-Spielanlagen. Direkt um die Ecke.',
+    tags:['kids'] },
+  // NATURE
+  { id:'t4', ic:'🐦', title:'Zwin Vogelpark & Natur',
+    meta:'Täglich 9–18 Uhr · 25 Min.',
+    desc:'Grenzübergreifendes Naturschutzgebiet NL/BE. Watvögel, Naturerlebnispfad.',
+    tags:['natur','kids'] },
+  { id:'t5', ic:'🚲', title:'Küsten-Radtour',
+    meta:'Jederzeit · ab Resort · ca. 25 km',
+    desc:'Nieuwvliet → Cadzand → Retranchement zurück. Flach, familienfreundlich.',
+    tags:['natur','strand'] },
+  // BEACH
+  { id:'t6', ic:'🏖️', title:'Cadzand-Bad Strandtag',
+    meta:'Jederzeit · 10 Min.',
+    desc:'Größerer Strand mit Strandpavilions und Beachbars.',
+    tags:['strand','kids'] },
+  { id:'t7', ic:'🚤', title:'Fähre Breskens → Vlissingen',
+    meta:'Stündlich · 15 Min. + 20 Min. Überfahrt',
+    desc:'Schnellfähre über die Westerschelde. Vlissingen mit schöner Promenade.',
+    tags:['natur','strand'] },
+  // CITIES
+  { id:'t8', ic:'🏰', title:'Brügge Tagesausflug',
+    meta:'Ganzer Tag empfohlen · 40 Min.',
+    desc:'UNESCO-Weltkulturerbe: Grachten, Schokolade, gotische Kirchen.',
+    tags:['stadt','kids'] },
+  { id:'t9', ic:'🏛️', title:'Sluis Altstadtbummel',
+    meta:'Täglich · 20 Min. · halber Tag',
+    desc:'Kleinste Stadt der Niederlande mit Windmühle und schönen Cafés.',
+    tags:['stadt'] },
+  { id:'t10', ic:'⛵', title:'Middelburg – Hauptstadt Zeeland',
+    meta:'Täglich · 45 Min.',
+    desc:'Historische Hauptstadt, Zeeuws Museum, schöner Stadtkern.',
+    tags:['stadt','kids'] },
+  { id:'t11', ic:'🌊', title:'Knokke-Heist Badeort',
+    meta:'Täglich · 30 Min.',
+    desc:'Schickes belgisches Seebad mit Promenade und Shopping.',
+    tags:['strand','stadt'] },
+  { id:'t12', ic:'🎨', title:'Gent Städtetrip',
+    meta:'Ganzer Tag · 60 Min.',
+    desc:'Gravensteen-Burg, bunte Grachtenhäuser, tolle Gastronomie.',
+    tags:['stadt'] },
+  // RAINY DAY
+  { id:'t13', ic:'🎬', title:'Bioscoop Terneuzen',
+    meta:'Täglich · 25 Min. · Regentag',
+    desc:'Modernes Kino, aktuelle Filme. Perfekt für verregnete Tage.',
+    tags:['regen','kids'] },
+  { id:'t14', ic:'🎥', title:'Kinepolis Brügge',
+    meta:'Täglich · 40 Min. · Regentag',
+    desc:'Großes Multiplex, Originalversionen. Kombinierbar mit Stadtbummel.',
+    tags:['regen','kids'] },
 ];
 
-const TAG_LABELS = {termin:'📅',kids:'👶',strand:'🌊',stadt:'🏛️',natur:'🌿',regen:'🌧️'};
-const TAG_CSS    = {termin:'t-k',kids:'t-k',strand:'t-s',stadt:'t-c',natur:'t-n',regen:'t-r'};
+const TAG_CSS   = { termin:'t-y', kids:'t-y', strand:'t-b', stadt:'t-p', natur:'t-g', regen:'t-s' };
+const TAG_LABEL = { termin:'📅', kids:'👶', strand:'🌊', stadt:'🏛️', natur:'🌿', regen:'🌧️' };
 
-// ── STATE ─────────────────────────────────────────────────────────────
-let S = {planned:{}, notes:{}};
-try { const r=localStorage.getItem(KEY); if(r) S=Object.assign({planned:{},notes:{}},JSON.parse(r)); } catch(e){}
-const save = () => { try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){} };
-
-// ── UTILS ─────────────────────────────────────────────────────────────
-function days() {
-  const r=[], d=new Date(START);
-  while(d<=END){r.push(new Date(d));d.setDate(d.getDate()+1);}
-  return r;
-}
-function dk(d){ return d.toISOString().slice(0,10); }
-function fmt(d){ return d.toLocaleDateString('de-DE',{weekday:'short',day:'2-digit',month:'2-digit'}); }
-function fmtFull(d){ return d.toLocaleDateString('de-DE',{weekday:'long',day:'2-digit',month:'long'}); }
-function toast(m){
-  const el=document.getElementById('toast');
-  el.textContent=m; el.classList.add('on');
-  setTimeout(()=>el.classList.remove('on'),2000);
-}
-function totalPlanned(){
-  return Object.values(S.planned).reduce((s,v)=>s+v.length,0);
+/* ── STATE ───────────────────────────────────────────── */
+let state = { planned: {}, notes: {} };
+(function loadState() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) state = Object.assign({ planned: {}, notes: {} }, JSON.parse(raw));
+  } catch (e) { /* ignore */ }
+})();
+function persist() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
 }
 
-// ── TAB SWITCH ────────────────────────────────────────────────────────
-function show(id, btn){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
-  document.getElementById('tab-'+id).classList.add('on');
-  btn.classList.add('on');
-  window.scrollTo(0,0);
+/* ── HELPERS ─────────────────────────────────────────── */
+function vacDays() {
+  const arr = [], d = new Date(TRIP_START);
+  while (d <= TRIP_END) { arr.push(new Date(d)); d.setDate(d.getDate() + 1); }
+  return arr;
+}
+function dayKey(d)  { return d.toISOString().slice(0, 10); }
+function fmtShort(d){ return d.toLocaleDateString('de-DE', { weekday:'short', day:'2-digit', month:'2-digit' }); }
+function fmtFull(d) { return d.toLocaleDateString('de-DE', { weekday:'long', day:'2-digit', month:'long' }); }
+function isToday(d) {
+  const n = new Date();
+  return d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth() && d.getDate() === n.getDate();
 }
 
-// ── FILTER ────────────────────────────────────────────────────────────
-let curFilter='alle';
-function filter(f, btn){
-  curFilter=f;
-  document.querySelectorAll('.f-btn').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-  renderItems();
+let _toastTimer = null;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
 }
 
-// ── ITEMS ─────────────────────────────────────────────────────────────
-function renderItems(){
+/* ── TAB SWITCHING ───────────────────────────────────── */
+document.querySelectorAll('.nav-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    const tabId = this.dataset.tab;
+    // deactivate all
+    document.querySelectorAll('.tab-section').forEach(function(s) { s.classList.remove('active'); });
+    document.querySelectorAll('.nav-btn').forEach(function(b) { b.classList.remove('active'); });
+    // activate target
+    document.getElementById('tab-' + tabId).classList.add('active');
+    this.classList.add('active');
+    // scroll to top (iOS-compatible)
+    window.pageYOffset = 0;
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  });
+});
+
+/* ── FILTER ──────────────────────────────────────────── */
+let activeFilter = 'alle';
+document.querySelectorAll('.f-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    activeFilter = this.dataset.filter;
+    document.querySelectorAll('.f-btn').forEach(function(b) { b.classList.remove('active'); });
+    this.classList.add('active');
+    renderItems();
+  });
+});
+
+/* ── RENDER: ITEMS ───────────────────────────────────── */
+function renderItems() {
   const list = document.getElementById('item-list');
-  const data = curFilter==='alle' ? ITEMS : ITEMS.filter(i=>i.tags.includes(curFilter));
-  if(!data.length){ list.innerHTML='<div class="no-res">Keine Einträge.</div>'; return; }
-  list.innerHTML = data.map(item => {
-    const assignedDays = Object.entries(S.planned)
-      .filter(([,v])=>v.includes(item.id))
-      .map(([k])=>{ const d=new Date(k+'T12:00'); return d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'}); });
-    const added = assignedDays.length>0;
-    const tagHtml = item.tags.map(t=>`<span class="tag ${TAG_CSS[t]||''}">${TAG_LABELS[t]||t}</span>`).join('');
-    return `<div class="item">
-      <div class="item-ico">${item.ic}</div>
-      <div class="item-body">
-        <div class="item-title">${item.ti}</div>
-        <div class="item-meta">${item.me}</div>
-        <div class="item-meta" style="margin-top:4px">${item.desc}</div>
-        ${added?`<div style="color:var(--green);font-size:.77rem;margin-top:4px">✓ ${assignedDays.join(', ')}</div>`:''}
-        <div class="tags">${tagHtml}</div>
-      </div>
-      <button class="item-plan-btn${added?' on':''}" onclick="openModal('${item.id}')" title="Einplanen">➕</button>
-    </div>`;
+  const data = activeFilter === 'alle'
+    ? ITEMS
+    : ITEMS.filter(function(it) { return it.tags.indexOf(activeFilter) !== -1; });
+
+  if (!data.length) {
+    list.innerHTML = '<div class="no-results">Keine Einträge für diesen Filter.</div>';
+    return;
+  }
+
+  list.innerHTML = data.map(function(item) {
+    const assigned = Object.entries(state.planned)
+      .filter(function(e) { return e[1].indexOf(item.id) !== -1; })
+      .map(function(e) {
+        const d = new Date(e[0] + 'T12:00:00');
+        return d.toLocaleDateString('de-DE', { day:'2-digit', month:'2-digit' });
+      });
+
+    const tagHtml = item.tags.map(function(t) {
+      return '<span class="tag ' + (TAG_CSS[t] || '') + '">' + (TAG_LABEL[t] || t) + '</span>';
+    }).join('');
+
+    return '<div class="item-card">'
+      + '<div class="item-ico">' + item.ic + '</div>'
+      + '<div class="item-body">'
+        + '<div class="item-title">' + item.title + '</div>'
+        + '<div class="item-meta">' + item.meta + '</div>'
+        + '<div class="item-desc">' + item.desc + '</div>'
+        + (assigned.length ? '<div class="item-ok">✓ Eingeplant: ' + assigned.join(', ') + '</div>' : '')
+        + '<div class="item-tags">' + tagHtml + '</div>'
+      + '</div>'
+      + '<button class="plan-btn' + (assigned.length ? ' added' : '') + '" data-item-id="' + item.id + '" aria-label="Einplanen">➕</button>'
+    + '</div>';
   }).join('');
+
+  // attach plan-btn listeners AFTER rendering
+  list.querySelectorAll('.plan-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      openModal(this.dataset.itemId);
+    });
+  });
 }
 
-// ── MODAL ─────────────────────────────────────────────────────────────
-let mId=null;
-function openModal(id){
-  mId=id; const item=ITEMS.find(i=>i.id===id);
-  document.getElementById('modal-title').textContent=`"${item.ti}" einplanen`;
-  document.getElementById('modal-dates').innerHTML = days().map(d=>{
-    const k=dk(d), on=(S.planned[k]||[]).includes(id);
-    return `<button class="d-btn${on?' on':''}" onclick="toggleDay('${id}','${k}',this)">
-      ${on?'✓ ':''}${fmt(d)}</button>`;
+/* ── MODAL ───────────────────────────────────────────── */
+let activeItemId = null;
+
+function openModal(itemId) {
+  activeItemId = itemId;
+  const item = ITEMS.find(function(i) { return i.id === itemId; });
+  document.getElementById('modal-title').textContent = '"' + item.title + '" einplanen';
+
+  document.getElementById('modal-dates').innerHTML = vacDays().map(function(d) {
+    const k = dayKey(d);
+    const isAdded = (state.planned[k] || []).indexOf(itemId) !== -1;
+    return '<button class="date-btn' + (isAdded ? ' added' : '') + '" data-key="' + k + '">'
+      + (isAdded ? '✓ ' : '') + fmtShort(d)
+      + '</button>';
   }).join('');
-  document.getElementById('modal').classList.remove('hide');
+
+  // attach listeners to date buttons
+  document.getElementById('modal-dates').querySelectorAll('.date-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      toggleAssignment(activeItemId, this.dataset.key, this);
+    });
+  });
+
+  document.getElementById('modal').removeAttribute('hidden');
 }
-function closeModal(){ document.getElementById('modal').classList.add('hide'); mId=null; }
-function toggleDay(id, k, btn){
-  S.planned[k]=S.planned[k]||[];
-  if(S.planned[k].includes(id)){
-    S.planned[k]=S.planned[k].filter(x=>x!==id);
-    btn.classList.remove('on'); btn.textContent=btn.textContent.replace('✓ ','');
+
+function closeModal() {
+  document.getElementById('modal').setAttribute('hidden', '');
+  activeItemId = null;
+}
+
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+document.getElementById('modal-close').addEventListener('click', closeModal);
+
+function toggleAssignment(itemId, k, btn) {
+  state.planned[k] = state.planned[k] || [];
+  if (state.planned[k].indexOf(itemId) !== -1) {
+    state.planned[k] = state.planned[k].filter(function(x) { return x !== itemId; });
+    btn.classList.remove('added');
+    btn.textContent = btn.textContent.replace('✓ ', '');
     toast('Aus Plan entfernt');
   } else {
-    S.planned[k].push(id);
-    btn.classList.add('on'); btn.textContent='✓ '+btn.textContent;
+    state.planned[k].push(itemId);
+    btn.classList.add('added');
+    btn.textContent = '✓ ' + btn.textContent;
     toast('Eingeplant ✓');
   }
-  save(); renderItems(); renderCal();
+  persist();
+  renderItems();
+  renderCal();
 }
 
-// ── CALENDAR ─────────────────────────────────────────────────────────
-function renderCal(){
-  const now=new Date();
-  document.getElementById('cal-days').innerHTML = days().map(d=>{
-    const k=dk(d);
-    const planned=(S.planned[k]||[]).map(id=>ITEMS.find(i=>i.id===id)).filter(Boolean);
-    const note=S.notes[k]||'';
-    const todayMark=d.toDateString()===now.toDateString()?'<span class="today-dot"></span>':'';
-    const sub=planned.map(i=>i.ic+' '+i.ti).join(' · ')||(note?'📝 Notiz':'—');
-    const wday=d.toLocaleDateString('de-DE',{weekday:'short'}).toUpperCase();
-    return `<div class="cal-day">
-      <div class="cal-hd" onclick="toggleDay2('${k}')">
-        <div class="cal-badge"><div class="n">${d.getDate()}</div><div class="d">${wday}</div></div>
-        <div class="cal-info">
-          <div class="cal-title">${d.toLocaleDateString('de-DE',{day:'2-digit',month:'long'})}${todayMark}</div>
-          <div class="cal-sub">${sub}</div>
-        </div>
-        <div class="cal-arr" id="arr-${k}">▾</div>
-      </div>
-      <div class="cal-body" id="body-${k}">
-        ${planned.map(it=>`<div class="cal-item-row">
-          <span>${it.ic}</span><span style="flex:1">${it.ti}</span>
-          <button class="rm" onclick="remove('${it.id}','${k}')">✕</button>
-        </div>`).join('')||'<div style="color:var(--muted);font-size:.8rem;padding:8px 0 4px">Noch nichts – unter Ziele auf ➕ tippen.</div>'}
-        <textarea class="cal-note" placeholder="Notiz…" oninput="saveNote('${k}',this.value)">${note}</textarea>
-      </div>
-    </div>`;
+/* ── RENDER: CALENDAR ────────────────────────────────── */
+function renderCal() {
+  const container = document.getElementById('cal-container');
+  const now = new Date();
+
+  container.innerHTML = vacDays().map(function(d) {
+    const k   = dayKey(d);
+    const planned = (state.planned[k] || [])
+      .map(function(id) { return ITEMS.find(function(i) { return i.id === id; }); })
+      .filter(Boolean);
+    const note = state.notes[k] || '';
+    const today = isToday(d);
+    const wd  = d.toLocaleDateString('de-DE', { weekday:'short' }).toUpperCase();
+    const sub = planned.map(function(i) { return i.ic + ' ' + i.title; }).join(' · ')
+      || (note ? '📝 Notiz' : 'Noch nichts geplant');
+
+    return '<div class="cal-day" id="cday-' + k + '">'
+      + '<div class="cal-hd" data-calkey="' + k + '">'
+        + '<div class="cal-badge">'
+          + '<div class="cal-day-n">' + d.getDate() + '</div>'
+          + '<div class="cal-day-w">' + wd + '</div>'
+        + '</div>'
+        + '<div class="cal-info">'
+          + '<div class="cal-title">' + d.toLocaleDateString('de-DE', { day:'2-digit', month:'long' })
+            + (today ? '<span class="today-dot"></span>' : '') + '</div>'
+          + '<div class="cal-sub">' + sub + '</div>'
+        + '</div>'
+        + '<div class="cal-arr" id="carr-' + k + '">▾</div>'
+      + '</div>'
+      + '<div class="cal-body" id="cbody-' + k + '">'
+        + (planned.length
+          ? planned.map(function(it) {
+              return '<div class="cal-planned-row">'
+                + '<span>' + it.ic + '</span>'
+                + '<span style="flex:1">' + it.title + '</span>'
+                + '<button class="rm-btn" data-rmid="' + it.id + '" data-rmkey="' + k + '">✕</button>'
+              + '</div>';
+            }).join('')
+          : '<div style="color:var(--muted);font-size:.79rem;padding:8px 0 4px">Noch nichts geplant.</div>'
+        )
+        + '<textarea class="cal-note" data-notekey="' + k + '" placeholder="Notiz für diesen Tag…">' + note + '</textarea>'
+      + '</div>'
+    + '</div>';
   }).join('');
-}
-function toggleDay2(k){
-  const b=document.getElementById('body-'+k), a=document.getElementById('arr-'+k);
-  const open=b.classList.toggle('open'); a.classList.toggle('open',open);
-}
-function remove(id, k){
-  S.planned[k]=(S.planned[k]||[]).filter(x=>x!==id);
-  save(); renderCal(); renderItems(); toast('Entfernt');
-}
-function saveNote(k, v){ S.notes[k]=v; save(); }
 
-// ── SHARE / EXPORT ────────────────────────────────────────────────────
-function buildPlanText(){
-  let out=`🏖️ DORMIO URLAUB 2026\n27. Juli – 10. August, Nieuwvliet-Bad\n\n`;
-  days().forEach(d=>{
-    const k=dk(d);
-    const planned=(S.planned[k]||[]).map(id=>ITEMS.find(i=>i.id===id)).filter(Boolean);
-    const note=S.notes[k]||'';
-    if(!planned.length && !note) return;
-    out+=`📅 ${fmtFull(d)}\n`;
-    planned.forEach(i=>{ out+=`  ${i.ic} ${i.ti}\n`; });
-    if(note) out+=`  📝 ${note}\n`;
-    out+='\n';
+  // accordion toggles
+  container.querySelectorAll('.cal-hd').forEach(function(hd) {
+    hd.addEventListener('click', function() {
+      var k = this.dataset.calkey;
+      var body = document.getElementById('cbody-' + k);
+      var arr  = document.getElementById('carr-' + k);
+      var open = body.classList.toggle('open');
+      arr.classList.toggle('open', open);
+    });
   });
-  if(out.split('\n').length<=3) out+=`Noch nichts geplant. Unter "Ziele" Aktivitäten einplanen.\n`;
+
+  // remove buttons
+  container.querySelectorAll('.rm-btn').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var id = this.dataset.rmid;
+      var k  = this.dataset.rmkey;
+      state.planned[k] = (state.planned[k] || []).filter(function(x) { return x !== id; });
+      persist();
+      renderCal();
+      renderItems();
+      toast('Entfernt');
+    });
+  });
+
+  // note fields
+  container.querySelectorAll('.cal-note').forEach(function(ta) {
+    ta.addEventListener('input', function() {
+      state.notes[this.dataset.notekey] = this.value;
+      persist();
+    });
+  });
+}
+
+/* ── SHARE ───────────────────────────────────────────── */
+function buildPlanText() {
+  var out = '🏖️ DORMIO URLAUB 2026\n27. Juli – 10. August · Nieuwvliet-Bad\n\n';
+  var hasContent = false;
+  vacDays().forEach(function(d) {
+    var k = dayKey(d);
+    var planned = (state.planned[k] || [])
+      .map(function(id) { return ITEMS.find(function(i) { return i.id === id; }); })
+      .filter(Boolean);
+    var note = state.notes[k] || '';
+    if (!planned.length && !note) return;
+    hasContent = true;
+    out += '📅 ' + fmtFull(d) + '\n';
+    planned.forEach(function(i) { out += '  ' + i.ic + ' ' + i.title + '\n'; });
+    if (note) out += '  📝 ' + note + '\n';
+    out += '\n';
+  });
+  if (!hasContent) out += 'Noch nichts geplant.\n';
   return out;
 }
-function copyPlan(){
-  const txt=buildPlanText();
-  if(navigator.clipboard?.writeText){
-    navigator.clipboard.writeText(txt).then(()=>toast('In Zwischenablage kopiert ✓'));
+
+document.getElementById('btn-copy').addEventListener('click', function() {
+  var txt = buildPlanText();
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt)
+      .then(function() { toast('In Zwischenablage kopiert ✓'); })
+      .catch(function() { fallbackCopy(txt); });
   } else {
-    const ta=document.createElement('textarea');
-    ta.value=txt; document.body.appendChild(ta); ta.select();
-    document.execCommand('copy'); ta.remove(); toast('Kopiert ✓');
+    fallbackCopy(txt);
   }
-}
-function showPlanText(){
-  const pre=document.getElementById('plan-preview');
-  pre.textContent=buildPlanText();
-  pre.style.display=pre.style.display==='none'?'block':'none';
-}
-function exportJSON(){
-  const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
-  const url=URL.createObjectURL(blob);
-  const is_ios=/iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-  if(is_ios){ const w=window.open(url,'_blank'); if(!w) window.location.href=url; setTimeout(()=>URL.revokeObjectURL(url),60000); }
-  else { const a=document.createElement('a'); a.href=url; a.download='dormio26.json'; a.click(); URL.revokeObjectURL(url); }
-}
-function importJSON(e){
-  const file=e.target.files[0]; if(!file) return;
-  const r=new FileReader();
-  r.onload=ev=>{ try{ S=Object.assign({planned:{},notes:{}},JSON.parse(ev.target.result)); save(); renderItems(); renderCal(); toast('Import erfolgreich ✓'); }catch(err){ toast('Fehler beim Import'); } };
-  r.readAsText(file);
-}
-function clearAll(){
-  if(!confirm('Alle Einplanungen und Notizen löschen?')) return;
-  S={planned:{},notes:{}}; save(); renderItems(); renderCal(); toast('Zurückgesetzt');
+});
+
+function fallbackCopy(txt) {
+  var ta = document.createElement('textarea');
+  ta.value = txt;
+  ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  try { document.execCommand('copy'); toast('Kopiert ✓'); } catch(e) { toast('Bitte manuell kopieren'); }
+  document.body.removeChild(ta);
 }
 
-// ── INIT ──────────────────────────────────────────────────────────────
+document.getElementById('btn-preview').addEventListener('click', function() {
+  var pre = document.getElementById('plan-pre');
+  if (pre.hasAttribute('hidden')) {
+    pre.textContent = buildPlanText();
+    pre.removeAttribute('hidden');
+    this.textContent = '🙈 Vorschau schließen';
+  } else {
+    pre.setAttribute('hidden', '');
+    this.textContent = '👁️ Vorschau';
+  }
+});
+
+const _isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent)
+  || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+document.getElementById('btn-export').addEventListener('click', function() {
+  var blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  var url  = URL.createObjectURL(blob);
+  if (_isIOS) {
+    var w = window.open(url, '_blank');
+    if (!w) window.location.href = url;
+    setTimeout(function() { URL.revokeObjectURL(url); }, 60000);
+  } else {
+    var a = document.createElement('a');
+    a.href = url; a.download = 'dormio26.json'; a.click();
+    URL.revokeObjectURL(url);
+  }
+});
+
+document.getElementById('import-input').addEventListener('change', function(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var r = new FileReader();
+  r.onload = function(ev) {
+    try {
+      state = Object.assign({ planned: {}, notes: {} }, JSON.parse(ev.target.result));
+      persist(); renderItems(); renderCal(); toast('Import erfolgreich ✓');
+    } catch(err) { toast('Fehler beim Import'); }
+  };
+  r.readAsText(file);
+});
+
+document.getElementById('btn-reset').addEventListener('click', function() {
+  if (!confirm('Alle Einplanungen und Notizen löschen?')) return;
+  state = { planned: {}, notes: {} };
+  persist(); renderItems(); renderCal(); toast('Zurückgesetzt');
+});
+
+/* ── INIT ────────────────────────────────────────────── */
 renderItems();
 renderCal();
 </script>
