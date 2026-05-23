@@ -6,267 +6,320 @@
 <title>Dormio Urlaub 2026</title>
 <style>
 :root {
-  --bg: #07111f; --surf: rgba(255,255,255,.08); --bord: rgba(255,255,255,.11);
-  --txt: #eef2ff; --dim: rgba(238,242,255,.50);
-  --blue: #38bdf8; --green: #34d399; --yellow: #fbbf24; --red: #f87171;
-  --r: 14px;
+  --bg:#07111f; --s:rgba(255,255,255,.08); --b:rgba(255,255,255,.11);
+  --t:#eef2ff; --m:rgba(238,242,255,.50);
+  --a:#38bdf8; --g:#34d399; --y:#fbbf24; --r:#f87171;
 }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { -webkit-text-size-adjust: 100%; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-  background: var(--bg); color: var(--txt);
-  min-height: 100vh;
-  padding-bottom: calc(70px + env(safe-area-inset-bottom, 16px));
-  overflow-x: hidden;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+  background:var(--bg);color:var(--t);
+  padding-bottom:calc(64px + env(safe-area-inset-bottom,20px));
+  overflow-x:hidden;
 }
 
-/* ── BOTTOM NAV ─────────────────── */
-.nav {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  height: calc(58px + env(safe-area-inset-bottom, 16px));
-  padding-bottom: env(safe-area-inset-bottom, 16px);
-  background: #0b1829; border-top: 1px solid var(--bord);
-  display: flex; align-items: stretch;
-  z-index: 9999;
+/* ── BOTTOM NAV – pure anchor links, zero JS ── */
+.nav{
+  position:fixed;bottom:0;left:0;right:0;
+  height:calc(56px + env(safe-area-inset-bottom,20px));
+  padding-bottom:env(safe-area-inset-bottom,20px);
+  background:#0b1829;border-top:1px solid var(--b);
+  display:flex;z-index:9999;
 }
-.nb {
-  flex: 1; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 3px;
-  background: transparent; border: none; outline: none;
-  color: rgba(238,242,255,.40); font-family: inherit;
-  font-size: .67rem; font-weight: 700; cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-  -webkit-user-select: none; user-select: none;
-  min-height: 44px; padding: 0;
-  transition: color .15s;
+.nav a{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:2px;
+  color:rgba(238,242,255,.40);text-decoration:none;
+  font-size:.66rem;font-weight:700;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+  -webkit-user-select:none;user-select:none;
+  padding:4px 2px;
 }
-.nb.on { color: var(--blue); }
-.ni { font-size: 1.4rem; line-height: 1; display: block; }
+.nav a:active{color:var(--a)}
+.nv{font-size:1.35rem;line-height:1;display:block}
 
-/* ── TABS ───────────────────────── */
-/* JS sets display directly – no CSS class needed */
-
-/* ── LAYOUT ─────────────────────── */
-.w { max-width: 600px; margin: 0 auto; padding: 0 14px; }
-.pt { padding-top: 14px; }
-
-/* ── HERO ───────────────────────── */
-.hero {
-  background: linear-gradient(135deg, rgba(56,189,248,.08), rgba(251,191,36,.04));
-  border-bottom: 1px solid var(--bord);
-  padding: 15px 14px 13px;
+/* ── SECTIONS ── */
+.sec{
+  padding:14px 0 20px;
+  scroll-margin-top:0px;
 }
-.hero h1 { font-size: 1.3rem; font-weight: 800; }
-.hero-sub { color: var(--dim); font-size: .8rem; margin-top: 3px; }
-.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 9px; }
-.chip {
-  background: rgba(56,189,248,.11); border: 1px solid rgba(56,189,248,.2);
-  color: var(--blue); border-radius: 999px;
-  padding: 4px 11px; font-size: .74rem; font-weight: 600;
+.w{max-width:600px;margin:0 auto;padding:0 14px}
+
+/* ── DIVIDERS between sections ── */
+.sec+.sec{border-top:2px solid rgba(255,255,255,.06)}
+
+/* ── SECTION HEADER ── */
+.sh{
+  background:linear-gradient(135deg,rgba(56,189,248,.10),rgba(251,191,36,.05));
+  border-bottom:1px solid var(--b);
+  padding:14px 14px 12px;
+  margin-bottom:14px;
+}
+.sh h2{font-size:1.1rem;font-weight:800}
+.sh p{color:var(--m);font-size:.78rem;margin-top:2px}
+
+/* ── HERO ── */
+.hero{
+  background:linear-gradient(135deg,rgba(56,189,248,.09),rgba(251,191,36,.04));
+  border-bottom:1px solid var(--b);
+  padding:16px 14px 14px;
+}
+.hero h1{font-size:1.3rem;font-weight:800}
+.hero-sub{color:var(--m);font-size:.79rem;margin-top:3px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.chip{
+  background:rgba(56,189,248,.11);border:1px solid rgba(56,189,248,.20);
+  color:var(--a);border-radius:999px;padding:4px 11px;
+  font-size:.73rem;font-weight:600;
 }
 
-/* ── CARDS ──────────────────────── */
-.card { background: var(--surf); border: 1px solid var(--bord); border-radius: var(--r); padding: 14px; margin-bottom: 10px; }
-.ct { font-size: .85rem; font-weight: 700; color: var(--blue); margin-bottom: 9px; }
+/* ── CARD ── */
+.card{background:var(--s);border:1px solid var(--b);border-radius:14px;padding:13px;margin-bottom:10px}
+.ct{font-size:.84rem;font-weight:700;color:var(--a);margin-bottom:9px}
 
-/* ── INFO ROWS ──────────────────── */
-.row { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--bord); font-size: .84rem; line-height: 1.4; }
-.row:last-child { border: none; padding-bottom: 1px; }
-.ri { font-size: 1rem; flex: 0 0 22px; padding-top: 1px; }
-.row b { display: block; font-weight: 700; }
-.row s2 { display: block; color: var(--dim); font-size: .77rem; }
-a.ml { display: inline-block; color: var(--blue); font-size: .77rem; font-weight: 600; text-decoration: none; margin-top: 3px; }
+/* ── INFO ROW ── */
+.row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--b);font-size:.83rem;line-height:1.4}
+.row:last-child{border:none;padding-bottom:1px}
+.ri{font-size:1rem;flex:0 0 20px;padding-top:1px}
+.row b{display:block;font-weight:700}
+.row small{display:block;color:var(--m);font-size:.76rem}
+a.ml{color:var(--a);font-size:.76rem;font-weight:600;text-decoration:none;display:inline-block;margin-top:3px}
 
-/* ── FILTER BAR ─────────────────── */
-.fbar { display: flex; gap: 7px; overflow-x: auto; padding: 11px 14px 2px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
-.fbar::-webkit-scrollbar { display: none; }
-.fb {
-  flex: 0 0 auto; background: var(--surf); border: 1px solid var(--bord);
-  color: var(--txt); border-radius: 999px; padding: 8px 13px;
-  font-family: inherit; font-size: .79rem; font-weight: 600;
-  white-space: nowrap; cursor: pointer; outline: none;
-  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
-  -webkit-user-select: none; user-select: none;
-  transition: background .12s, color .12s, border-color .12s;
+/* ── FILTER BAR ── */
+.fbar{
+  display:flex;gap:7px;overflow-x:auto;
+  padding:0 14px 10px;scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
 }
-.fb.on { background: rgba(56,189,248,.13); border-color: rgba(56,189,248,.32); color: var(--blue); }
-
-/* ── ZIEL-ITEMS ─────────────────── */
-#ilist { padding: 8px 14px 2px; }
-.ic { background: var(--surf); border: 1px solid var(--bord); border-radius: var(--r); padding: 13px; margin-bottom: 9px; display: flex; gap: 11px; align-items: flex-start; }
-.iico { font-size: 1.45rem; flex: 0 0 34px; text-align: center; padding-top: 2px; }
-.ib { flex: 1; min-width: 0; }
-.it { font-weight: 700; font-size: .91rem; }
-.im { color: var(--dim); font-size: .77rem; margin-top: 2px; line-height: 1.4; }
-.id { color: var(--dim); font-size: .77rem; margin-top: 3px; line-height: 1.4; }
-.iok { color: var(--green); font-size: .76rem; margin-top: 3px; }
-.itags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
-.tag { border-radius: 999px; padding: 2px 8px; font-size: .69rem; font-weight: 700; }
-.ty { background: rgba(251,191,36,.11); color: var(--yellow); border: 1px solid rgba(251,191,36,.19); }
-.tb { background: rgba(56,189,248,.09); color: var(--blue); border: 1px solid rgba(56,189,248,.17); }
-.tp { background: rgba(167,139,250,.09); color: #c4b5fd; border: 1px solid rgba(167,139,250,.17); }
-.tg { background: rgba(52,211,153,.09); color: var(--green); border: 1px solid rgba(52,211,153,.17); }
-.ts { background: rgba(148,163,184,.09); color: #94a3b8; border: 1px solid rgba(148,163,184,.17); }
-.pb {
-  flex: 0 0 auto; align-self: center;
-  background: rgba(56,189,248,.09); border: 1px solid rgba(56,189,248,.19);
-  color: var(--blue); border-radius: 10px;
-  padding: 9px 10px; font-size: 1.05rem; line-height: 1;
-  cursor: pointer; outline: none;
-  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
-  -webkit-user-select: none; user-select: none;
+.fbar::-webkit-scrollbar{display:none}
+.fb{
+  flex:0 0 auto;background:var(--s);border:1px solid var(--b);
+  color:var(--t);border-radius:999px;padding:7px 12px;
+  font-family:inherit;font-size:.78rem;font-weight:600;
+  white-space:nowrap;cursor:pointer;outline:none;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  -webkit-user-select:none;user-select:none;
 }
-.pb.on { background: rgba(52,211,153,.13); border-color: rgba(52,211,153,.27); color: var(--green); }
+.fb.on{background:rgba(56,189,248,.13);border-color:rgba(56,189,248,.30);color:var(--a)}
 
-/* ── CALENDAR ───────────────────── */
-.cd { background: var(--surf); border: 1px solid var(--bord); border-radius: var(--r); margin-bottom: 8px; overflow: hidden; }
-.cdh { display: flex; align-items: center; gap: 10px; padding: 11px 12px; min-height: 52px; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; -webkit-user-select: none; user-select: none; outline: none; }
-.cdb { background: rgba(255,255,255,.09); border-radius: 8px; padding: 5px 8px; text-align: center; flex: 0 0 44px; }
-.cdn { font-size: 1.1rem; font-weight: 800; line-height: 1; }
-.cdw { font-size: .57rem; color: var(--dim); font-weight: 700; text-transform: uppercase; margin-top: 1px; }
-.cdi { flex: 1; min-width: 0; }
-.cdt { font-weight: 700; font-size: .86rem; }
-.cds { font-size: .72rem; color: var(--dim); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.cda { color: var(--dim); font-size: .82rem; transition: transform .17s; }
-.cda.open { transform: rotate(180deg); }
-.cdbody { display: none; padding: 0 12px 12px; border-top: 1px solid var(--bord); }
-.cdbody.open { display: block; }
-.cpr { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--bord); font-size: .84rem; }
-.cpr:last-of-type { border: none; }
-.rmb { background: none; border: none; color: var(--red); font-size: .92rem; padding: 5px 6px; margin-left: auto; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; outline: none; }
-.cnote { display: block; width: 100%; background: rgba(255,255,255,.05); border: 1px solid var(--bord); border-radius: 9px; padding: 9px 11px; color: var(--txt); font-family: inherit; font-size: .81rem; resize: none; min-height: 50px; margin-top: 9px; -webkit-appearance: none; outline: none; }
-.cnote::placeholder { color: var(--dim); }
-.cnote:focus { border-color: rgba(56,189,248,.38); }
-.tdot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--yellow); vertical-align: middle; margin-left: 5px; }
-
-/* ── MODAL ──────────────────────── */
-.modal { position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: 99999; display: flex; align-items: flex-end; overscroll-behavior: contain; }
-.modal[aria-hidden="true"] { display: none; }
-.sheet { background: #0d1c33; border-top: 1px solid var(--bord); border-radius: 20px 20px 0 0; padding: 16px 14px calc(16px + env(safe-area-inset-bottom,16px)); width: 100%; max-height: 78vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-.sht { font-size: .94rem; font-weight: 700; margin-bottom: 11px; }
-.dgrid { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; margin-bottom: 11px; }
-.dbn { background: var(--surf); border: 1px solid var(--bord); color: var(--txt); border-radius: 10px; padding: 10px 4px; font-family: inherit; font-size: .78rem; font-weight: 600; text-align: center; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; touch-action: manipulation; -webkit-user-select: none; user-select: none; }
-.dbn.on { background: rgba(52,211,153,.13); border-color: rgba(52,211,153,.27); color: var(--green); }
-.scl { width: 100%; background: rgba(255,255,255,.06); border: 1px solid var(--bord); color: var(--dim); border-radius: 10px; padding: 12px; font-family: inherit; font-size: .87rem; font-weight: 600; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; }
-
-/* ── SHARE BUTTONS ──────────────── */
-.btn { display: block; width: 100%; border: none; border-radius: var(--r); padding: 13px; font-family: inherit; font-size: .89rem; font-weight: 700; text-align: center; cursor: pointer; outline: none; -webkit-tap-highlight-color: transparent; touch-action: manipulation; margin-bottom: 8px; -webkit-user-select: none; user-select: none; }
-.btnp { background: var(--blue); color: #07111f; }
-.btng { background: var(--surf); color: var(--txt); border: 1px solid var(--bord); }
-.btnr { background: var(--surf); color: var(--red); border: 1px solid rgba(248,113,113,.22); }
-.plan-pre { font-size: .73rem; color: var(--dim); white-space: pre-wrap; word-break: break-word; max-height: 230px; overflow-y: auto; margin: 10px 0 4px; padding: 10px; background: rgba(255,255,255,.04); border-radius: 9px; border: 1px solid var(--bord); }
-
-/* ── TOAST ──────────────────────── */
-.toast {
-  position: fixed;
-  left: 50%; bottom: calc(64px + env(safe-area-inset-bottom, 16px) + 10px);
-  transform: translateX(-50%) translateY(10px);
-  background: rgba(52,211,153,.93); color: #07111f;
-  border-radius: 999px; padding: 9px 18px;
-  font-size: .83rem; font-weight: 700;
-  opacity: 0; pointer-events: none; white-space: nowrap; z-index: 99998;
-  transition: opacity .18s ease, transform .18s ease;
+/* ── ITEMS ── */
+.item{
+  background:var(--s);border:1px solid var(--b);border-radius:14px;
+  padding:12px;margin:0 14px 9px;
+  display:flex;gap:10px;align-items:flex-start;
 }
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.item[data-hide]{display:none}
+.iico{font-size:1.4rem;flex:0 0 32px;text-align:center;padding-top:2px}
+.ibody{flex:1;min-width:0}
+.ititle{font-weight:700;font-size:.90rem}
+.imeta{color:var(--m);font-size:.76rem;margin-top:2px;line-height:1.4}
+.idesc{color:var(--m);font-size:.76rem;margin-top:3px;line-height:1.4}
+.iok{color:var(--g);font-size:.75rem;margin-top:3px}
+.itags{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.tag{border-radius:999px;padding:2px 8px;font-size:.68rem;font-weight:700}
+.ty{background:rgba(251,191,36,.10);color:var(--y);border:1px solid rgba(251,191,36,.18)}
+.tb{background:rgba(56,189,248,.09);color:var(--a);border:1px solid rgba(56,189,248,.16)}
+.tp{background:rgba(167,139,250,.09);color:#c4b5fd;border:1px solid rgba(167,139,250,.16)}
+.tg{background:rgba(52,211,153,.09);color:var(--g);border:1px solid rgba(52,211,153,.16)}
+.tgr{background:rgba(148,163,184,.09);color:#94a3b8;border:1px solid rgba(148,163,184,.16)}
+.pb{
+  flex:0 0 auto;align-self:center;
+  background:rgba(56,189,248,.09);border:1px solid rgba(56,189,248,.18);
+  color:var(--a);border-radius:10px;padding:9px 10px;
+  font-size:1rem;line-height:1;cursor:pointer;outline:none;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  -webkit-user-select:none;user-select:none;
+  min-width:40px;min-height:40px;text-align:center;
+}
+.pb.on{background:rgba(52,211,153,.13);border-color:rgba(52,211,153,.26);color:var(--g)}
 
-.gap { height: 8px; }
+/* ── CALENDAR ── */
+.cd{background:var(--s);border:1px solid var(--b);border-radius:14px;margin-bottom:8px;overflow:hidden}
+.cdh{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;min-height:52px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;-webkit-user-select:none;user-select:none;outline:none;
+}
+.cdbadge{background:rgba(255,255,255,.09);border-radius:8px;padding:5px 8px;text-align:center;flex:0 0 42px}
+.cdnum{font-size:1.1rem;font-weight:800;line-height:1}
+.cdwday{font-size:.56rem;color:var(--m);font-weight:700;text-transform:uppercase;margin-top:1px}
+.cdinfo{flex:1;min-width:0}
+.cdtitle{font-weight:700;font-size:.85rem}
+.cdsub{font-size:.71rem;color:var(--m);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cdarr{color:var(--m);font-size:.80rem;transition:transform .17s;flex:0 0 auto}
+.cdarr.open{transform:rotate(180deg)}
+.cdbody{display:none;padding:0 12px 12px;border-top:1px solid var(--b)}
+.cdbody.open{display:block}
+.cpi{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--b);font-size:.83rem}
+.cpi:last-of-type{border:none}
+.rmb{background:none;border:none;color:var(--r);font-size:.90rem;padding:5px 6px;margin-left:auto;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;outline:none}
+.cnote{
+  display:block;width:100%;
+  background:rgba(255,255,255,.05);border:1px solid var(--b);border-radius:9px;
+  padding:9px 11px;color:var(--t);font-family:inherit;font-size:.80rem;
+  resize:none;min-height:50px;margin-top:8px;
+  -webkit-appearance:none;outline:none;
+}
+.cnote::placeholder{color:var(--m)}
+.cnote:focus{border-color:rgba(56,189,248,.36)}
+.tdot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--y);vertical-align:middle;margin-left:5px}
+
+/* ── BUTTONS ── */
+.btn{
+  display:block;width:100%;border:none;border-radius:14px;
+  padding:13px;font-family:inherit;font-size:.88rem;font-weight:700;
+  text-align:center;cursor:pointer;outline:none;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  margin-bottom:8px;-webkit-user-select:none;user-select:none;
+}
+.btnp{background:var(--a);color:#07111f}
+.btng{background:var(--s);color:var(--t);border:1px solid var(--b)}
+.btnr{background:var(--s);color:var(--r);border:1px solid rgba(248,113,113,.22)}
+.plan-pre{
+  font-size:.72rem;color:var(--m);white-space:pre-wrap;word-break:break-word;
+  max-height:220px;overflow-y:auto;margin:10px 0 4px;padding:10px;
+  background:rgba(255,255,255,.04);border-radius:9px;border:1px solid var(--b);
+}
+
+/* ── MODAL ── */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:99999;display:flex;align-items:flex-end}
+.modal.hide{display:none}
+.sheet{
+  background:#0d1c33;border-top:1px solid var(--b);border-radius:20px 20px 0 0;
+  padding:16px 14px calc(16px + env(safe-area-inset-bottom,20px));
+  width:100%;max-height:78vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+}
+.stitle{font-size:.93rem;font-weight:700;margin-bottom:11px}
+.dgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:11px}
+.dbn{
+  background:var(--s);border:1px solid var(--b);color:var(--t);
+  border-radius:10px;padding:10px 4px;
+  font-family:inherit;font-size:.77rem;font-weight:600;text-align:center;
+  cursor:pointer;outline:none;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  -webkit-user-select:none;user-select:none;
+}
+.dbn.on{background:rgba(52,211,153,.13);border-color:rgba(52,211,153,.26);color:var(--g)}
+.scls{
+  width:100%;background:rgba(255,255,255,.06);border:1px solid var(--b);
+  color:var(--m);border-radius:10px;padding:12px;
+  font-family:inherit;font-size:.86rem;font-weight:600;
+  cursor:pointer;outline:none;-webkit-tap-highlight-color:transparent;
+}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;left:50%;
+  bottom:calc(60px + env(safe-area-inset-bottom,20px) + 10px);
+  transform:translateX(-50%) translateY(10px);
+  background:rgba(52,211,153,.93);color:#07111f;
+  border-radius:999px;padding:9px 18px;font-size:.82rem;font-weight:700;
+  opacity:0;pointer-events:none;white-space:nowrap;z-index:99998;
+  transition:opacity .18s,transform .18s;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
 
-<!-- ══ BOTTOM NAV ══════════════════════════════ -->
+<!-- ════════════════════════════════════════
+     BOTTOM NAV — pure <a href="#"> links
+     Zero JavaScript. Always works on iOS.
+════════════════════════════════════════ -->
 <nav class="nav">
-  <button type="button" class="nb on" data-tab="info">
-    <span class="ni">📍</span>Info
-  </button>
-  <button type="button" class="nb" data-tab="ziele">
-    <span class="ni">🗺️</span>Ziele
-  </button>
-  <button type="button" class="nb" data-tab="plan">
-    <span class="ni">📅</span>Plan
-  </button>
-  <button type="button" class="nb" data-tab="teilen">
-    <span class="ni">📤</span>Teilen
-  </button>
+  <a href="#info"><span class="nv">📍</span>Info</a>
+  <a href="#ziele"><span class="nv">🗺️</span>Ziele</a>
+  <a href="#plan"><span class="nv">📅</span>Plan</a>
+  <a href="#teilen"><span class="nv">📤</span>Teilen</a>
 </nav>
 
 <div class="toast" id="toast"></div>
 
-<!-- ══ MODAL ════════════════════════════════════ -->
-<div class="modal" id="modal" aria-hidden="true">
+<!-- MODAL -->
+<div class="modal hide" id="modal">
   <div class="sheet">
-    <div class="sht" id="modal-title">Einplanen</div>
-    <div class="dgrid" id="modal-grid"></div>
-    <button type="button" class="scl" id="modal-cls">Abbrechen</button>
+    <div class="stitle" id="mtitle">Einplanen</div>
+    <div class="dgrid" id="mgrid"></div>
+    <button type="button" class="scls" id="mcls">Abbrechen</button>
   </div>
 </div>
 
-<!-- ══ TAB: INFO ════════════════════════════════ -->
-<div id="tab-info">
-  <div class="hero">
-    <div style="font-size:.72rem;color:var(--dim);margin-bottom:4px">📍 Nieuwvliet-Bad · Zeeland · NL</div>
-    <h1>🏖️ Dormio Urlaub 2026</h1>
-    <div class="hero-sub">Mo 27. Juli – Mo 10. August · 15 Tage</div>
-    <div class="chips">
-      <span class="chip">🐶 Hundestrand</span>
-      <span class="chip">🧒 Kinder</span>
-      <span class="chip">🌊 Nordseeküste</span>
-      <span class="chip">🇧🇪 Nahe Belgien</span>
-    </div>
+<!-- ════════════════════════════════════════
+     HERO
+════════════════════════════════════════ -->
+<div class="hero">
+  <div style="font-size:.71rem;color:var(--m);margin-bottom:4px">📍 Nieuwvliet-Bad · Zeeland · NL</div>
+  <h1>🏖️ Dormio Urlaub 2026</h1>
+  <div class="hero-sub">Mo 27. Juli – Mo 10. August · 15 Tage</div>
+  <div class="chips">
+    <span class="chip">🐶 Hundestrand</span>
+    <span class="chip">🧒 Kinder</span>
+    <span class="chip">🌊 Nordseeküste</span>
+    <span class="chip">🇧🇪 Nahe Belgien</span>
   </div>
-  <div class="w pt">
+</div>
+
+<!-- ════════════════════════════════════════
+     INFO
+════════════════════════════════════════ -->
+<section class="sec" id="info">
+  <div class="sh"><h2>📍 Info &amp; Destination</h2></div>
+  <div class="w">
     <div class="card">
       <div class="ct">📋 Buchung</div>
-      <div class="row"><span class="ri">🏠</span><div><b>Dormio Strand Resort</b><s2>Baanstpoldersedijk 4, 4504 PR Nieuwvliet · Reserv. 36801</s2><a class="ml" href="https://maps.apple.com/?q=Dormio+Strand+Resort+Nieuwvliet" target="_blank">📍 In Maps öffnen</a></div></div>
-      <div class="row"><span class="ri">📆</span><div><b>Check-in Mo 27.07 ab 16:00</b><s2>Check-out Mo 10.08 bis 10:30 Uhr</s2></div></div>
-      <div class="row"><span class="ri">📞</span><div><b>Rezeption</b><s2>+31 117 37 08 00</s2></div></div>
+      <div class="row"><span class="ri">🏠</span><div><b>Dormio Strand Resort</b><small>Baanstpoldersedijk 4, 4504 PR Nieuwvliet · Reserv. 36801</small><a class="ml" href="https://maps.apple.com/?q=Dormio+Strand+Resort+Nieuwvliet" target="_blank">📍 In Maps öffnen</a></div></div>
+      <div class="row"><span class="ri">📆</span><div><b>Check-in Mo 27.07 ab 16:00</b><small>Check-out Mo 10.08 bis 10:30 Uhr</small></div></div>
+      <div class="row"><span class="ri">📞</span><div><b>Rezeption</b><small>+31 117 37 08 00</small></div></div>
     </div>
     <div class="card">
       <div class="ct">🐶 Hund am Strand</div>
-      <div class="row"><span class="ri">☀️</span><div><b>10–18 Uhr → Leinenpflicht</b><s2>Hauptstrand tagsüber</s2></div></div>
-      <div class="row"><span class="ri">🌅</span><div><b>Vor 10 &amp; nach 18 Uhr frei</b><s2>Freilauf möglich – beste Zeiten!</s2></div></div>
-      <div class="row"><span class="ri">🐾</span><div><b>Hundestrand</b><s2>Ca. 500 m östlich der Hauptkasse</s2></div></div>
+      <div class="row"><span class="ri">☀️</span><div><b>10–18 Uhr → Leinenpflicht</b><small>Hauptstrand tagsüber</small></div></div>
+      <div class="row"><span class="ri">🌅</span><div><b>Vor 10 &amp; nach 18 Uhr frei</b><small>Freilauf – beste Zeiten!</small></div></div>
+      <div class="row"><span class="ri">🐾</span><div><b>Hundestrand</b><small>Ca. 500 m östlich der Hauptkasse</small></div></div>
     </div>
     <div class="card">
       <div class="ct">📅 Feste Termine</div>
-      <div class="row"><span class="ri">🌙</span><div><b>Sluis Abendmarkt</b><s2>Mi 29.07 &amp; Mi 05.08 · ab 18 Uhr · 20 Min.</s2></div></div>
-      <div class="row"><span class="ri">🛒</span><div><b>Cadzand Wochenmarkt</b><s2>Do 30.07 &amp; Do 06.08 · 9–13 Uhr · 10 Min.</s2></div></div>
-      <div class="row"><span class="ri">🐟</span><div><b>Breskens Hafenmarkt</b><s2>Fr 31.07 &amp; Fr 07.08 · 9–13 Uhr · 15 Min.</s2></div></div>
-      <div class="row"><span class="ri">🦭</span><div><b>Robbensafari Breskens</b><s2>Täglich Mai–Sept · Buchung empfohlen!</s2></div></div>
+      <div class="row"><span class="ri">🌙</span><div><b>Sluis Abendmarkt</b><small>Mi 29.07 &amp; Mi 05.08 · ab 18 Uhr · 20 Min.</small></div></div>
+      <div class="row"><span class="ri">🛒</span><div><b>Cadzand Wochenmarkt</b><small>Do 30.07 &amp; Do 06.08 · 9–13 Uhr · 10 Min.</small></div></div>
+      <div class="row"><span class="ri">🐟</span><div><b>Breskens Hafenmarkt</b><small>Fr 31.07 &amp; Fr 07.08 · 9–13 Uhr · 15 Min.</small></div></div>
+      <div class="row"><span class="ri">🦭</span><div><b>Robbensafari Breskens</b><small>Täglich Mai–Sept · Buchung empfohlen!</small></div></div>
     </div>
     <div class="card">
       <div class="ct">🚗 Entfernungen</div>
-      <div class="row"><span class="ri">📍</span><div><b>Cadzand-Bad</b><s2>10 Min. · 8 km</s2></div></div>
-      <div class="row"><span class="ri">📍</span><div><b>Groede / Driftkarts</b><s2>10 Min. · 7 km</s2></div></div>
-      <div class="row"><span class="ri">📍</span><div><b>Breskens (Hafen)</b><s2>15 Min. · 12 km</s2></div></div>
-      <div class="row"><span class="ri">📍</span><div><b>Sluis (Altstadt)</b><s2>20 Min. · 15 km</s2></div></div>
-      <div class="row"><span class="ri">📍</span><div><b>Knokke-Heist 🇧🇪</b><s2>30 Min. · 22 km</s2></div></div>
-      <div class="row"><span class="ri">📍</span><div><b>Brügge 🇧🇪</b><s2>40 Min. · 32 km</s2></div></div>
-      <div class="row"><span class="ri">📍</span><div><b>Vlissingen</b><s2>40 Min. · 35 km</s2></div></div>
-      <div class="row"><span class="ri">📍</span><div><b>Middelburg</b><s2>45 Min. · 38 km</s2></div></div>
-      <div class="row"><span class="ri">📍</span><div><b>Neeltje Jans</b><s2>50 Min. · 55 km</s2></div></div>
-      <div class="row"><span class="ri">📍</span><div><b>Gent 🇧🇪</b><s2>60 Min. · 65 km</s2></div></div>
+      <div class="row"><span class="ri">📍</span><div><b>Cadzand-Bad</b><small>10 Min. · 8 km</small></div></div>
+      <div class="row"><span class="ri">📍</span><div><b>Groede / Driftkarts</b><small>10 Min. · 7 km</small></div></div>
+      <div class="row"><span class="ri">📍</span><div><b>Breskens (Hafen)</b><small>15 Min. · 12 km</small></div></div>
+      <div class="row"><span class="ri">📍</span><div><b>Sluis (Altstadt)</b><small>20 Min. · 15 km</small></div></div>
+      <div class="row"><span class="ri">📍</span><div><b>Knokke-Heist 🇧🇪</b><small>30 Min. · 22 km</small></div></div>
+      <div class="row"><span class="ri">📍</span><div><b>Brügge 🇧🇪</b><small>40 Min. · 32 km</small></div></div>
+      <div class="row"><span class="ri">📍</span><div><b>Vlissingen</b><small>40 Min. · 35 km</small></div></div>
+      <div class="row"><span class="ri">📍</span><div><b>Middelburg</b><small>45 Min. · 38 km</small></div></div>
+      <div class="row"><span class="ri">📍</span><div><b>Neeltje Jans</b><small>50 Min. · 55 km</small></div></div>
+      <div class="row"><span class="ri">📍</span><div><b>Gent 🇧🇪</b><small>60 Min. · 65 km</small></div></div>
     </div>
     <div class="card">
       <div class="ct">🍽️ Essen</div>
-      <div class="row"><span class="ri">🐚</span><div><b>Zeeland-Muscheln</b><s2>Ab Juli Saison! Breskens &amp; Sluis</s2></div></div>
-      <div class="row"><span class="ri">🐟</span><div><b>Frischer Fisch &amp; Krabben</b><s2>Hafenrestaurants Breskens</s2></div></div>
-      <div class="row"><span class="ri">🍟</span><div><b>Belgische Pommes &amp; Schokolade</b><s2>Überall in der Grenzregion</s2></div></div>
-      <div class="row"><span class="ri">🧇</span><div><b>Stroopwafels &amp; Hagelslag</b><s2>Jeder Albert Heijn</s2></div></div>
+      <div class="row"><span class="ri">🐚</span><div><b>Zeeland-Muscheln</b><small>Ab Juli Saison! Breskens &amp; Sluis</small></div></div>
+      <div class="row"><span class="ri">🐟</span><div><b>Frischer Fisch &amp; Krabben</b><small>Hafenrestaurants Breskens</small></div></div>
+      <div class="row"><span class="ri">🍟</span><div><b>Belgische Pommes &amp; Schokolade</b><small>Überall in der Grenzregion</small></div></div>
+      <div class="row"><span class="ri">🧇</span><div><b>Stroopwafels &amp; Hagelslag</b><small>Jeder Albert Heijn</small></div></div>
     </div>
     <div class="card">
       <div class="ct">🆘 Notfall</div>
-      <div class="row"><span class="ri">🚑</span><div><b>Notruf NL &amp; BE</b><s2>112</s2></div></div>
-      <div class="row"><span class="ri">🏥</span><div><b>Hausarzt-Notdienst NL</b><s2>0900-1010 (nach 17 Uhr)</s2></div></div>
+      <div class="row"><span class="ri">🚑</span><div><b>Notruf NL &amp; BE</b><small>112</small></div></div>
+      <div class="row"><span class="ri">🏥</span><div><b>Hausarzt-Notdienst NL</b><small>0900-1010 (nach 17 Uhr)</small></div></div>
     </div>
-    <div class="gap"></div>
   </div>
-</div>
+</section>
 
-<!-- ══ TAB: ZIELE ════════════════════════════════ -->
-<div id="tab-ziele" style="display:none">
+<!-- ════════════════════════════════════════
+     ZIELE
+════════════════════════════════════════ -->
+<section class="sec" id="ziele">
+  <div class="sh"><h2>🗺️ Events &amp; Ausflüge</h2><p>Tippe auf ➕ um etwas in den Kalender einzuplanen</p></div>
   <div class="fbar">
     <button type="button" class="fb on" data-f="alle">Alle</button>
     <button type="button" class="fb" data-f="termin">📅 Termine</button>
@@ -276,55 +329,60 @@ a.ml { display: inline-block; color: var(--blue); font-size: .77rem; font-weight
     <button type="button" class="fb" data-f="natur">🌿 Natur</button>
     <button type="button" class="fb" data-f="regen">🌧️ Regen</button>
   </div>
+  <!-- items rendered by JS -->
   <div id="ilist"></div>
-  <div class="gap"></div>
-</div>
+</section>
 
-<!-- ══ TAB: PLAN ═════════════════════════════════ -->
-<div id="tab-plan" style="display:none">
-  <div class="w pt">
-    <p style="color:var(--dim);font-size:.79rem;margin-bottom:11px">Tag antippen zum Öffnen · bei Zielen auf ➕ einplanen</p>
+<!-- ════════════════════════════════════════
+     PLAN
+════════════════════════════════════════ -->
+<section class="sec" id="plan">
+  <div class="sh"><h2>📅 Urlaubskalender</h2><p>Tag antippen zum Öffnen · Notizen eintragen</p></div>
+  <div class="w">
     <div id="calwrap"></div>
-    <div class="gap"></div>
   </div>
-</div>
+</section>
 
-<!-- ══ TAB: TEILEN ═══════════════════════════════ -->
-<div id="tab-teilen" style="display:none">
-  <div class="w pt">
+<!-- ════════════════════════════════════════
+     TEILEN
+════════════════════════════════════════ -->
+<section class="sec" id="teilen">
+  <div class="sh"><h2>📤 Teilen &amp; Sichern</h2></div>
+  <div class="w">
     <div class="card">
       <div class="ct">📤 Plan teilen</div>
-      <p style="color:var(--dim);font-size:.81rem;margin-bottom:11px">Plan als Text kopieren und per WhatsApp oder iMessage schicken.</p>
+      <p style="color:var(--m);font-size:.80rem;margin-bottom:11px">Plan als Text kopieren und per WhatsApp oder iMessage schicken.</p>
       <button type="button" class="btn btnp" id="bcopy">📋 Plan kopieren</button>
-      <button type="button" class="btn btng" id="bprev">👁️ Vorschau</button>
+      <button type="button" class="btn btng" id="bprev">👁️ Vorschau anzeigen</button>
       <pre class="plan-pre" id="planpre" style="display:none"></pre>
     </div>
     <div class="card">
       <div class="ct">💾 Sicherung</div>
-      <p style="color:var(--dim);font-size:.81rem;margin-bottom:11px">Plan speichern und auf anderen Geräten wiederherstellen.</p>
+      <p style="color:var(--m);font-size:.80rem;margin-bottom:11px">Plan als Datei sichern und auf anderen Geräten importieren.</p>
       <button type="button" class="btn btng" id="bexp">⬇️ Sicherung speichern</button>
-      <label class="btn btng" style="cursor:pointer">⬆️ Sicherung importieren<input type="file" id="fimp" accept=".json" style="display:none"></label>
+      <label class="btn btng" style="cursor:pointer;display:block;text-align:center">
+        ⬆️ Sicherung importieren
+        <input type="file" id="fimp" accept=".json" style="display:none">
+      </label>
       <button type="button" class="btn btnr" id="breset">🗑️ Plan zurücksetzen</button>
     </div>
-    <div class="gap"></div>
   </div>
-</div>
+</section>
 
 <script>
-// ── DATA ────────────────────────────────────────────────────
-var D_START = new Date(2026, 6, 27);
-var D_END   = new Date(2026, 7, 10);
+var D_START = new Date(2026,6,27);
+var D_END   = new Date(2026,7,10);
 var SK = 'dormio26';
 
 var ITEMS = [
-  {id:'e1',ic:'🌙',ti:'Sluis Abendmarkt',me:'Mi 29.07 & Mi 05.08 · 18 Uhr · 20 Min.',de:'Abendmarkt in der Altstadt. Streetfood, Musik, Händler.',tags:['termin','stadt']},
+  {id:'e1',ic:'🌙',ti:'Sluis Abendmarkt',me:'Mi 29.07 & Mi 05.08 · ab 18 Uhr · 20 Min.',de:'Abendmarkt in der Altstadt. Streetfood, Musik, Händler.',tags:['termin','stadt']},
   {id:'e2',ic:'🛒',ti:'Cadzand Wochenmarkt',me:'Do 30.07 & Do 06.08 · 9–13 Uhr · 10 Min.',de:'Frischer Fisch, Gemüse, Käse. Bester Markt der Region.',tags:['termin','strand','kids']},
   {id:'e3',ic:'🐟',ti:'Breskens Hafenmarkt',me:'Fr 31.07 & Fr 07.08 · 9–13 Uhr · 15 Min.',de:'Fisch vom Boot, Streetfood, Hafenatmosphäre.',tags:['termin','natur']},
   {id:'t1',ic:'🦭',ti:'Robbensafari Breskens',me:'Täglich · 15 Min. · 1,5 Std. Bootstour',de:'Seehunde in freier Wildbahn. Buchung empfohlen!',tags:['kids','natur']},
   {id:'t2',ic:'💧',ti:'Waterland Neeltje Jans',me:'Täglich · 50 Min. · halber/ganzer Tag',de:'Wasserpark + Deltawerke. Riesenrutsche, Robben füttern.',tags:['kids','natur']},
   {id:'t3',ic:'🚗',ti:'Groede Driftkarts & Spielpark',me:'Täglich Apr–Sept · 10 Min.',de:'Driftkarts, Trampoline, Spielanlagen. Direkt um die Ecke.',tags:['kids']},
   {id:'t4',ic:'🐦',ti:'Zwin Vogelpark',me:'Täglich 9–18 Uhr · 25 Min.',de:'Naturschutzgebiet NL/BE. Watvögel, Naturerlebnispfad.',tags:['natur','kids']},
-  {id:'t5',ic:'🚲',ti:'Küsten-Radtour',me:'Jederzeit · ab Resort · ca. 25 km',de:'Nieuwvliet → Cadzand → Retranchement zurück. Flach, familienfreundlich.',tags:['natur','strand']},
+  {id:'t5',ic:'🚲',ti:'Küsten-Radtour',me:'Jederzeit · ab Resort · ca. 25 km',de:'Nieuwvliet → Cadzand → Retranchement. Flach, familienfreundlich.',tags:['natur','strand']},
   {id:'t6',ic:'🏖️',ti:'Cadzand-Bad Strandtag',me:'Jederzeit · 10 Min.',de:'Größerer Strand mit Strandpavilions und Beachbars.',tags:['strand','kids']},
   {id:'t7',ic:'🚤',ti:'Fähre Breskens → Vlissingen',me:'Stündlich · 15 + 20 Min. Überfahrt',de:'Schnellfähre Westerschelde. Vlissingen mit Promenade.',tags:['natur','strand']},
   {id:'t8',ic:'🏰',ti:'Brügge Tagesausflug',me:'Ganzer Tag · 40 Min.',de:'UNESCO-Weltkulturerbe: Grachten, Schokolade, Kirchen.',tags:['stadt','kids']},
@@ -335,289 +393,175 @@ var ITEMS = [
   {id:'t13',ic:'🎬',ti:'Bioscoop Terneuzen',me:'Täglich · 25 Min. · Regentag',de:'Modernes Kino. Perfekt für verregnete Tage.',tags:['regen','kids']},
   {id:'t14',ic:'🎥',ti:'Kinepolis Brügge',me:'Täglich · 40 Min. · Regentag',de:'Großes Multiplex, Originalversionen.',tags:['regen','kids']},
 ];
+var TCSS={termin:'ty',kids:'ty',strand:'tb',stadt:'tp',natur:'tg',regen:'tgr'};
+var TLBL={termin:'📅',kids:'👶',strand:'🌊',stadt:'🏛️',natur:'🌿',regen:'🌧️'};
 
-var TCSS = {termin:'ty',kids:'ty',strand:'tb',stadt:'tp',natur:'tg',regen:'ts'};
-var TLBL = {termin:'📅',kids:'👶',strand:'🌊',stadt:'🏛️',natur:'🌿',regen:'🌧️'};
+var ST={p:{},n:{}};
+try{var _r=localStorage.getItem(SK);if(_r)ST=Object.assign({p:{},n:{}},JSON.parse(_r));}catch(e){}
+function save(){try{localStorage.setItem(SK,JSON.stringify(ST));}catch(e){}}
 
-// ── STATE ───────────────────────────────────────────────────
-var ST = {p:{}, n:{}};
-try { var _r = localStorage.getItem(SK); if (_r) ST = Object.assign({p:{},n:{}}, JSON.parse(_r)); } catch(e) {}
-function save() { try { localStorage.setItem(SK, JSON.stringify(ST)); } catch(e) {} }
-
-// ── UTILS ───────────────────────────────────────────────────
-function vacDays() {
-  var arr = [], d = new Date(D_START);
-  while (d <= D_END) { arr.push(new Date(d)); d.setDate(d.getDate()+1); }
-  return arr;
-}
-function dk(d) { return d.toISOString().slice(0,10); }
-function fmtS(d) { return d.toLocaleDateString('de-DE',{weekday:'short',day:'2-digit',month:'2-digit'}); }
-function fmtL(d) { return d.toLocaleDateString('de-DE',{weekday:'long',day:'2-digit',month:'long'}); }
-function isToday(d) { var n=new Date(); return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth()&&d.getDate()===n.getDate(); }
-
+function vacDays(){var a=[],d=new Date(D_START);while(d<=D_END){a.push(new Date(d));d.setDate(d.getDate()+1);}return a;}
+function dk(d){return d.toISOString().slice(0,10);}
+function fmtS(d){return d.toLocaleDateString('de-DE',{weekday:'short',day:'2-digit',month:'2-digit'});}
+function fmtL(d){return d.toLocaleDateString('de-DE',{weekday:'long',day:'2-digit',month:'long'});}
+function isToday(d){var n=new Date();return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth()&&d.getDate()===n.getDate();}
 var _tt;
-function toast(m) {
-  var el = document.getElementById('toast');
-  el.textContent = m; el.classList.add('show');
-  clearTimeout(_tt); _tt = setTimeout(function(){ el.classList.remove('show'); }, 2200);
-}
+function toast(m){var e=document.getElementById('toast');e.textContent=m;e.classList.add('show');clearTimeout(_tt);_tt=setTimeout(function(){e.classList.remove('show');},2200);}
 
-// ── TAB SWITCHING ────────────────────────────────────────────
-var TABS = ['info','ziele','plan','teilen'];
-function showTab(id) {
-  for (var i=0; i<TABS.length; i++) {
-    document.getElementById('tab-'+TABS[i]).style.display = (TABS[i]===id) ? 'block' : 'none';
-  }
-  var btns = document.querySelectorAll('.nb');
-  for (var j=0; j<btns.length; j++) {
-    btns[j].classList.toggle('on', btns[j].getAttribute('data-tab')===id);
-  }
-  window.scrollTo(0,0);
-  document.body.scrollTop = 0;
-}
-
-var navBtns = document.querySelectorAll('.nb');
-for (var _i=0; _i<navBtns.length; _i++) {
-  (function(btn) {
-    btn.addEventListener('click', function() { showTab(btn.getAttribute('data-tab')); });
-  })(navBtns[_i]);
-}
-
-// ── FILTER ───────────────────────────────────────────────────
-var curF = 'alle';
-var fbtns = document.querySelectorAll('.fb');
-for (var _fi=0; _fi<fbtns.length; _fi++) {
-  (function(btn) {
-    btn.addEventListener('click', function() {
-      curF = btn.getAttribute('data-f');
-      for (var x=0; x<fbtns.length; x++) fbtns[x].classList.remove('on');
+// FILTER
+var curF='alle';
+var fbtns=document.querySelectorAll('.fb');
+for(var fi=0;fi<fbtns.length;fi++){
+  (function(btn){
+    btn.addEventListener('click',function(){
+      curF=btn.getAttribute('data-f');
+      for(var x=0;x<fbtns.length;x++)fbtns[x].classList.remove('on');
       btn.classList.add('on');
       renderItems();
     });
-  })(fbtns[_fi]);
+  })(fbtns[fi]);
 }
 
-// ── RENDER ITEMS ─────────────────────────────────────────────
-function renderItems() {
-  var list = document.getElementById('ilist');
-  var data = curF === 'alle' ? ITEMS : ITEMS.filter(function(it){ return it.tags.indexOf(curF)!==-1; });
-  if (!data.length) { list.innerHTML = '<p style="text-align:center;color:var(--dim);padding:32px">Keine Einträge.</p>'; return; }
-  var html = '';
-  for (var i=0; i<data.length; i++) {
-    var item = data[i];
-    var asgn = [];
-    var days = Object.keys(ST.p);
-    for (var d=0; d<days.length; d++) {
-      if (ST.p[days[d]].indexOf(item.id)!==-1) {
-        var dd = new Date(days[d]+'T12:00:00');
-        asgn.push(dd.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'}));
-      }
-    }
-    var tagHtml = '';
-    for (var t=0; t<item.tags.length; t++) {
-      tagHtml += '<span class="tag '+(TCSS[item.tags[t]]||'')+'">'+(TLBL[item.tags[t]]||item.tags[t])+'</span>';
-    }
-    html += '<div class="ic">'
+// RENDER ITEMS
+function renderItems(){
+  var list=document.getElementById('ilist');
+  var data=curF==='alle'?ITEMS:ITEMS.filter(function(it){return it.tags.indexOf(curF)!==-1;});
+  if(!data.length){list.innerHTML='<p style="text-align:center;color:var(--m);padding:30px">Keine Einträge.</p>';return;}
+  var html='';
+  for(var i=0;i<data.length;i++){
+    var item=data[i];
+    var asgn=[];
+    var ks=Object.keys(ST.p);
+    for(var d=0;d<ks.length;d++){if((ST.p[ks[d]]||[]).indexOf(item.id)!==-1){var dd=new Date(ks[d]+'T12:00:00');asgn.push(dd.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'}));}}
+    var tagHtml='';
+    for(var t=0;t<item.tags.length;t++){tagHtml+='<span class="tag '+(TCSS[item.tags[t]]||'')+'">'+TLBL[item.tags[t]]+'</span>';}
+    html+='<div class="item">'
       +'<div class="iico">'+item.ic+'</div>'
-      +'<div class="ib">'
-        +'<div class="it">'+item.ti+'</div>'
-        +'<div class="im">'+item.me+'</div>'
-        +'<div class="id">'+item.de+'</div>'
-        +(asgn.length ? '<div class="iok">✓ '+asgn.join(', ')+'</div>' : '')
+      +'<div class="ibody">'
+        +'<div class="ititle">'+item.ti+'</div>'
+        +'<div class="imeta">'+item.me+'</div>'
+        +'<div class="idesc">'+item.de+'</div>'
+        +(asgn.length?'<div class="iok">✓ '+asgn.join(', ')+'</div>':'')
         +'<div class="itags">'+tagHtml+'</div>'
       +'</div>'
       +'<button type="button" class="pb'+(asgn.length?' on':'')+'" data-iid="'+item.id+'">➕</button>'
     +'</div>';
   }
-  list.innerHTML = html;
-  var pbs = list.querySelectorAll('.pb');
-  for (var _p=0; _p<pbs.length; _p++) {
-    (function(btn) {
-      btn.addEventListener('click', function() { openModal(btn.getAttribute('data-iid')); });
-    })(pbs[_p]);
+  list.innerHTML=html;
+  var pbs=list.querySelectorAll('.pb');
+  for(var pi=0;pi<pbs.length;pi++){
+    (function(btn){btn.addEventListener('click',function(){openModal(btn.getAttribute('data-iid'));});})(pbs[pi]);
   }
 }
 
-// ── MODAL ────────────────────────────────────────────────────
-var mItemId = null;
-function openModal(iid) {
-  mItemId = iid;
-  var item = null;
-  for (var i=0; i<ITEMS.length; i++) { if (ITEMS[i].id===iid) { item=ITEMS[i]; break; } }
-  document.getElementById('modal-title').textContent = '"'+item.ti+'" einplanen';
-  var vd = vacDays();
-  var html = '';
-  for (var i=0; i<vd.length; i++) {
-    var k = dk(vd[i]);
-    var on = (ST.p[k]||[]).indexOf(iid)!==-1;
-    html += '<button type="button" class="dbn'+(on?' on':'')+'" data-k="'+k+'">'+(on?'✓ ':'')+fmtS(vd[i])+'</button>';
+// MODAL
+var mId=null;
+function openModal(iid){
+  mId=iid;
+  var item=null;for(var i=0;i<ITEMS.length;i++){if(ITEMS[i].id===iid){item=ITEMS[i];break;}}
+  document.getElementById('mtitle').textContent='"'+item.ti+'" einplanen';
+  var vd=vacDays(),html='';
+  for(var i=0;i<vd.length;i++){
+    var k=dk(vd[i]),on=(ST.p[k]||[]).indexOf(iid)!==-1;
+    html+='<button type="button" class="dbn'+(on?' on':'')+'" data-k="'+k+'">'+(on?'✓ ':'')+fmtS(vd[i])+'</button>';
   }
-  document.getElementById('modal-grid').innerHTML = html;
-  var dbtns = document.getElementById('modal-grid').querySelectorAll('.dbn');
-  for (var _d=0; _d<dbtns.length; _d++) {
-    (function(btn) {
-      btn.addEventListener('click', function() { togglePlan(mItemId, btn.getAttribute('data-k'), btn); });
-    })(dbtns[_d]);
-  }
-  document.getElementById('modal').setAttribute('aria-hidden','false');
+  document.getElementById('mgrid').innerHTML=html;
+  var dbs=document.getElementById('mgrid').querySelectorAll('.dbn');
+  for(var di=0;di<dbs.length;di++){(function(btn){btn.addEventListener('click',function(){togglePlan(mId,btn.getAttribute('data-k'),btn);});})(dbs[di]);}
+  document.getElementById('modal').classList.remove('hide');
 }
-function closeModal() { document.getElementById('modal').setAttribute('aria-hidden','true'); mItemId=null; }
-document.getElementById('modal').addEventListener('click', function(e){ if(e.target===this) closeModal(); });
-document.getElementById('modal-cls').addEventListener('click', closeModal);
+function closeModal(){document.getElementById('modal').classList.add('hide');mId=null;}
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+document.getElementById('mcls').addEventListener('click',closeModal);
 
-function togglePlan(iid, k, btn) {
-  ST.p[k] = ST.p[k] || [];
-  if (ST.p[k].indexOf(iid)!==-1) {
-    ST.p[k] = ST.p[k].filter(function(x){return x!==iid;});
-    btn.classList.remove('on');
-    btn.textContent = btn.textContent.replace('✓ ','');
-    toast('Entfernt');
-  } else {
-    ST.p[k].push(iid);
-    btn.classList.add('on');
-    btn.textContent = '✓ '+btn.textContent;
-    toast('Eingeplant ✓');
+function togglePlan(iid,k,btn){
+  ST.p[k]=ST.p[k]||[];
+  if((ST.p[k]).indexOf(iid)!==-1){
+    ST.p[k]=ST.p[k].filter(function(x){return x!==iid;});
+    btn.classList.remove('on');btn.textContent=btn.textContent.replace('✓ ','');toast('Entfernt');
+  }else{
+    ST.p[k].push(iid);btn.classList.add('on');btn.textContent='✓ '+btn.textContent;toast('Eingeplant ✓');
   }
-  save(); renderItems(); renderCal();
+  save();renderItems();renderCal();
 }
 
-// ── RENDER CALENDAR ──────────────────────────────────────────
-function renderCal() {
-  var vd = vacDays();
-  var html = '';
-  var now = new Date();
-  for (var i=0; i<vd.length; i++) {
-    var d = vd[i];
-    var k = dk(d);
-    var planned = [];
-    var pp = ST.p[k] || [];
-    for (var j=0; j<pp.length; j++) {
-      for (var x=0; x<ITEMS.length; x++) { if(ITEMS[x].id===pp[j]){planned.push(ITEMS[x]);break;} }
-    }
-    var note = ST.n[k] || '';
-    var wd = d.toLocaleDateString('de-DE',{weekday:'short'}).toUpperCase();
-    var sub = planned.map(function(it){return it.ic+' '+it.ti;}).join(' · ') || (note?'📝 Notiz':'Noch nichts geplant');
-    var today = isToday(d);
-    var rows = '';
-    if (planned.length) {
-      for (var pi=0; pi<planned.length; pi++) {
-        rows += '<div class="cpr"><span>'+planned[pi].ic+'</span><span style="flex:1">'+planned[pi].ti+'</span>'
-          +'<button type="button" class="rmb" data-rid="'+planned[pi].id+'" data-rk="'+k+'">✕</button></div>';
-      }
-    } else {
-      rows = '<div style="color:var(--dim);font-size:.78rem;padding:7px 0 3px">Noch nichts geplant.</div>';
-    }
-    html += '<div class="cd">'
+// CALENDAR
+function renderCal(){
+  var vd=vacDays(),now=new Date(),html='';
+  for(var i=0;i<vd.length;i++){
+    var d=vd[i],k=dk(d);
+    var planned=[];var pp=ST.p[k]||[];
+    for(var j=0;j<pp.length;j++){for(var x=0;x<ITEMS.length;x++){if(ITEMS[x].id===pp[j]){planned.push(ITEMS[x]);break;}}}
+    var note=ST.n[k]||'';
+    var wd=d.toLocaleDateString('de-DE',{weekday:'short'}).toUpperCase();
+    var sub=planned.map(function(it){return it.ic+' '+it.ti;}).join(' · ')||(note?'📝 Notiz':'Noch nichts geplant');
+    var today=isToday(d);
+    var rows=planned.length?planned.map(function(it){return'<div class="cpi"><span>'+it.ic+'</span><span style="flex:1">'+it.ti+'</span><button type="button" class="rmb" data-rid="'+it.id+'" data-rk="'+k+'">✕</button></div>';}).join(''):'<div style="color:var(--m);font-size:.77rem;padding:6px 0 3px">Noch nichts geplant.</div>';
+    html+='<div class="cd">'
       +'<div class="cdh" data-ck="'+k+'">'
-        +'<div class="cdb"><div class="cdn">'+d.getDate()+'</div><div class="cdw">'+wd+'</div></div>'
-        +'<div class="cdi"><div class="cdt">'+d.toLocaleDateString('de-DE',{day:'2-digit',month:'long'})+(today?'<span class="tdot"></span>':'')+'</div><div class="cds">'+sub+'</div></div>'
-        +'<div class="cda" id="ca'+k+'">▾</div>'
+        +'<div class="cdbadge"><div class="cdnum">'+d.getDate()+'</div><div class="cdwday">'+wd+'</div></div>'
+        +'<div class="cdinfo"><div class="cdtitle">'+d.toLocaleDateString('de-DE',{day:'2-digit',month:'long'})+(today?'<span class="tdot"></span>':'')+'</div><div class="cdsub">'+sub+'</div></div>'
+        +'<div class="cdarr" id="ca'+k+'">▾</div>'
       +'</div>'
-      +'<div class="cdbody" id="cb'+k+'">'
-        +rows
-        +'<textarea class="cnote" data-nk="'+k+'" placeholder="Notiz für diesen Tag…">'+note+'</textarea>'
-      +'</div>'
+      +'<div class="cdbody" id="cb'+k+'">'+rows+'<textarea class="cnote" data-nk="'+k+'" placeholder="Notiz für diesen Tag…">'+note+'</textarea></div>'
     +'</div>';
   }
-  var wrap = document.getElementById('calwrap');
-  wrap.innerHTML = html;
-
-  var hdrs = wrap.querySelectorAll('.cdh');
-  for (var _h=0; _h<hdrs.length; _h++) {
-    (function(hd) {
-      hd.addEventListener('click', function() {
-        var k = hd.getAttribute('data-ck');
-        var body = document.getElementById('cb'+k);
-        var arr  = document.getElementById('ca'+k);
-        var open = body.classList.toggle('open');
-        arr.classList.toggle('open', open);
-      });
-    })(hdrs[_h]);
-  }
-  var rmbs = wrap.querySelectorAll('.rmb');
-  for (var _r=0; _r<rmbs.length; _r++) {
-    (function(btn) {
-      btn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        var id = btn.getAttribute('data-rid');
-        var k  = btn.getAttribute('data-rk');
-        ST.p[k] = (ST.p[k]||[]).filter(function(x){return x!==id;});
-        save(); renderCal(); renderItems(); toast('Entfernt');
-      });
-    })(rmbs[_r]);
-  }
-  var notes = wrap.querySelectorAll('.cnote');
-  for (var _n=0; _n<notes.length; _n++) {
-    (function(ta) {
-      ta.addEventListener('input', function() { ST.n[ta.getAttribute('data-nk')] = ta.value; save(); });
-    })(notes[_n]);
-  }
+  var wrap=document.getElementById('calwrap');
+  wrap.innerHTML=html;
+  var hdrs=wrap.querySelectorAll('.cdh');
+  for(var hi=0;hi<hdrs.length;hi++){(function(hd){hd.addEventListener('click',function(){var k=hd.getAttribute('data-ck');var b=document.getElementById('cb'+k);var a=document.getElementById('ca'+k);var o=b.classList.toggle('open');a.classList.toggle('open',o);});})(hdrs[hi]);}
+  var rmbs=wrap.querySelectorAll('.rmb');
+  for(var ri=0;ri<rmbs.length;ri++){(function(btn){btn.addEventListener('click',function(e){e.stopPropagation();var id=btn.getAttribute('data-rid');var k=btn.getAttribute('data-rk');ST.p[k]=(ST.p[k]||[]).filter(function(x){return x!==id;});save();renderCal();renderItems();toast('Entfernt');});})(rmbs[ri]);}
+  var notes=wrap.querySelectorAll('.cnote');
+  for(var ni=0;ni<notes.length;ni++){(function(ta){ta.addEventListener('input',function(){ST.n[ta.getAttribute('data-nk')]=ta.value;save();});})(notes[ni]);}
 }
 
-// ── SHARE ─────────────────────────────────────────────────────
-function buildText() {
-  var out = '🏖️ DORMIO URLAUB 2026\n27. Juli – 10. August · Nieuwvliet-Bad\n\n';
-  var vd = vacDays(); var any = false;
-  for (var i=0; i<vd.length; i++) {
-    var k = dk(vd[i]);
-    var pp = ST.p[k] || [];
-    var note = ST.n[k] || '';
-    if (!pp.length && !note) continue;
-    any = true;
-    out += '📅 '+fmtL(vd[i])+'\n';
-    for (var j=0; j<pp.length; j++) {
-      for (var x=0; x<ITEMS.length; x++) { if(ITEMS[x].id===pp[j]){out+='  '+ITEMS[x].ic+' '+ITEMS[x].ti+'\n';break;} }
-    }
-    if (note) out += '  📝 '+note+'\n';
-    out += '\n';
+// SHARE
+function buildText(){
+  var out='🏖️ DORMIO URLAUB 2026\n27. Juli – 10. August · Nieuwvliet-Bad\n\n';
+  var vd=vacDays(),any=false;
+  for(var i=0;i<vd.length;i++){
+    var k=dk(vd[i]),pp=ST.p[k]||[],note=ST.n[k]||'';
+    if(!pp.length&&!note)continue;any=true;
+    out+='📅 '+fmtL(vd[i])+'\n';
+    for(var j=0;j<pp.length;j++){for(var x=0;x<ITEMS.length;x++){if(ITEMS[x].id===pp[j]){out+='  '+ITEMS[x].ic+' '+ITEMS[x].ti+'\n';break;}}}
+    if(note)out+='  📝 '+note+'\n';
+    out+='\n';
   }
-  if (!any) out += 'Noch nichts geplant.\n';
+  if(!any)out+='Noch nichts geplant.\n';
   return out;
 }
-
-document.getElementById('bcopy').addEventListener('click', function() {
-  var txt = buildText();
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(txt).then(function(){toast('Kopiert ✓');}).catch(function(){fbCopy(txt);});
-  } else { fbCopy(txt); }
+document.getElementById('bcopy').addEventListener('click',function(){
+  var txt=buildText();
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){toast('Kopiert ✓');}).catch(function(){fbCopy(txt);});}
+  else{fbCopy(txt);}
 });
-function fbCopy(txt) {
-  var ta = document.createElement('textarea');
-  ta.value = txt; ta.style.cssText='position:fixed;top:-9999px;opacity:0';
-  document.body.appendChild(ta); ta.focus(); ta.select();
-  try{document.execCommand('copy');toast('Kopiert ✓');}catch(e){toast('Manuell kopieren');}
-  document.body.removeChild(ta);
-}
-
-var prevOpen = false;
-document.getElementById('bprev').addEventListener('click', function() {
-  var pre = document.getElementById('planpre');
-  prevOpen = !prevOpen;
-  pre.style.display = prevOpen ? 'block' : 'none';
-  if (prevOpen) pre.textContent = buildText();
-  this.textContent = prevOpen ? '🙈 Schließen' : '👁️ Vorschau';
+function fbCopy(txt){var ta=document.createElement('textarea');ta.value=txt;ta.style.cssText='position:fixed;top:-9999px;opacity:0;';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');toast('Kopiert ✓');}catch(e){toast('Manuell kopieren');}document.body.removeChild(ta);}
+var prevO=false;
+document.getElementById('bprev').addEventListener('click',function(){
+  var pre=document.getElementById('planpre');prevO=!prevO;
+  pre.style.display=prevO?'block':'none';
+  if(prevO)pre.textContent=buildText();
+  this.textContent=prevO?'🙈 Schließen':'👁️ Vorschau anzeigen';
 });
-
-var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-document.getElementById('bexp').addEventListener('click', function() {
-  var blob = new Blob([JSON.stringify(ST,null,2)],{type:'application/json'});
-  var url = URL.createObjectURL(blob);
-  if (isIOS) { var w=window.open(url,'_blank'); if(!w)window.location.href=url; setTimeout(function(){URL.revokeObjectURL(url);},60000); }
-  else { var a=document.createElement('a'); a.href=url; a.download='dormio26.json'; a.click(); URL.revokeObjectURL(url); }
+var isIOS=/iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+document.getElementById('bexp').addEventListener('click',function(){
+  var blob=new Blob([JSON.stringify(ST,null,2)],{type:'application/json'});
+  var url=URL.createObjectURL(blob);
+  if(isIOS){var w=window.open(url,'_blank');if(!w)window.location.href=url;setTimeout(function(){URL.revokeObjectURL(url);},60000);}
+  else{var a=document.createElement('a');a.href=url;a.download='dormio26.json';a.click();URL.revokeObjectURL(url);}
 });
-document.getElementById('fimp').addEventListener('change', function(e) {
-  var f=e.target.files[0]; if(!f) return;
+document.getElementById('fimp').addEventListener('change',function(e){
+  var f=e.target.files[0];if(!f)return;
   var r=new FileReader();
   r.onload=function(ev){try{ST=Object.assign({p:{},n:{}},JSON.parse(ev.target.result));save();renderItems();renderCal();toast('Import ✓');}catch(er){toast('Fehler');}};
   r.readAsText(f);
 });
-document.getElementById('breset').addEventListener('click', function() {
-  if(!confirm('Alles löschen?')) return;
-  ST={p:{},n:{}}; save(); renderItems(); renderCal(); toast('Zurückgesetzt');
+document.getElementById('breset').addEventListener('click',function(){
+  if(!confirm('Alles löschen?'))return;
+  ST={p:{},n:{}};save();renderItems();renderCal();toast('Zurückgesetzt');
 });
 
-// ── INIT ─────────────────────────────────────────────────────
-showTab('info');
 renderItems();
 renderCal();
 </script>
