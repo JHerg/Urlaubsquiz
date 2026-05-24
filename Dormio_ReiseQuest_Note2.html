@@ -2,568 +2,1072 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Dormio Urlaub 2026</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Dormio Zeeland 2026 · Marco Polo Guide</title>
 <style>
-:root {
-  --bg:#07111f; --s:rgba(255,255,255,.08); --b:rgba(255,255,255,.11);
-  --t:#eef2ff; --m:rgba(238,242,255,.50);
-  --a:#38bdf8; --g:#34d399; --y:#fbbf24; --r:#f87171;
-}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
-body{
-  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
-  background:var(--bg);color:var(--t);
-  padding-bottom:calc(64px + env(safe-area-inset-bottom,20px));
-  overflow-x:hidden;
+:root{
+  --bg:#08111e;
+  --card:rgba(255,255,255,0.07);
+  --border:rgba(255,255,255,0.10);
+  --text:#f0f4ff;
+  --muted:rgba(240,244,255,0.52);
+  --accent:#0ea5e9;
+  --amber:#f59e0b;
+  --green:#10b981;
+  --gold:#f59e0b;
+  --nav-h:108px;
 }
+html{scroll-behavior:smooth;scroll-padding-top:var(--nav-h)}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;font-size:16px;line-height:1.55;-webkit-text-size-adjust:100%;overscroll-behavior:none}
 
-/* ── BOTTOM NAV – pure anchor links, zero JS ── */
-.nav{
-  position:fixed;bottom:0;left:0;right:0;
-  height:calc(56px + env(safe-area-inset-bottom,20px));
-  padding-bottom:env(safe-area-inset-bottom,20px);
-  background:#0b1829;border-top:1px solid var(--b);
-  display:flex;z-index:9999;
+.nav{position:sticky;top:0;z-index:100;background:rgba(8,17,30,0.97);border-bottom:1px solid var(--border);padding:0}
+.nav-title{font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--muted);text-align:center;padding:6px 12px 0}
+.nav-chips{display:flex;gap:8px;overflow-x:auto;padding:8px 12px 10px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.nav-chips::-webkit-scrollbar{display:none}
+.nav-chips a{
+  display:inline-flex;align-items:center;gap:4px;white-space:nowrap;
+  background:var(--card);border:1px solid var(--border);
+  color:var(--text);text-decoration:none;font-size:13px;font-weight:500;
+  padding:6px 13px;border-radius:20px;flex-shrink:0;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  transition:background .15s,border-color .15s
 }
-.nav a{
-  flex:1;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;gap:2px;
-  color:rgba(238,242,255,.40);text-decoration:none;
-  font-size:.66rem;font-weight:700;
-  -webkit-tap-highlight-color:transparent;
-  touch-action:manipulation;
-  -webkit-user-select:none;user-select:none;
-  padding:4px 2px;
-}
-.nav a:active{color:var(--a)}
-.nv{font-size:1.35rem;line-height:1;display:block}
+.nav-chips a:hover{background:rgba(14,165,233,0.18);border-color:var(--accent)}
 
-/* ── SECTIONS ── */
-.sec{
-  padding:14px 0 20px;
-  scroll-margin-top:0px;
-}
-.w{max-width:600px;margin:0 auto;padding:0 14px}
-
-/* ── DIVIDERS between sections ── */
-.sec+.sec{border-top:2px solid rgba(255,255,255,.06)}
-
-/* ── SECTION HEADER ── */
-.sh{
-  background:linear-gradient(135deg,rgba(56,189,248,.10),rgba(251,191,36,.05));
-  border-bottom:1px solid var(--b);
-  padding:14px 14px 12px;
-  margin-bottom:14px;
-}
-.sh h2{font-size:1.1rem;font-weight:800}
-.sh p{color:var(--m);font-size:.78rem;margin-top:2px}
-
-/* ── HERO ── */
 .hero{
-  background:linear-gradient(135deg,rgba(56,189,248,.09),rgba(251,191,36,.04));
-  border-bottom:1px solid var(--b);
-  padding:16px 14px 14px;
+  background:linear-gradient(160deg,#0a2540 0%,#0c3a5c 35%,#0e4a70 60%,#083052 100%);
+  padding:40px 20px 36px;text-align:center;position:relative;overflow:hidden
 }
-.hero h1{font-size:1.3rem;font-weight:800}
-.hero-sub{color:var(--m);font-size:.79rem;margin-top:3px}
-.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
-.chip{
-  background:rgba(56,189,248,.11);border:1px solid rgba(56,189,248,.20);
-  color:var(--a);border-radius:999px;padding:4px 11px;
-  font-size:.73rem;font-weight:600;
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 100%,rgba(14,165,233,0.20) 0%,transparent 70%);
+  pointer-events:none
 }
-
-/* ── CARD ── */
-.card{background:var(--s);border:1px solid var(--b);border-radius:14px;padding:13px;margin-bottom:10px}
-.ct{font-size:.84rem;font-weight:700;color:var(--a);margin-bottom:9px}
-
-/* ── INFO ROW ── */
-.row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--b);font-size:.83rem;line-height:1.4}
-.row:last-child{border:none;padding-bottom:1px}
-.ri{font-size:1rem;flex:0 0 20px;padding-top:1px}
-.row b{display:block;font-weight:700}
-.row small{display:block;color:var(--m);font-size:.76rem}
-a.ml{color:var(--a);font-size:.76rem;font-weight:600;text-decoration:none;display:inline-block;margin-top:3px}
-
-/* ── FILTER BAR ── */
-.fbar{
-  display:flex;gap:7px;overflow-x:auto;
-  padding:0 14px 10px;scrollbar-width:none;
-  -webkit-overflow-scrolling:touch;
+.hero-wave{font-size:52px;display:block;margin-bottom:8px;filter:drop-shadow(0 4px 16px rgba(14,165,233,0.4))}
+.hero h1{font-size:28px;font-weight:800;letter-spacing:-.02em;line-height:1.2;margin-bottom:4px}
+.hero h1 span{color:var(--accent)}
+.hero-sub{font-size:15px;color:var(--muted);margin-bottom:6px}
+.hero-dates{
+  display:inline-block;background:rgba(14,165,233,0.18);border:1px solid rgba(14,165,233,0.35);
+  color:var(--accent);font-size:13px;font-weight:600;padding:5px 14px;border-radius:20px;margin-bottom:18px
 }
-.fbar::-webkit-scrollbar{display:none}
-.fb{
-  flex:0 0 auto;background:var(--s);border:1px solid var(--b);
-  color:var(--t);border-radius:999px;padding:7px 12px;
-  font-family:inherit;font-size:.78rem;font-weight:600;
-  white-space:nowrap;cursor:pointer;outline:none;
-  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
-  -webkit-user-select:none;user-select:none;
-}
-.fb.on{background:rgba(56,189,248,.13);border-color:rgba(56,189,248,.30);color:var(--a)}
-
-/* ── ITEMS ── */
-.item{
-  background:var(--s);border:1px solid var(--b);border-radius:14px;
-  padding:12px;margin:0 14px 9px;
-  display:flex;gap:10px;align-items:flex-start;
-}
-.item[data-hide]{display:none}
-.iico{font-size:1.4rem;flex:0 0 32px;text-align:center;padding-top:2px}
-.ibody{flex:1;min-width:0}
-.ititle{font-weight:700;font-size:.90rem}
-.imeta{color:var(--m);font-size:.76rem;margin-top:2px;line-height:1.4}
-.idesc{color:var(--m);font-size:.76rem;margin-top:3px;line-height:1.4}
-.iok{color:var(--g);font-size:.75rem;margin-top:3px}
-.itags{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
-.tag{border-radius:999px;padding:2px 8px;font-size:.68rem;font-weight:700}
-.ty{background:rgba(251,191,36,.10);color:var(--y);border:1px solid rgba(251,191,36,.18)}
-.tb{background:rgba(56,189,248,.09);color:var(--a);border:1px solid rgba(56,189,248,.16)}
-.tp{background:rgba(167,139,250,.09);color:#c4b5fd;border:1px solid rgba(167,139,250,.16)}
-.tg{background:rgba(52,211,153,.09);color:var(--g);border:1px solid rgba(52,211,153,.16)}
-.tgr{background:rgba(148,163,184,.09);color:#94a3b8;border:1px solid rgba(148,163,184,.16)}
-.pb{
-  flex:0 0 auto;align-self:center;
-  background:rgba(56,189,248,.09);border:1px solid rgba(56,189,248,.18);
-  color:var(--a);border-radius:10px;padding:9px 10px;
-  font-size:1rem;line-height:1;cursor:pointer;outline:none;
-  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
-  -webkit-user-select:none;user-select:none;
-  min-width:40px;min-height:40px;text-align:center;
-}
-.pb.on{background:rgba(52,211,153,.13);border-color:rgba(52,211,153,.26);color:var(--g)}
-
-/* ── CALENDAR ── */
-.cd{background:var(--s);border:1px solid var(--b);border-radius:14px;margin-bottom:8px;overflow:hidden}
-.cdh{
-  display:flex;align-items:center;gap:10px;
-  padding:10px 12px;min-height:52px;
-  cursor:pointer;-webkit-tap-highlight-color:transparent;
-  touch-action:manipulation;-webkit-user-select:none;user-select:none;outline:none;
-}
-.cdbadge{background:rgba(255,255,255,.09);border-radius:8px;padding:5px 8px;text-align:center;flex:0 0 42px}
-.cdnum{font-size:1.1rem;font-weight:800;line-height:1}
-.cdwday{font-size:.56rem;color:var(--m);font-weight:700;text-transform:uppercase;margin-top:1px}
-.cdinfo{flex:1;min-width:0}
-.cdtitle{font-weight:700;font-size:.85rem}
-.cdsub{font-size:.71rem;color:var(--m);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cdarr{color:var(--m);font-size:.80rem;transition:transform .17s;flex:0 0 auto}
-.cdarr.open{transform:rotate(180deg)}
-.cdbody{display:none;padding:0 12px 12px;border-top:1px solid var(--b)}
-.cdbody.open{display:block}
-.cpi{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--b);font-size:.83rem}
-.cpi:last-of-type{border:none}
-.rmb{background:none;border:none;color:var(--r);font-size:.90rem;padding:5px 6px;margin-left:auto;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;outline:none}
-.cnote{
-  display:block;width:100%;
-  background:rgba(255,255,255,.05);border:1px solid var(--b);border-radius:9px;
-  padding:9px 11px;color:var(--t);font-family:inherit;font-size:.80rem;
-  resize:none;min-height:50px;margin-top:8px;
-  -webkit-appearance:none;outline:none;
-}
-.cnote::placeholder{color:var(--m)}
-.cnote:focus{border-color:rgba(56,189,248,.36)}
-.tdot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--y);vertical-align:middle;margin-left:5px}
-
-/* ── BUTTONS ── */
-.btn{
-  display:block;width:100%;border:none;border-radius:14px;
-  padding:13px;font-family:inherit;font-size:.88rem;font-weight:700;
-  text-align:center;cursor:pointer;outline:none;
-  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
-  margin-bottom:8px;-webkit-user-select:none;user-select:none;
-}
-.btnp{background:var(--a);color:#07111f}
-.btng{background:var(--s);color:var(--t);border:1px solid var(--b)}
-.btnr{background:var(--s);color:var(--r);border:1px solid rgba(248,113,113,.22)}
-.plan-pre{
-  font-size:.72rem;color:var(--m);white-space:pre-wrap;word-break:break-word;
-  max-height:220px;overflow-y:auto;margin:10px 0 4px;padding:10px;
-  background:rgba(255,255,255,.04);border-radius:9px;border:1px solid var(--b);
+.hero-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.hero-chip{
+  background:rgba(255,255,255,0.09);border:1px solid rgba(255,255,255,0.14);
+  font-size:13px;padding:6px 13px;border-radius:20px;font-weight:500
 }
 
-/* ── MODAL ── */
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:99999;display:flex;align-items:flex-end}
-.modal.hide{display:none}
-.sheet{
-  background:#0d1c33;border-top:1px solid var(--b);border-radius:20px 20px 0 0;
-  padding:16px 14px calc(16px + env(safe-area-inset-bottom,20px));
-  width:100%;max-height:78vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+.section{padding:0 0 48px}
+.section-header{
+  padding:28px 20px 16px;
+  border-top:3px solid var(--accent);
 }
-.stitle{font-size:.93rem;font-weight:700;margin-bottom:11px}
-.dgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:11px}
-.dbn{
-  background:var(--s);border:1px solid var(--b);color:var(--t);
-  border-radius:10px;padding:10px 4px;
-  font-family:inherit;font-size:.77rem;font-weight:600;text-align:center;
-  cursor:pointer;outline:none;
-  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
-  -webkit-user-select:none;user-select:none;
+.section-header h2{font-size:22px;font-weight:800;letter-spacing:-.02em}
+.section-header p{font-size:14px;color:var(--muted);margin-top:4px}
+
+.cards{padding:0 12px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cards.single{grid-template-columns:1fr}
+
+.card{
+  background:var(--card);border:1px solid var(--border);border-radius:16px;
+  padding:16px;position:relative;overflow:hidden
 }
-.dbn.on{background:rgba(52,211,153,.13);border-color:rgba(52,211,153,.26);color:var(--g)}
-.scls{
-  width:100%;background:rgba(255,255,255,.06);border:1px solid var(--b);
-  color:var(--m);border-radius:10px;padding:12px;
-  font-family:inherit;font-size:.86rem;font-weight:600;
-  cursor:pointer;outline:none;-webkit-tap-highlight-color:transparent;
+.card-icon{font-size:30px;margin-bottom:8px;display:block}
+.card-badge{
+  position:absolute;top:12px;right:12px;
+  background:linear-gradient(135deg,var(--gold),#e07b00);
+  color:#1a0a00;font-size:10px;font-weight:800;
+  padding:3px 8px;border-radius:10px;letter-spacing:.02em
+}
+.card h3{font-size:15px;font-weight:700;margin-bottom:5px;line-height:1.25}
+.card p{font-size:13px;color:var(--muted);line-height:1.5}
+.card-dist{
+  display:inline-flex;align-items:center;gap:4px;
+  background:rgba(14,165,233,0.15);border:1px solid rgba(14,165,233,0.25);
+  color:var(--accent);font-size:11px;font-weight:600;
+  padding:3px 9px;border-radius:10px;margin:8px 0 6px
+}
+.card-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.tag{font-size:11px;padding:3px 8px;border-radius:8px;font-weight:600;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.10)}
+
+.insider{
+  background:rgba(245,158,11,0.10);border:1px solid rgba(245,158,11,0.28);
+  border-radius:12px;padding:11px 13px;margin-top:10px;
+  font-size:12px;color:rgba(245,158,11,0.95);line-height:1.5
+}
+.insider::before{content:'💡 Insider: ';font-weight:700}
+
+.maps-btn{
+  display:inline-flex;align-items:center;gap:5px;margin-top:10px;
+  background:rgba(14,165,233,0.12);border:1px solid rgba(14,165,233,0.25);
+  color:var(--accent);font-size:12px;font-weight:600;
+  padding:6px 12px;border-radius:10px;text-decoration:none;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent
 }
 
-/* ── TOAST ── */
-.toast{
-  position:fixed;left:50%;
-  bottom:calc(60px + env(safe-area-inset-bottom,20px) + 10px);
-  transform:translateX(-50%) translateY(10px);
-  background:rgba(52,211,153,.93);color:#07111f;
-  border-radius:999px;padding:9px 18px;font-size:.82rem;font-weight:700;
-  opacity:0;pointer-events:none;white-space:nowrap;z-index:99998;
-  transition:opacity .18s,transform .18s;
+.hl-num{
+  width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),#0870a8);
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:800;flex-shrink:0;margin-bottom:8px
 }
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.filter-wrap{display:flex;gap:8px;overflow-x:auto;padding:0 12px 14px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.filter-wrap::-webkit-scrollbar{display:none}
+.filter-btn{
+  display:inline-flex;align-items:center;gap:4px;white-space:nowrap;
+  background:var(--card);border:1px solid var(--border);
+  color:var(--text);font-size:13px;font-weight:500;
+  padding:7px 14px;border-radius:20px;cursor:pointer;flex-shrink:0;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  transition:all .15s
+}
+.filter-btn.active{background:rgba(14,165,233,0.20);border-color:var(--accent);color:var(--accent)}
+
+.calendar{padding:0 12px;display:flex;flex-direction:column;gap:8px}
+.cal-day{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.cal-head{
+  display:flex;align-items:center;gap:12px;padding:13px 16px;
+  cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none
+}
+.cal-head.arrive{border-left:3px solid var(--green)}
+.cal-head.depart{border-left:3px solid #ef4444}
+.cal-head.event-day{border-left:3px solid var(--amber)}
+.cal-date{
+  background:rgba(14,165,233,0.15);border:1px solid rgba(14,165,233,0.20);
+  border-radius:10px;padding:4px 10px;font-size:12px;font-weight:700;
+  color:var(--accent);min-width:62px;text-align:center;flex-shrink:0
+}
+.cal-info{flex:1}
+.cal-info strong{font-size:14px;display:block;line-height:1.3}
+.cal-info small{font-size:12px;color:var(--muted)}
+.cal-arrow{font-size:13px;color:var(--muted);transition:transform .2s}
+.cal-body{display:none;padding:0 16px 14px;border-top:1px solid var(--border)}
+.cal-body.open{display:block}
+.cal-body p{font-size:13px;color:var(--muted);padding-top:10px}
+
+.recurring{padding:16px 12px 0;display:flex;flex-direction:column;gap:8px}
+.rec-card{
+  background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.20);
+  border-radius:12px;padding:13px 15px;display:flex;align-items:center;gap:12px
+}
+.rec-icon{font-size:24px;flex-shrink:0}
+.rec-info strong{font-size:14px;display:block}
+.rec-info small{font-size:12px;color:var(--muted)}
+
+.age-badge{
+  display:inline-block;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.25);
+  color:var(--green);font-size:11px;font-weight:700;
+  padding:3px 9px;border-radius:10px;margin-top:7px
+}
+
+.rain-box{
+  margin:16px 12px 0;background:rgba(14,165,233,0.08);border:1px solid rgba(14,165,233,0.20);
+  border-radius:14px;padding:16px;
+}
+.rain-box h3{font-size:15px;font-weight:700;margin-bottom:8px}
+.rain-box ul{padding-left:18px}
+.rain-box li{font-size:13px;color:var(--muted);margin-bottom:5px;line-height:1.45}
+
+.dog-rule{
+  background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.20);
+  border-radius:12px;padding:14px;margin:0 12px 12px;
+}
+.dog-rule h3{font-size:14px;font-weight:700;color:var(--amber);margin-bottom:6px}
+.dog-rule p{font-size:13px;color:var(--muted);line-height:1.5}
+
+.food-grid{padding:0 12px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.food-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px}
+.food-icon{font-size:28px;margin-bottom:6px}
+.food-card h3{font-size:14px;font-weight:700;margin-bottom:4px}
+.food-card p{font-size:12px;color:var(--muted);line-height:1.45}
+
+.info-block{margin:0 12px 14px}
+.info-block h3{font-size:15px;font-weight:700;margin-bottom:8px;color:var(--accent)}
+.info-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px}
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);gap:8px}
+.info-row:last-child{border-bottom:none}
+.info-row .label{font-size:13px;color:var(--muted);flex-shrink:0}
+.info-row .val{font-size:13px;font-weight:600;text-align:right}
+
+.plan-grid{padding:0 12px;display:flex;flex-direction:column;gap:8px}
+.plan-day{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.plan-head{
+  display:flex;align-items:center;gap:10px;padding:12px 16px;
+  cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none
+}
+.plan-dot{width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0}
+.plan-dot.today{background:var(--accent);box-shadow:0 0 8px var(--accent)}
+.plan-head strong{font-size:14px;flex:1}
+.plan-arrow{font-size:12px;color:var(--muted);transition:transform .2s}
+.plan-body{display:none;padding:0 14px 12px;border-top:1px solid var(--border)}
+.plan-body.open{display:block}
+.plan-note{
+  width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--border);
+  border-radius:10px;color:var(--text);font-size:13px;font-family:inherit;
+  padding:10px 12px;margin-top:10px;resize:vertical;min-height:70px;-webkit-appearance:none
+}
+.plan-note:focus{outline:none;border-color:var(--accent)}
+
+.footer{text-align:center;padding:32px 20px 48px;color:var(--muted);font-size:12px}
+.footer strong{color:var(--accent)}
 </style>
 </head>
 <body>
 
-<!-- ════════════════════════════════════════
-     BOTTOM NAV — pure <a href="#"> links
-     Zero JavaScript. Always works on iOS.
-════════════════════════════════════════ -->
-<nav class="nav">
-  <a href="#info"><span class="nv">📍</span>Info</a>
-  <a href="#ziele"><span class="nv">🗺️</span>Ziele</a>
-  <a href="#plan"><span class="nv">📅</span>Plan</a>
-  <a href="#teilen"><span class="nv">📤</span>Teilen</a>
+<!-- STICKY NAV -->
+<nav class="nav" id="top">
+  <div class="nav-title">🏖️ Dormio · Zeeland 2026 · 27.07 – 10.08</div>
+  <div class="nav-chips">
+    <a href="#highlights">⭐ Highlights</a>
+    <a href="#orte">📍 Orte</a>
+    <a href="#termine">📅 Termine</a>
+    <a href="#kinder">👶 Kinder</a>
+    <a href="#hund">🐶 Hund</a>
+    <a href="#kulinarik">🍽️ Kulinarik</a>
+    <a href="#infos">ℹ️ Infos</a>
+    <a href="#plan">📋 Plan</a>
+  </div>
 </nav>
 
-<div class="toast" id="toast"></div>
-
-<!-- MODAL -->
-<div class="modal hide" id="modal">
-  <div class="sheet">
-    <div class="stitle" id="mtitle">Einplanen</div>
-    <div class="dgrid" id="mgrid"></div>
-    <button type="button" class="scls" id="mcls">Abbrechen</button>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════════
-     HERO
-════════════════════════════════════════ -->
+<!-- HERO -->
 <div class="hero">
-  <div style="font-size:.71rem;color:var(--m);margin-bottom:4px">📍 Nieuwvliet-Bad · Zeeland · NL</div>
-  <h1>🏖️ Dormio Urlaub 2026</h1>
-  <div class="hero-sub">Mo 27. Juli – Mo 10. August · 15 Tage</div>
-  <div class="chips">
-    <span class="chip">🐶 Hundestrand</span>
-    <span class="chip">🧒 Kinder</span>
-    <span class="chip">🌊 Nordseeküste</span>
-    <span class="chip">🇧🇪 Nahe Belgien</span>
+  <span class="hero-wave">🌊</span>
+  <h1>Dormio Strand<br><span>Resort Zeeland</span></h1>
+  <p class="hero-sub">Nieuwvliet-Bad · Zeeland · Niederlande</p>
+  <div class="hero-dates">📅 27. Juli – 10. August 2026 · 14 Nächte</div>
+  <div class="hero-chips">
+    <span class="hero-chip">🐶 Hundestrand</span>
+    <span class="hero-chip">🧒 Familien</span>
+    <span class="hero-chip">🌊 Nordseeküste</span>
+    <span class="hero-chip">🇧🇪 Nahe Belgien</span>
   </div>
 </div>
 
-<!-- ════════════════════════════════════════
-     INFO
-════════════════════════════════════════ -->
-<section class="sec" id="info">
-  <div class="sh"><h2>📍 Info &amp; Destination</h2></div>
-  <div class="w">
+<!-- HIGHLIGHTS -->
+<section class="section" id="highlights">
+  <div class="section-header">
+    <h2>⭐ Top Highlights</h2>
+    <p>Die 8 Must-Sees eures Zeeland-Urlaubs</p>
+  </div>
+  <div class="cards">
+
     <div class="card">
-      <div class="ct">📋 Buchung</div>
-      <div class="row"><span class="ri">🏠</span><div><b>Dormio Strand Resort</b><small>Baanstpoldersedijk 4, 4504 PR Nieuwvliet · Reserv. 36801</small><a class="ml" href="https://maps.apple.com/?q=Dormio+Strand+Resort+Nieuwvliet" target="_blank">📍 In Maps öffnen</a></div></div>
-      <div class="row"><span class="ri">📆</span><div><b>Check-in Mo 27.07 ab 16:00</b><small>Check-out Mo 10.08 bis 10:30 Uhr</small></div></div>
-      <div class="row"><span class="ri">📞</span><div><b>Rezeption</b><small>+31 117 37 08 00</small></div></div>
+      <div class="hl-num">1</div>
+      <div class="card-badge">⭐ Top</div>
+      <span class="card-icon">🌊</span>
+      <h3>Nieuwvliet-Bad Strand</h3>
+      <p>Der eigene Strand vor der Haustür – breiter Nordseestrand direkt am Resort.</p>
     </div>
+
     <div class="card">
-      <div class="ct">🐶 Hund am Strand</div>
-      <div class="row"><span class="ri">☀️</span><div><b>10–18 Uhr → Leinenpflicht</b><small>Hauptstrand tagsüber</small></div></div>
-      <div class="row"><span class="ri">🌅</span><div><b>Vor 10 &amp; nach 18 Uhr frei</b><small>Freilauf – beste Zeiten!</small></div></div>
-      <div class="row"><span class="ri">🐾</span><div><b>Hundestrand</b><small>Ca. 500 m östlich der Hauptkasse</small></div></div>
+      <div class="hl-num">2</div>
+      <div class="card-badge">⭐ Top</div>
+      <span class="card-icon">🏰</span>
+      <h3>Brügge</h3>
+      <p>Belgiens schönste Stadt, nur 40 Min. entfernt – UNESCO-Weltkulturerbe.</p>
     </div>
+
     <div class="card">
-      <div class="ct">📅 Feste Termine</div>
-      <div class="row"><span class="ri">🌙</span><div><b>Sluis Abendmarkt</b><small>Mi 29.07 &amp; Mi 05.08 · ab 18 Uhr · 20 Min.</small></div></div>
-      <div class="row"><span class="ri">🛒</span><div><b>Cadzand Wochenmarkt</b><small>Do 30.07 &amp; Do 06.08 · 9–13 Uhr · 10 Min.</small></div></div>
-      <div class="row"><span class="ri">🐟</span><div><b>Breskens Hafenmarkt</b><small>Fr 31.07 &amp; Fr 07.08 · 9–13 Uhr · 15 Min.</small></div></div>
-      <div class="row"><span class="ri">🦭</span><div><b>Robbensafari Breskens</b><small>Täglich Mai–Sept · Buchung empfohlen!</small></div></div>
+      <div class="hl-num">3</div>
+      <span class="card-icon">🦭</span>
+      <h3>Robbensafari Breskens</h3>
+      <p>Seehunde in freier Wildbahn beobachten – einmalig für die ganze Familie.</p>
     </div>
+
     <div class="card">
-      <div class="ct">🚗 Entfernungen</div>
-      <div class="row"><span class="ri">📍</span><div><b>Cadzand-Bad</b><small>10 Min. · 8 km</small></div></div>
-      <div class="row"><span class="ri">📍</span><div><b>Groede / Driftkarts</b><small>10 Min. · 7 km</small></div></div>
-      <div class="row"><span class="ri">📍</span><div><b>Breskens (Hafen)</b><small>15 Min. · 12 km</small></div></div>
-      <div class="row"><span class="ri">📍</span><div><b>Sluis (Altstadt)</b><small>20 Min. · 15 km</small></div></div>
-      <div class="row"><span class="ri">📍</span><div><b>Knokke-Heist 🇧🇪</b><small>30 Min. · 22 km</small></div></div>
-      <div class="row"><span class="ri">📍</span><div><b>Brügge 🇧🇪</b><small>40 Min. · 32 km</small></div></div>
-      <div class="row"><span class="ri">📍</span><div><b>Vlissingen</b><small>40 Min. · 35 km</small></div></div>
-      <div class="row"><span class="ri">📍</span><div><b>Middelburg</b><small>45 Min. · 38 km</small></div></div>
-      <div class="row"><span class="ri">📍</span><div><b>Neeltje Jans</b><small>50 Min. · 55 km</small></div></div>
-      <div class="row"><span class="ri">📍</span><div><b>Gent 🇧🇪</b><small>60 Min. · 65 km</small></div></div>
+      <div class="hl-num">4</div>
+      <span class="card-icon">🌿</span>
+      <h3>Zwin Naturpark</h3>
+      <p>Wo Nordsee auf Wildnis trifft – seltene Vogelarten und weite Salzwiesen.</p>
     </div>
+
     <div class="card">
-      <div class="ct">🍽️ Essen</div>
-      <div class="row"><span class="ri">🐚</span><div><b>Zeeland-Muscheln</b><small>Ab Juli Saison! Breskens &amp; Sluis</small></div></div>
-      <div class="row"><span class="ri">🐟</span><div><b>Frischer Fisch &amp; Krabben</b><small>Hafenrestaurants Breskens</small></div></div>
-      <div class="row"><span class="ri">🍟</span><div><b>Belgische Pommes &amp; Schokolade</b><small>Überall in der Grenzregion</small></div></div>
-      <div class="row"><span class="ri">🧇</span><div><b>Stroopwafels &amp; Hagelslag</b><small>Jeder Albert Heijn</small></div></div>
+      <div class="hl-num">5</div>
+      <span class="card-icon">💧</span>
+      <h3>Waterland Neeltje Jans</h3>
+      <p>Deltawerke hautnah erleben plus spektakulärer Wasserpark für Kinder.</p>
     </div>
+
     <div class="card">
-      <div class="ct">🆘 Notfall</div>
-      <div class="row"><span class="ri">🚑</span><div><b>Notruf NL &amp; BE</b><small>112</small></div></div>
-      <div class="row"><span class="ri">🏥</span><div><b>Hausarzt-Notdienst NL</b><small>0900-1010 (nach 17 Uhr)</small></div></div>
+      <div class="hl-num">6</div>
+      <span class="card-icon">🌙</span>
+      <h3>Sluis Abendmarkt</h3>
+      <p>Mittelalterliche Altstadt bei Nacht – mittwochs ab 18 Uhr zauberhaft.</p>
+    </div>
+
+    <div class="card">
+      <div class="hl-num">7</div>
+      <span class="card-icon">🐟</span>
+      <h3>Breskens Hafen</h3>
+      <p>Frischer Fisch direkt vom Boot – Muscheln und Krabben am Freitagsmarkt.</p>
+    </div>
+
+    <div class="card">
+      <div class="hl-num">8</div>
+      <span class="card-icon">🚲</span>
+      <h3>Küstenradweg</h3>
+      <p>Pedalrittour entlang der Nordsee – flaches Land, Meereswind, Freiheit.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ORTE -->
+<section class="section" id="orte">
+  <div class="section-header">
+    <h2>📍 Orte &amp; Ausflüge</h2>
+    <p>10 Ziele in der Umgebung mit Insider-Tipps</p>
+  </div>
+
+  <div class="filter-wrap">
+    <button type="button" class="filter-btn active" data-filter="alle">Alle</button>
+    <button type="button" class="filter-btn" data-filter="strand">🌊 Strand</button>
+    <button type="button" class="filter-btn" data-filter="stadt">🏰 Stadt</button>
+    <button type="button" class="filter-btn" data-filter="natur">🌿 Natur</button>
+    <button type="button" class="filter-btn" data-filter="kids">👶 Kinder</button>
+    <button type="button" class="filter-btn" data-filter="regen">🌧️ Regen</button>
+  </div>
+
+  <div class="cards single" id="orte-cards">
+
+    <div class="card" data-tags="strand kids">
+      <span class="card-icon">🌊</span>
+      <h3>Cadzand-Bad</h3>
+      <span class="card-dist">🚗 10 Min · 8 km</span>
+      <p>Lebhafterer Strand mit Strandrestaurants und breitem Sandstreifen. Schöner Bummel durch das Seebad – Boutiquen und Eiscafés laden ein. Abends gute Fischrestaurants direkt am Wasser.</p>
+      <div class="insider">Früh morgens ist der Strand noch leer – perfekt für einen Spaziergang im Morgennebel.</div>
+      <div class="card-tags">
+        <span class="tag">🌊 Strand</span><span class="tag">👶 Kids</span>
+      </div>
+      <a class="maps-btn" href="https://maps.apple.com/?q=Cadzand-Bad,Netherlands" target="_blank">📍 Maps</a>
+    </div>
+
+    <div class="card" data-tags="stadt">
+      <span class="card-icon">🏰</span>
+      <h3>Sluis</h3>
+      <span class="card-dist">🚗 20 Min · 15 km</span>
+      <p>Kleinste Stadt der Niederlande mit wunderschön erhaltenen Stadtmauern. Windmühle, Boutiquen und Käseläden prägen das Ortsbild. Mittwochabend findet der beliebte Abendmarkt statt.</p>
+      <div class="insider">Die Windmühle ist von innen begehbar – wunderbare Aussicht über das flache Zeeland.</div>
+      <div class="card-tags">
+        <span class="tag">🏰 Stadt</span><span class="tag">🧀 Käse</span>
+      </div>
+      <a class="maps-btn" href="https://maps.apple.com/?q=Sluis,Netherlands" target="_blank">📍 Maps</a>
+    </div>
+
+    <div class="card" data-tags="natur essen">
+      <span class="card-icon">🐟</span>
+      <h3>Breskens</h3>
+      <span class="card-dist">🚗 15 Min · 12 km</span>
+      <p>Kleines Hafenstädtchen mit echten Fischerbooten – der Alltag am Meer ist hier noch spürbar. Frische Muscheln und Nordseekrabben direkt am Kai. Fähre nach Vlissingen ist eine schöne Bootsfahrt.</p>
+      <div class="insider">Freitagsmarkt (9–13 Uhr) für den besten und frischesten Fisch der ganzen Region.</div>
+      <div class="card-tags">
+        <span class="tag">🌿 Natur</span><span class="tag">🍽️ Essen</span><span class="tag">⛵ Fähre</span>
+      </div>
+      <a class="maps-btn" href="https://maps.apple.com/?q=Breskens+harbor,Netherlands" target="_blank">📍 Maps</a>
+    </div>
+
+    <div class="card" data-tags="stadt kids regen">
+      <span class="card-icon">🏰</span>
+      <h3>Brügge</h3>
+      <span class="card-dist">🚗 40 Min · 32 km</span>
+      <p>UNESCO-Weltkulturerbe mit traumhaften Grachten, gotischer Architektur und weltberühmter Schokolade. Ein ganzer Tag ist das absolute Minimum für diese Stadt. Grachtenrundfahrten, Brauereien und Märkte.</p>
+      <div class="insider">Groeningemuseum für Flämische Primitive – absolute Weltklasse-Kunstwerke, kaum Warteschlangen morgens.</div>
+      <div class="card-tags">
+        <span class="tag">🏰 Stadt</span><span class="tag">👶 Kids</span><span class="tag">🌧️ Regen</span>
+      </div>
+      <a class="maps-btn" href="https://maps.apple.com/?q=Bruges,Belgium" target="_blank">📍 Maps</a>
+    </div>
+
+    <div class="card" data-tags="strand stadt">
+      <span class="card-icon">🌊</span>
+      <h3>Knokke-Heist</h3>
+      <span class="card-dist">🚗 30 Min · 22 km</span>
+      <p>Schickstes belgisches Seebad mit Luxusboutiquen und langen Sandstränden. Gehobenes Restaurantniveau – perfekt für einen eleganten Abend. Lebhafter Ortskern mit Galerien und Cafés.</p>
+      <div class="insider">Naturschutzgebiet "Het Zwin" liegt direkt nebenan – Übergang zwischen Belgien und Niederlanden.</div>
+      <div class="card-tags">
+        <span class="tag">🌊 Strand</span><span class="tag">🏰 Stadt</span>
+      </div>
+      <a class="maps-btn" href="https://maps.apple.com/?q=Knokke-Heist,Belgium" target="_blank">📍 Maps</a>
+    </div>
+
+    <div class="card" data-tags="strand">
+      <span class="card-icon">⛵</span>
+      <h3>Vlissingen</h3>
+      <span class="card-dist">🚗 40 Min · 35 km</span>
+      <p>Fähre von Breskens oder auf der Autobahn erreichbar. Schöne Boulevard-Promenade direkt am Meer – ideal für einen Strandspaziergang. Historische Festungsanlagen prägen das Stadtbild.</p>
+      <div class="insider">Von der Festung aus sieht man die riesigen Containerschiffe in der Westerschelde – spektakulär!</div>
+      <div class="card-tags">
+        <span class="tag">🌊 Strand</span><span class="tag">⛵ Boot</span>
+      </div>
+      <a class="maps-btn" href="https://maps.apple.com/?q=Vlissingen,Netherlands" target="_blank">📍 Maps</a>
+    </div>
+
+    <div class="card" data-tags="stadt kids regen">
+      <span class="card-icon">🏛️</span>
+      <h3>Middelburg</h3>
+      <span class="card-dist">🚗 45 Min · 38 km</span>
+      <p>Historische Hauptstadt Zeelands mit prächtiger Abtei und Rathausturm. Zeeuws Museum mit lebendiger regionaler Geschichte. Dienstags und samstags findet der große Wochenmarkt statt.</p>
+      <div class="insider">Turmbesteigung der Abtei für die beste Aussicht über ganz Zeeland – absolut empfehlenswert.</div>
+      <div class="card-tags">
+        <span class="tag">🏰 Stadt</span><span class="tag">👶 Kids</span><span class="tag">🌧️ Regen</span>
+      </div>
+      <a class="maps-btn" href="https://maps.apple.com/?q=Middelburg,Netherlands" target="_blank">📍 Maps</a>
+    </div>
+
+    <div class="card" data-tags="kids natur">
+      <span class="card-icon">💧</span>
+      <h3>Neeltje Jans</h3>
+      <span class="card-dist">🚗 50 Min · 55 km</span>
+      <p>Künstliche Insel im Herzen der Deltawerke – Ingenieurskunst auf höchstem Niveau. Riesenrutschenpark und Robbenstation zum Füttern. Für Kinder ist das ein ganzer Tag volles Programm.</p>
+      <div class="insider">Deltawerke-Führung separat buchen – lohnt sich sehr und ist schnell ausverkauft.</div>
+      <div class="card-tags">
+        <span class="tag">👶 Kids</span><span class="tag">🌿 Natur</span>
+      </div>
+      <a class="maps-btn" href="https://maps.apple.com/?q=Waterland+Neeltje+Jans,Netherlands" target="_blank">📍 Maps</a>
+    </div>
+
+    <div class="card" data-tags="kids natur">
+      <span class="card-icon">🌿</span>
+      <h3>Groede</h3>
+      <span class="card-dist">🚗 10 Min · 7 km</span>
+      <p>Winziges idyllisches Dorf mit malerischer Backsteinkirche und Dorfplatz. Driftkartbahn und Spielpark für Kinder direkt vor Ort. Perfekte entspannte Fahrradpause mit Kindern.</p>
+      <div class="insider">"De Groede" Restaurant für günstige und authentische niederländische Hausmannskost.</div>
+      <div class="card-tags">
+        <span class="tag">👶 Kids</span><span class="tag">🚲 Rad</span>
+      </div>
+      <a class="maps-btn" href="https://maps.apple.com/?q=Groede,Netherlands" target="_blank">📍 Maps</a>
+    </div>
+
+    <div class="card" data-tags="stadt regen">
+      <span class="card-icon">🎨</span>
+      <h3>Gent</h3>
+      <span class="card-dist">🚗 60 Min · 65 km</span>
+      <p>Flämisches Juwel mit dem imposanten Gravensteen-Burgmuseum und bunten Grachtenhäusern am Graslei. Tolle Gastronomie und lebhaftes Nachtleben. Für einen langen Tagesausflug einplanen.</p>
+      <div class="insider">Gratis-Grachtenrundfahrt am frühen Abend – Guides zeigen die besten versteckten Ecken der Stadt.</div>
+      <div class="card-tags">
+        <span class="tag">🏰 Stadt</span><span class="tag">🌧️ Regen</span>
+      </div>
+      <a class="maps-btn" href="https://maps.apple.com/?q=Ghent,Belgium" target="_blank">📍 Maps</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- TERMINE -->
+<section class="section" id="termine">
+  <div class="section-header">
+    <h2>📅 Termine &amp; Events</h2>
+    <p>Kalender 27. Juli – 10. August 2026</p>
+  </div>
+
+  <div class="calendar">
+
+    <div class="cal-day">
+      <div class="cal-head arrive" data-cal="0">
+        <div class="cal-date">Mo 27.07</div>
+        <div class="cal-info">
+          <strong>🏠 Anreise &amp; Ankunft</strong>
+          <small>Check-in ab 16:00 Uhr</small>
+        </div>
+        <span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-body" id="cal-0">
+        <p>Ankunft am Resort ab 16:00 Uhr. Reservierung Nr. 36801. Resort-Tel: +31 117 37 08 00. Erster Abend: kurzer Spaziergang zum Strand, Abendessen im Resort oder Supermarkt. Einleben und entspannen!</p>
+      </div>
+    </div>
+
+    <div class="cal-day">
+      <div class="cal-head" data-cal="1">
+        <div class="cal-date">Di 28.07</div>
+        <div class="cal-info">
+          <strong>🌊 Erster Strandtag</strong>
+          <small>Den Strand entdecken</small>
+        </div>
+        <span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-body" id="cal-1">
+        <p>Erster richtiger Strandtag – Nieuwvliet-Bad kennenlernen. Sandburg bauen, Wellen genießen, Strandkörbe erkunden. Abends früh ins Bett nach der Anreise.</p>
+      </div>
+    </div>
+
+    <div class="cal-day">
+      <div class="cal-head event-day" data-cal="2">
+        <div class="cal-date">Mi 29.07</div>
+        <div class="cal-info">
+          <strong>🌙 Sluis Abendmarkt</strong>
+          <small>Ab 18:00 Uhr · 20 Min. entfernt</small>
+        </div>
+        <span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-body" id="cal-2">
+        <p>Sluis Abendmarkt ab 18 Uhr – mittelalterliche Kulisse, Marktstände, Straßenmusik. Tagsüber Strand oder Cadzand-Bad erkunden. Abendmarkt ist einer der schönsten in ganz Zeeland.</p>
+      </div>
+    </div>
+
+    <div class="cal-day">
+      <div class="cal-head event-day" data-cal="3">
+        <div class="cal-date">Do 30.07</div>
+        <div class="cal-info">
+          <strong>🛒 Cadzand Wochenmarkt</strong>
+          <small>9–13 Uhr · 10 Min. entfernt</small>
+        </div>
+        <span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-body" id="cal-3">
+        <p>Cadzand-Bad Wochenmarkt am Morgen – frische Produkte, lokale Spezialitäten, Blumen. Perfekt für das Frühstückseinkaufen. Nachmittag: Strand in Cadzand oder zurück zum Dormio-Strand.</p>
+      </div>
+    </div>
+
+    <div class="cal-day">
+      <div class="cal-head event-day" data-cal="4">
+        <div class="cal-date">Fr 31.07</div>
+        <div class="cal-info">
+          <strong>🐟 Breskens Hafenmarkt</strong>
+          <small>9–13 Uhr · 15 Min. entfernt</small>
+        </div>
+        <span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-body" id="cal-4">
+        <p>Breskens Freitagsmarkt für den frischesten Fisch – Muscheln, Krabben, Hering. Hafenspaziergang danach. Nachmittag: Fähre nach Vlissingen oder Rückkehr zum Strand. Abend: frisch gekochter Fisch.</p>
+      </div>
+    </div>
+
+    <div class="cal-day">
+      <div class="cal-head" data-cal="5">
+        <div class="cal-date">Sa 01.08</div>
+        <div class="cal-info">
+          <strong>🏰 Brügge Tagesausflug</strong>
+          <small>40 Min. · Ganzer Tag empfohlen</small>
+        </div>
+        <span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-body" id="cal-5">
+        <p>Brügge – ein ganzer Tag für die schönste Stadt Belgiens. Grachtenfahrt, Schokoladenläden, Altstadt. Groeningemuseum für Flämische Primitive. Waffeln zum Mittagessen nicht vergessen!</p>
+      </div>
+    </div>
+
+    <div class="cal-day">
+      <div class="cal-head" data-cal="6">
+        <div class="cal-date">So 02.08</div>
+        <div class="cal-info">
+          <strong>🦭 Robbensafari Breskens</strong>
+          <small>Täglich buchbar · 15 Min.</small>
+        </div>
+        <span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-body" id="cal-6">
+        <p>Robbensafari – Seehunde in freier Wildbahn. Frühzeitig buchen! Nachmittag: entspannter Strandtag am Dormio-Strand. Abend: Essen im Resort oder Cadzand-Bad.</p>
+      </div>
+    </div>
+
+    <div class="cal-day">
+      <div class="cal-head" data-cal="7">
+        <div class="cal-date">Mo 03.08</div>
+        <div class="cal-info">
+          <strong>🌿 Zwin Naturpark</strong>
+          <small>Knokke · 30 Min. entfernt</small>
+        </div>
+        <span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-body" id="cal-7">
+        <p>Zwin Naturpark bei Knokke – Salzwiesen, seltene Vögel, Meeresblick. Anschließend kurzer Bummel durch Knokke-Heist. Strandspaziergang am belgischen Nordseeküstenstreifen.</p>
+      </div>
+    </div>
+
+    <div class="cal-day">
+      <div class="cal-head" data-cal="8">
+        <div class="cal-date">Di 04.08</div>
+        <div class="cal-info">
+          <strong>🚲 Küstenradtour</strong>
+          <small>Entlang der Nordsee</small>
+        </div>
+        <span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-body" id="cal-8">
+        <p>Fahrräder ausleihen und den flachen Küstenradweg erkunden – Richtung Cadzand oder Breskens. Zeeland ist das Paradies für Radfahrer: kein Hügel, Meeresluft, weite Dünenlandschaft.</p>
+      </div>
+    </div>
+
+    <div class="cal-day">
+      <div class="cal-head event-day" data-cal="9">
+        <div class="cal-date">Mi 05.08</div>
+        <div class="cal-info">
+          <strong>🌙 Sluis Abendmarkt</strong>
+          <small>Ab 18:00 Uhr · 20 Min. entfernt</small>
+        </div>
+        <span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-body" id="cal-9">
+        <p>Zweite Runde Sluis Abendmarkt – oder tagsüber Sluis besuchen: Windmühle, Stadtmauern, Käseläden. Abend dann mit dem Marktbesuch abrunden. Ein schöner Wiederbesuch!</p>
+      </div>
+    </div>
+
+    <div class="cal-day">
+      <div class="cal-head event-day" data-cal="10">
+        <div class="cal-date">Do 06.08</div>
+        <div class="cal-info">
+          <strong>🛒 Cadzand Wochenmarkt</strong>
+          <small>9–13 Uhr · 10 Min. entfernt</small>
+        </div>
+        <span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-body" id="cal-10">
+        <p>Cadzand Wochenmarkt oder Middelburg besuchen. Nachmittag: letzter großer Strandtag vor dem Wochenende planen. Abends essen gehen in Cadzand oder Breskens.</p>
+      </div>
+    </div>
+
+    <div class="cal-day">
+      <div class="cal-head event-day" data-cal="11">
+        <div class="cal-date">Fr 07.08</div>
+        <div class="cal-info">
+          <strong>🐟 Breskens Hafenmarkt</strong>
+          <small>9–13 Uhr · 15 Min. entfernt</small>
+        </div>
+        <span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-body" id="cal-11">
+        <p>Letzter Freitagsmarkt Breskens – noch einmal frischen Fisch für das Wochenende kaufen. Nachmittag: Gent Tagesausflug oder Neeltje Jans als letztes großes Highlight.</p>
+      </div>
+    </div>
+
+    <div class="cal-day">
+      <div class="cal-head" data-cal="12">
+        <div class="cal-date">Sa 08.08</div>
+        <div class="cal-info">
+          <strong>💧 Waterland Neeltje Jans</strong>
+          <small>50 Min. · Ganzer Kindertag</small>
+        </div>
+        <span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-body" id="cal-12">
+        <p>Waterland Neeltje Jans – Deltawerke, Wasserpark, Robben füttern. Ein ganzer Kindertag. Abends zurück und Koffer für die Abreise beginnen. Schöner Abschluss-Höhepunkt für die Kinder.</p>
+      </div>
+    </div>
+
+    <div class="cal-day">
+      <div class="cal-head" data-cal="13">
+        <div class="cal-date">So 09.08</div>
+        <div class="cal-info">
+          <strong>🌊 Letzter Strandtag</strong>
+          <small>Alles nochmal genießen</small>
+        </div>
+        <span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-body" id="cal-13">
+        <p>Letzter voller Tag: Strand genießen, Abschiedsrunde im Resort, Abendessen an einem Lieblingsplatz. Koffer packen für morgen früh. Die letzten Muscheln und Krabben am Abend genießen.</p>
+      </div>
+    </div>
+
+    <div class="cal-day">
+      <div class="cal-head depart" data-cal="14">
+        <div class="cal-date">Mo 10.08</div>
+        <div class="cal-info">
+          <strong>🚗 Abreise</strong>
+          <small>Check-out bis 10:30 Uhr</small>
+        </div>
+        <span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-body" id="cal-14">
+        <p>Abreise bis spätestens 10:30 Uhr. Schlüssel abgeben, letzte Kontrolle der Unterkunft. Letzten Blick auf die Nordsee genießen. Bis zum nächsten Mal, Zeeland! 🌊</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="recurring">
+    <div class="section-header" style="margin:16px 0 0;padding-top:16px">
+      <h2>🔄 Immer verfügbar</h2>
+    </div>
+    <div class="rec-card">
+      <span class="rec-icon">🦭</span>
+      <div class="rec-info">
+        <strong>Robbensafari Breskens</strong>
+        <small>Täglich Mai–September · Buchung empfohlen</small>
+      </div>
+    </div>
+    <div class="rec-card">
+      <span class="rec-icon">🚗</span>
+      <div class="rec-info">
+        <strong>Groede Spielpark &amp; Driftkarts</strong>
+        <small>Täglich April–September · 10 Min. entfernt</small>
+      </div>
+    </div>
+    <div class="rec-card">
+      <span class="rec-icon">🌿</span>
+      <div class="rec-info">
+        <strong>Zwin Naturpark</strong>
+        <small>Täglich 9–18 Uhr · Bei Knokke</small>
+      </div>
+    </div>
+    <div class="rec-card">
+      <span class="rec-icon">💧</span>
+      <div class="rec-info">
+        <strong>Waterland Neeltje Jans</strong>
+        <small>Täglich · Deltawerke + Wasserpark</small>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ════════════════════════════════════════
-     ZIELE
-════════════════════════════════════════ -->
-<section class="sec" id="ziele">
-  <div class="sh"><h2>🗺️ Events &amp; Ausflüge</h2><p>Tippe auf ➕ um etwas in den Kalender einzuplanen</p></div>
-  <div class="fbar">
-    <button type="button" class="fb on" data-f="alle">Alle</button>
-    <button type="button" class="fb" data-f="termin">📅 Termine</button>
-    <button type="button" class="fb" data-f="kids">👶 Kids</button>
-    <button type="button" class="fb" data-f="strand">🌊 Strand</button>
-    <button type="button" class="fb" data-f="stadt">🏛️ Stadt</button>
-    <button type="button" class="fb" data-f="natur">🌿 Natur</button>
-    <button type="button" class="fb" data-f="regen">🌧️ Regen</button>
+<!-- KINDER -->
+<section class="section" id="kinder">
+  <div class="section-header">
+    <h2>👶 Kinder-Guide</h2>
+    <p>Zeeland ist ein Paradies für Kinder – flacher Strand, ruhige See und Abenteuer überall.</p>
   </div>
-  <!-- items rendered by JS -->
-  <div id="ilist"></div>
+
+  <div class="cards">
+
+    <div class="card">
+      <div class="card-badge">⭐ Top</div>
+      <span class="card-icon">🦭</span>
+      <h3>Robbensafari</h3>
+      <p>Das Highlight für jedes Kind – echte Seehunde in freier Wildbahn beobachten. Unvergesslich!</p>
+      <span class="age-badge">👶 Alle Altersgruppen</span>
+    </div>
+
+    <div class="card">
+      <span class="card-icon">💧</span>
+      <h3>Waterland Neeltje Jans</h3>
+      <p>Wasserrutschen, Robben füttern und die Deltawerke hautnah erleben – ein voller Kindertag.</p>
+      <span class="age-badge">🧒 Ab 4 Jahren</span>
+    </div>
+
+    <div class="card">
+      <span class="card-icon">🚗</span>
+      <h3>Groede Driftkarts</h3>
+      <p>Driftkarts, Trampolin und Spielplatz direkt in Groede – kurzer Abstecher, großer Spaß.</p>
+      <span class="age-badge">🧒 Ab 5 Jahren</span>
+    </div>
+
+    <div class="card">
+      <span class="card-icon">🐦</span>
+      <h3>Zwin Vogelpark</h3>
+      <p>Naturerlebnis mit seltenen Vögeln in den Salzwiesen – Storch, Löffler und Wattvögel.</p>
+      <span class="age-badge">👶 Alle Altersgruppen</span>
+    </div>
+
+    <div class="card">
+      <span class="card-icon">🎬</span>
+      <h3>Kinepolis Brügge</h3>
+      <p>Regentag-Notfallplan: Kino in Brügge oder Bioscoop Terneuzen für aktuelle Filme.</p>
+      <span class="age-badge">👶 Alle Altersgruppen</span>
+    </div>
+
+    <div class="card">
+      <span class="card-icon">🏖️</span>
+      <h3>Sandburg-Tag</h3>
+      <p>Immer geht's zum Strand – Sandburg bauen, Wellen zählen, Muscheln sammeln, Ebbe erkunden.</p>
+      <span class="age-badge">👶 Alle Altersgruppen</span>
+    </div>
+
+  </div>
+
+  <div class="rain-box">
+    <h3>🌧️ Regentag-Tipps</h3>
+    <ul>
+      <li>🏰 Brügge – Grachten, Museen, Schokoladenläden – ein ganzer Tag drinnen möglich</li>
+      <li>🏛️ Middelburg – Zeeuws Museum, Abtei, überdachter Markt</li>
+      <li>🎬 Kinepolis Brügge oder Bioscoop Terneuzen – aktuelle Filme</li>
+      <li>🎨 Gravensteen Burg in Gent – mittelalterliches Burgmuseum</li>
+      <li>🍫 Schokoladen-Workshop in Brügge (vorher buchen!)</li>
+      <li>🛍️ Einkaufszentrum in Middelburg</li>
+    </ul>
+  </div>
 </section>
 
-<!-- ════════════════════════════════════════
-     PLAN
-════════════════════════════════════════ -->
-<section class="sec" id="plan">
-  <div class="sh"><h2>📅 Urlaubskalender</h2><p>Tag antippen zum Öffnen · Notizen eintragen</p></div>
-  <div class="w">
-    <div id="calwrap"></div>
+<!-- HUND -->
+<section class="section" id="hund">
+  <div class="section-header">
+    <h2>🐶 Mit Hund</h2>
+    <p>Zeeland ist hundefreundlich – mit ein paar Regeln zum Wohlfühlen für alle.</p>
+  </div>
+
+  <div class="dog-rule">
+    <h3>🏖️ Strandregeln Nieuwvliet-Bad</h3>
+    <p>Hauptstrand: Leinenpflicht täglich 10–18 Uhr. Morgens und abends sind Hunde frei. Der offizielle Hundestrand liegt ca. 500 m östlich der Hauptkasse – dort ganztags ohne Leine möglich.</p>
+  </div>
+
+  <div class="cards single" style="padding-top:4px">
+
+    <div class="card">
+      <span class="card-icon">🌊</span>
+      <h3>Cadzand-Bad Strand</h3>
+      <p>Hundestrandabschnitt vorhanden – morgens und abends frei laufen. Gutes Café mit Hundefreundlichkeit direkt am Strand.</p>
+      <div class="card-tags"><span class="tag">🐶 Hund</span><span class="tag">🌊 Strand</span></div>
+    </div>
+
+    <div class="card">
+      <span class="card-icon">🌿</span>
+      <h3>Zwin Naturpark</h3>
+      <p>Hunde an der Leine erlaubt auf den Wanderwegen. Weite Salzwiesen, Meeresluft – Hunde lieben diesen Ausflug besonders.</p>
+      <div class="card-tags"><span class="tag">🐶 Hund</span><span class="tag">🌿 Natur</span></div>
+    </div>
+
+    <div class="card">
+      <span class="card-icon">🚲</span>
+      <h3>Küstenradweg</h3>
+      <p>Perfekte Route für Hunde: flach, Meeresluft, kaum Verkehr. Hund kann neben dem Fahrrad laufen oder im Fahrradanhänger mitfahren.</p>
+      <div class="card-tags"><span class="tag">🐶 Hund</span><span class="tag">🚲 Rad</span></div>
+    </div>
+
+    <div class="card">
+      <span class="card-icon">🐟</span>
+      <h3>Breskens Hafen</h3>
+      <p>Hafenspaziergang mit Hund problemlos möglich – viele andere Hundebesitzer treffen sich hier. Fischgeruch macht Hunde besonders neugierig!</p>
+      <div class="card-tags"><span class="tag">🐶 Hund</span><span class="tag">⛵ Hafen</span></div>
+    </div>
+
+  </div>
+
+  <div class="insider" style="margin:14px 12px 0">Früh morgens ist der Strand für euren Hund das reinste Paradies – kaum Menschen, frische Meeresluft, und euer Hund kann frei laufen und ins Wasser rennen!</div>
+
+  <div class="dog-rule" style="margin-top:14px">
+    <h3>📋 Praktische Hinweise</h3>
+    <p>• Immer frisches Wasser und Napf mitnehmen – Salz-/Meerwasser nicht trinken lassen<br>
+    • Genügend Kotbeutel einpacken (auch für belgische Ausflüge)<br>
+    • EU-Heimtierausweis / Impfpass für Ausflüge nach Belgien kontrollieren<br>
+    • Sonnenschutz für helle Nasen und Ohren – auch Hunde können Sonnenbrand bekommen<br>
+    • Tierarzt-Notruf Niederlande: 0900-1010</p>
   </div>
 </section>
 
-<!-- ════════════════════════════════════════
-     TEILEN
-════════════════════════════════════════ -->
-<section class="sec" id="teilen">
-  <div class="sh"><h2>📤 Teilen &amp; Sichern</h2></div>
-  <div class="w">
-    <div class="card">
-      <div class="ct">📤 Plan teilen</div>
-      <p style="color:var(--m);font-size:.80rem;margin-bottom:11px">Plan als Text kopieren und per WhatsApp oder iMessage schicken.</p>
-      <button type="button" class="btn btnp" id="bcopy">📋 Plan kopieren</button>
-      <button type="button" class="btn btng" id="bprev">👁️ Vorschau anzeigen</button>
-      <pre class="plan-pre" id="planpre" style="display:none"></pre>
+<!-- KULINARIK -->
+<section class="section" id="kulinarik">
+  <div class="section-header">
+    <h2>🍽️ Kulinarik</h2>
+    <p>Was man in Zeeland und Belgien unbedingt essen muss</p>
+  </div>
+
+  <div class="food-grid">
+    <div class="food-card">
+      <div class="food-icon">🐚</div>
+      <h3>Zeeland-Muscheln</h3>
+      <p>Saison beginnt im Juli! Beste Adresse: Hafenrestaurants in Breskens – frischer geht's nicht.</p>
     </div>
-    <div class="card">
-      <div class="ct">💾 Sicherung</div>
-      <p style="color:var(--m);font-size:.80rem;margin-bottom:11px">Plan als Datei sichern und auf anderen Geräten importieren.</p>
-      <button type="button" class="btn btng" id="bexp">⬇️ Sicherung speichern</button>
-      <label class="btn btng" style="cursor:pointer;display:block;text-align:center">
-        ⬆️ Sicherung importieren
-        <input type="file" id="fimp" accept=".json" style="display:none">
-      </label>
-      <button type="button" class="btn btnr" id="breset">🗑️ Plan zurücksetzen</button>
+    <div class="food-card">
+      <div class="food-icon">🦐</div>
+      <h3>Nordseekrabben</h3>
+      <p>Morgens frisch angelandet – direkt am Kai in Breskens kaufen oder essen.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-icon">🍟</div>
+      <h3>Belgische Pommes</h3>
+      <p>Inoffizielles UNESCO-Weltkulturerbe des Geschmacks – dicker, knuspriger als jede andere.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-icon">🍫</div>
+      <h3>Belgische Schokolade</h3>
+      <p>Brügge hat die beste Auswahl weltweit – Pralinés, Tafeln, Schokoladenfontänen.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-icon">🧀</div>
+      <h3>Käse aus Sluis</h3>
+      <p>Holländischer Edamer und Gouda in Spitzenqualität – direkt vom Käsehändler auf dem Markt.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-icon">🧇</div>
+      <h3>Stroopwafels &amp; Hagelslag</h3>
+      <p>Im Albert Heijn Nieuwvliet (5 Min.) – niederländische Frühstücksklassiker für zu Hause.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-icon">🍺</div>
+      <h3>Belgisches Bier</h3>
+      <p>Trappistenbiere, Gueuze, Tripel – in jedem belgischen Café eine Offenbarung.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-icon">🐟</div>
+      <h3>Haring (Holländisch)</h3>
+      <p>Frischer Salzhering mit Zwiebeln – der ultimative niederländische Streetfood-Klassiker.</p>
+    </div>
+  </div>
+
+  <div class="insider" style="margin:14px 12px 0">Märkte für Frischware: Sluis Mi-Abendmarkt, Cadzand Do 9–13 Uhr, Breskens Fr 9–13 Uhr. Albert Heijn Nieuwvliet für den täglichen Einkauf – nur 5 Min. vom Resort!</div>
+</section>
+
+<!-- INFOS -->
+<section class="section" id="infos">
+  <div class="section-header">
+    <h2>ℹ️ Buchung &amp; Infos</h2>
+    <p>Alles Wichtige auf einen Blick</p>
+  </div>
+
+  <div class="info-block">
+    <h3>🏨 Resort</h3>
+    <div class="info-box">
+      <div class="info-row"><span class="label">Name</span><span class="val">Dormio Strand Resort Nieuwvliet-Bad</span></div>
+      <div class="info-row"><span class="label">Adresse</span><span class="val">Baanstpoldersedijk 4, Nieuwvliet</span></div>
+      <div class="info-row"><span class="label">Reservierung</span><span class="val">Nr. 36801</span></div>
+      <div class="info-row"><span class="label">Telefon</span><span class="val"><a href="tel:+31117370800" style="color:var(--accent)">+31 117 37 08 00</a></span></div>
+      <div class="info-row"><span class="label">Check-in</span><span class="val">Mo 27.07 ab 16:00 Uhr</span></div>
+      <div class="info-row"><span class="label">Check-out</span><span class="val">Mo 10.08 bis 10:30 Uhr</span></div>
+    </div>
+  </div>
+
+  <div class="info-block">
+    <h3>🚗 Entfernungstabelle</h3>
+    <div class="info-box">
+      <div class="info-row"><span class="label">🌿 Groede</span><span class="val">7 km · 10 Min.</span></div>
+      <div class="info-row"><span class="label">🌊 Cadzand-Bad</span><span class="val">8 km · 10 Min.</span></div>
+      <div class="info-row"><span class="label">🐟 Breskens</span><span class="val">12 km · 15 Min.</span></div>
+      <div class="info-row"><span class="label">🏰 Sluis</span><span class="val">15 km · 20 Min.</span></div>
+      <div class="info-row"><span class="label">🌊 Knokke-Heist</span><span class="val">22 km · 30 Min.</span></div>
+      <div class="info-row"><span class="label">🏰 Brügge</span><span class="val">32 km · 40 Min.</span></div>
+      <div class="info-row"><span class="label">⛵ Vlissingen</span><span class="val">35 km · 40 Min.</span></div>
+      <div class="info-row"><span class="label">🏛️ Middelburg</span><span class="val">38 km · 45 Min.</span></div>
+      <div class="info-row"><span class="label">💧 Neeltje Jans</span><span class="val">55 km · 50 Min.</span></div>
+      <div class="info-row"><span class="label">🎨 Gent</span><span class="val">65 km · 60 Min.</span></div>
+    </div>
+  </div>
+
+  <div class="info-block">
+    <h3>🚨 Notfallnummern</h3>
+    <div class="info-box">
+      <div class="info-row"><span class="label">Notruf EU</span><span class="val"><a href="tel:112" style="color:#ef4444">112</a></span></div>
+      <div class="info-row"><span class="label">Hausarzt NL</span><span class="val"><a href="tel:09001010" style="color:var(--accent)">0900-1010</a></span></div>
+      <div class="info-row"><span class="label">Resort</span><span class="val"><a href="tel:+31117370800" style="color:var(--accent)">+31 117 37 08 00</a></span></div>
+    </div>
+  </div>
+
+  <div class="info-block">
+    <h3>🌤️ Wetter &amp; Nützliches</h3>
+    <div class="info-box">
+      <div class="info-row"><span class="label">Wetter NL</span><span class="val"><a href="https://buienradar.nl" target="_blank" style="color:var(--accent)">buienradar.nl</a></span></div>
+      <div class="info-row"><span class="label">Wetter Prognose</span><span class="val"><a href="https://yr.no" target="_blank" style="color:var(--accent)">yr.no</a></span></div>
+      <div class="info-row"><span class="label">Supermarkt</span><span class="val">Albert Heijn Nieuwvliet · 5 Min.</span></div>
+      <div class="info-row"><span class="label">Währung</span><span class="val">Euro (NL + BE)</span></div>
     </div>
   </div>
 </section>
+
+<!-- PLAN -->
+<section class="section" id="plan">
+  <div class="section-header">
+    <h2>📋 Mein Urlaubsplan</h2>
+    <p>14 Tage, deine Notizen – automatisch gespeichert</p>
+  </div>
+  <div class="plan-grid" id="plan-grid"></div>
+</section>
+
+<footer class="footer">
+  <strong>🌊 Dormio Zeeland 2026</strong><br>
+  Nieuwvliet-Bad · 27. Juli – 10. August<br>
+  <span style="font-size:11px;opacity:.6;margin-top:6px;display:block">Marco Polo Digital Guide · Gute Reise!</span>
+</footer>
 
 <script>
-var D_START = new Date(2026,6,27);
-var D_END   = new Date(2026,7,10);
-var SK = 'dormio26';
+(function () {
+  'use strict';
 
-var ITEMS = [
-  {id:'e1',ic:'🌙',ti:'Sluis Abendmarkt',me:'Mi 29.07 & Mi 05.08 · ab 18 Uhr · 20 Min.',de:'Abendmarkt in der Altstadt. Streetfood, Musik, Händler.',tags:['termin','stadt']},
-  {id:'e2',ic:'🛒',ti:'Cadzand Wochenmarkt',me:'Do 30.07 & Do 06.08 · 9–13 Uhr · 10 Min.',de:'Frischer Fisch, Gemüse, Käse. Bester Markt der Region.',tags:['termin','strand','kids']},
-  {id:'e3',ic:'🐟',ti:'Breskens Hafenmarkt',me:'Fr 31.07 & Fr 07.08 · 9–13 Uhr · 15 Min.',de:'Fisch vom Boot, Streetfood, Hafenatmosphäre.',tags:['termin','natur']},
-  {id:'t1',ic:'🦭',ti:'Robbensafari Breskens',me:'Täglich · 15 Min. · 1,5 Std. Bootstour',de:'Seehunde in freier Wildbahn. Buchung empfohlen!',tags:['kids','natur']},
-  {id:'t2',ic:'💧',ti:'Waterland Neeltje Jans',me:'Täglich · 50 Min. · halber/ganzer Tag',de:'Wasserpark + Deltawerke. Riesenrutsche, Robben füttern.',tags:['kids','natur']},
-  {id:'t3',ic:'🚗',ti:'Groede Driftkarts & Spielpark',me:'Täglich Apr–Sept · 10 Min.',de:'Driftkarts, Trampoline, Spielanlagen. Direkt um die Ecke.',tags:['kids']},
-  {id:'t4',ic:'🐦',ti:'Zwin Vogelpark',me:'Täglich 9–18 Uhr · 25 Min.',de:'Naturschutzgebiet NL/BE. Watvögel, Naturerlebnispfad.',tags:['natur','kids']},
-  {id:'t5',ic:'🚲',ti:'Küsten-Radtour',me:'Jederzeit · ab Resort · ca. 25 km',de:'Nieuwvliet → Cadzand → Retranchement. Flach, familienfreundlich.',tags:['natur','strand']},
-  {id:'t6',ic:'🏖️',ti:'Cadzand-Bad Strandtag',me:'Jederzeit · 10 Min.',de:'Größerer Strand mit Strandpavilions und Beachbars.',tags:['strand','kids']},
-  {id:'t7',ic:'🚤',ti:'Fähre Breskens → Vlissingen',me:'Stündlich · 15 + 20 Min. Überfahrt',de:'Schnellfähre Westerschelde. Vlissingen mit Promenade.',tags:['natur','strand']},
-  {id:'t8',ic:'🏰',ti:'Brügge Tagesausflug',me:'Ganzer Tag · 40 Min.',de:'UNESCO-Weltkulturerbe: Grachten, Schokolade, Kirchen.',tags:['stadt','kids']},
-  {id:'t9',ic:'🏛️',ti:'Sluis Altstadtbummel',me:'Täglich · 20 Min. · halber Tag',de:'Kleinste Stadt der Niederlande. Windmühle, Cafés.',tags:['stadt']},
-  {id:'t10',ic:'⛵',ti:'Middelburg',me:'Täglich · 45 Min.',de:'Historische Hauptstadt Zeeland, Zeeuws Museum.',tags:['stadt','kids']},
-  {id:'t11',ic:'🌊',ti:'Knokke-Heist',me:'Täglich · 30 Min.',de:'Belgisches Seebad mit Promenade und Shopping.',tags:['strand','stadt']},
-  {id:'t12',ic:'🎨',ti:'Gent Städtetrip',me:'Ganzer Tag · 60 Min.',de:'Gravensteen-Burg, Grachtenhäuser, tolle Gastronomie.',tags:['stadt']},
-  {id:'t13',ic:'🎬',ti:'Bioscoop Terneuzen',me:'Täglich · 25 Min. · Regentag',de:'Modernes Kino. Perfekt für verregnete Tage.',tags:['regen','kids']},
-  {id:'t14',ic:'🎥',ti:'Kinepolis Brügge',me:'Täglich · 40 Min. · Regentag',de:'Großes Multiplex, Originalversionen.',tags:['regen','kids']},
-];
-var TCSS={termin:'ty',kids:'ty',strand:'tb',stadt:'tp',natur:'tg',regen:'tgr'};
-var TLBL={termin:'📅',kids:'👶',strand:'🌊',stadt:'🏛️',natur:'🌿',regen:'🌧️'};
-
-var ST={p:{},n:{}};
-try{var _r=localStorage.getItem(SK);if(_r)ST=Object.assign({p:{},n:{}},JSON.parse(_r));}catch(e){}
-function save(){try{localStorage.setItem(SK,JSON.stringify(ST));}catch(e){}}
-
-function vacDays(){var a=[],d=new Date(D_START);while(d<=D_END){a.push(new Date(d));d.setDate(d.getDate()+1);}return a;}
-function dk(d){return d.toISOString().slice(0,10);}
-function fmtS(d){return d.toLocaleDateString('de-DE',{weekday:'short',day:'2-digit',month:'2-digit'});}
-function fmtL(d){return d.toLocaleDateString('de-DE',{weekday:'long',day:'2-digit',month:'long'});}
-function isToday(d){var n=new Date();return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth()&&d.getDate()===n.getDate();}
-var _tt;
-function toast(m){var e=document.getElementById('toast');e.textContent=m;e.classList.add('show');clearTimeout(_tt);_tt=setTimeout(function(){e.classList.remove('show');},2200);}
-
-// FILTER
-var curF='alle';
-var fbtns=document.querySelectorAll('.fb');
-for(var fi=0;fi<fbtns.length;fi++){
-  (function(btn){
-    btn.addEventListener('click',function(){
-      curF=btn.getAttribute('data-f');
-      for(var x=0;x<fbtns.length;x++)fbtns[x].classList.remove('on');
-      btn.classList.add('on');
-      renderItems();
+  // Filter Orte
+  var filterBtns = document.querySelectorAll('.filter-btn');
+  var orteCards = document.querySelectorAll('#orte-cards .card');
+  filterBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      filterBtns.forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      var filter = btn.getAttribute('data-filter');
+      orteCards.forEach(function (card) {
+        if (filter === 'alle') {
+          card.style.display = '';
+        } else {
+          var tags = card.getAttribute('data-tags') || '';
+          card.style.display = (tags.indexOf(filter) !== -1) ? '' : 'none';
+        }
+      });
     });
-  })(fbtns[fi]);
-}
+  });
 
-// RENDER ITEMS
-function renderItems(){
-  var list=document.getElementById('ilist');
-  var data=curF==='alle'?ITEMS:ITEMS.filter(function(it){return it.tags.indexOf(curF)!==-1;});
-  if(!data.length){list.innerHTML='<p style="text-align:center;color:var(--m);padding:30px">Keine Einträge.</p>';return;}
-  var html='';
-  for(var i=0;i<data.length;i++){
-    var item=data[i];
-    var asgn=[];
-    var ks=Object.keys(ST.p);
-    for(var d=0;d<ks.length;d++){if((ST.p[ks[d]]||[]).indexOf(item.id)!==-1){var dd=new Date(ks[d]+'T12:00:00');asgn.push(dd.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'}));}}
-    var tagHtml='';
-    for(var t=0;t<item.tags.length;t++){tagHtml+='<span class="tag '+(TCSS[item.tags[t]]||'')+'">'+TLBL[item.tags[t]]+'</span>';}
-    html+='<div class="item">'
-      +'<div class="iico">'+item.ic+'</div>'
-      +'<div class="ibody">'
-        +'<div class="ititle">'+item.ti+'</div>'
-        +'<div class="imeta">'+item.me+'</div>'
-        +'<div class="idesc">'+item.de+'</div>'
-        +(asgn.length?'<div class="iok">✓ '+asgn.join(', ')+'</div>':'')
-        +'<div class="itags">'+tagHtml+'</div>'
-      +'</div>'
-      +'<button type="button" class="pb'+(asgn.length?' on':'')+'" data-iid="'+item.id+'">➕</button>'
-    +'</div>';
-  }
-  list.innerHTML=html;
-  var pbs=list.querySelectorAll('.pb');
-  for(var pi=0;pi<pbs.length;pi++){
-    (function(btn){btn.addEventListener('click',function(){openModal(btn.getAttribute('data-iid'));});})(pbs[pi]);
-  }
-}
+  // Kalender Accordion
+  var calHeads = document.querySelectorAll('.cal-head');
+  calHeads.forEach(function (head) {
+    head.addEventListener('click', function () {
+      var id = head.getAttribute('data-cal');
+      var body = document.getElementById('cal-' + id);
+      var arrow = head.querySelector('.cal-arrow');
+      if (!body) return;
+      var isOpen = body.classList.contains('open');
+      body.classList.toggle('open', !isOpen);
+      if (arrow) { arrow.style.transform = isOpen ? '' : 'rotate(180deg)'; }
+    });
+  });
 
-// MODAL
-var mId=null;
-function openModal(iid){
-  mId=iid;
-  var item=null;for(var i=0;i<ITEMS.length;i++){if(ITEMS[i].id===iid){item=ITEMS[i];break;}}
-  document.getElementById('mtitle').textContent='"'+item.ti+'" einplanen';
-  var vd=vacDays(),html='';
-  for(var i=0;i<vd.length;i++){
-    var k=dk(vd[i]),on=(ST.p[k]||[]).indexOf(iid)!==-1;
-    html+='<button type="button" class="dbn'+(on?' on':'')+'" data-k="'+k+'">'+(on?'✓ ':'')+fmtS(vd[i])+'</button>';
-  }
-  document.getElementById('mgrid').innerHTML=html;
-  var dbs=document.getElementById('mgrid').querySelectorAll('.dbn');
-  for(var di=0;di<dbs.length;di++){(function(btn){btn.addEventListener('click',function(){togglePlan(mId,btn.getAttribute('data-k'),btn);});})(dbs[di]);}
-  document.getElementById('modal').classList.remove('hide');
-}
-function closeModal(){document.getElementById('modal').classList.add('hide');mId=null;}
-document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
-document.getElementById('mcls').addEventListener('click',closeModal);
+  // Plan: Tage generieren
+  var days = [
+    { date: 'Mo 27.07', label: 'Ankunft ab 16:00 Uhr' },
+    { date: 'Di 28.07', label: 'Tag 2' },
+    { date: 'Mi 29.07', label: 'Tag 3 · Sluis Abendmarkt' },
+    { date: 'Do 30.07', label: 'Tag 4 · Cadzand Markt 9–13h' },
+    { date: 'Fr 31.07', label: 'Tag 5 · Breskens Markt 9–13h' },
+    { date: 'Sa 01.08', label: 'Tag 6' },
+    { date: 'So 02.08', label: 'Tag 7' },
+    { date: 'Mo 03.08', label: 'Tag 8' },
+    { date: 'Di 04.08', label: 'Tag 9' },
+    { date: 'Mi 05.08', label: 'Tag 10 · Sluis Abendmarkt' },
+    { date: 'Do 06.08', label: 'Tag 11 · Cadzand Markt 9–13h' },
+    { date: 'Fr 07.08', label: 'Tag 12 · Breskens Markt 9–13h' },
+    { date: 'Sa 08.08', label: 'Tag 13' },
+    { date: 'So 09.08', label: 'Tag 14' },
+    { date: 'Mo 10.08', label: 'Abreise bis 10:30 Uhr' }
+  ];
 
-function togglePlan(iid,k,btn){
-  ST.p[k]=ST.p[k]||[];
-  if((ST.p[k]).indexOf(iid)!==-1){
-    ST.p[k]=ST.p[k].filter(function(x){return x!==iid;});
-    btn.classList.remove('on');btn.textContent=btn.textContent.replace('✓ ','');toast('Entfernt');
-  }else{
-    ST.p[k].push(iid);btn.classList.add('on');btn.textContent='✓ '+btn.textContent;toast('Eingeplant ✓');
-  }
-  save();renderItems();renderCal();
-}
+  var todayStr = '';
+  try {
+    var now = new Date();
+    var mo = now.getMonth() + 1;
+    var dy = now.getDate();
+    todayStr = (dy < 10 ? '0' + dy : '' + dy) + '.' + (mo < 10 ? '0' + mo : '' + mo);
+  } catch (e) {}
 
-// CALENDAR
-function renderCal(){
-  var vd=vacDays(),now=new Date(),html='';
-  for(var i=0;i<vd.length;i++){
-    var d=vd[i],k=dk(d);
-    var planned=[];var pp=ST.p[k]||[];
-    for(var j=0;j<pp.length;j++){for(var x=0;x<ITEMS.length;x++){if(ITEMS[x].id===pp[j]){planned.push(ITEMS[x]);break;}}}
-    var note=ST.n[k]||'';
-    var wd=d.toLocaleDateString('de-DE',{weekday:'short'}).toUpperCase();
-    var sub=planned.map(function(it){return it.ic+' '+it.ti;}).join(' · ')||(note?'📝 Notiz':'Noch nichts geplant');
-    var today=isToday(d);
-    var rows=planned.length?planned.map(function(it){return'<div class="cpi"><span>'+it.ic+'</span><span style="flex:1">'+it.ti+'</span><button type="button" class="rmb" data-rid="'+it.id+'" data-rk="'+k+'">✕</button></div>';}).join(''):'<div style="color:var(--m);font-size:.77rem;padding:6px 0 3px">Noch nichts geplant.</div>';
-    html+='<div class="cd">'
-      +'<div class="cdh" data-ck="'+k+'">'
-        +'<div class="cdbadge"><div class="cdnum">'+d.getDate()+'</div><div class="cdwday">'+wd+'</div></div>'
-        +'<div class="cdinfo"><div class="cdtitle">'+d.toLocaleDateString('de-DE',{day:'2-digit',month:'long'})+(today?'<span class="tdot"></span>':'')+'</div><div class="cdsub">'+sub+'</div></div>'
-        +'<div class="cdarr" id="ca'+k+'">▾</div>'
-      +'</div>'
-      +'<div class="cdbody" id="cb'+k+'">'+rows+'<textarea class="cnote" data-nk="'+k+'" placeholder="Notiz für diesen Tag…">'+note+'</textarea></div>'
-    +'</div>';
-  }
-  var wrap=document.getElementById('calwrap');
-  wrap.innerHTML=html;
-  var hdrs=wrap.querySelectorAll('.cdh');
-  for(var hi=0;hi<hdrs.length;hi++){(function(hd){hd.addEventListener('click',function(){var k=hd.getAttribute('data-ck');var b=document.getElementById('cb'+k);var a=document.getElementById('ca'+k);var o=b.classList.toggle('open');a.classList.toggle('open',o);});})(hdrs[hi]);}
-  var rmbs=wrap.querySelectorAll('.rmb');
-  for(var ri=0;ri<rmbs.length;ri++){(function(btn){btn.addEventListener('click',function(e){e.stopPropagation();var id=btn.getAttribute('data-rid');var k=btn.getAttribute('data-rk');ST.p[k]=(ST.p[k]||[]).filter(function(x){return x!==id;});save();renderCal();renderItems();toast('Entfernt');});})(rmbs[ri]);}
-  var notes=wrap.querySelectorAll('.cnote');
-  for(var ni=0;ni<notes.length;ni++){(function(ta){ta.addEventListener('input',function(){ST.n[ta.getAttribute('data-nk')]=ta.value;save();});})(notes[ni]);}
-}
+  var grid = document.getElementById('plan-grid');
+  if (grid) {
+    days.forEach(function (day, i) {
+      var isToday = todayStr !== '' && day.date.indexOf(todayStr) !== -1;
+      var dotClass = isToday ? 'plan-dot today' : 'plan-dot';
+      var savedNote = '';
+      try { savedNote = localStorage.getItem('dormio_note_' + i) || ''; } catch (e) {}
+      var el = document.createElement('div');
+      el.className = 'plan-day';
+      el.innerHTML =
+        '<div class="plan-head" data-plan="' + i + '">' +
+          '<div class="' + dotClass + '"></div>' +
+          '<div class="cal-date">' + day.date + '</div>' +
+          '<strong>' + day.label + (isToday ? ' &#x1F535;' : '') + '</strong>' +
+          '<span class="plan-arrow">&#9660;</span>' +
+        '</div>' +
+        '<div class="plan-body" id="plan-body-' + i + '">' +
+          '<textarea class="plan-note" placeholder="Notizen für diesen Tag…" data-day="' + i + '">' +
+            savedNote.replace(/</g, '&lt;').replace(/>/g, '&gt;') +
+          '</textarea>' +
+        '</div>';
+      grid.appendChild(el);
+    });
 
-// SHARE
-function buildText(){
-  var out='🏖️ DORMIO URLAUB 2026\n27. Juli – 10. August · Nieuwvliet-Bad\n\n';
-  var vd=vacDays(),any=false;
-  for(var i=0;i<vd.length;i++){
-    var k=dk(vd[i]),pp=ST.p[k]||[],note=ST.n[k]||'';
-    if(!pp.length&&!note)continue;any=true;
-    out+='📅 '+fmtL(vd[i])+'\n';
-    for(var j=0;j<pp.length;j++){for(var x=0;x<ITEMS.length;x++){if(ITEMS[x].id===pp[j]){out+='  '+ITEMS[x].ic+' '+ITEMS[x].ti+'\n';break;}}}
-    if(note)out+='  📝 '+note+'\n';
-    out+='\n';
-  }
-  if(!any)out+='Noch nichts geplant.\n';
-  return out;
-}
-document.getElementById('bcopy').addEventListener('click',function(){
-  var txt=buildText();
-  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){toast('Kopiert ✓');}).catch(function(){fbCopy(txt);});}
-  else{fbCopy(txt);}
-});
-function fbCopy(txt){var ta=document.createElement('textarea');ta.value=txt;ta.style.cssText='position:fixed;top:-9999px;opacity:0;';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');toast('Kopiert ✓');}catch(e){toast('Manuell kopieren');}document.body.removeChild(ta);}
-var prevO=false;
-document.getElementById('bprev').addEventListener('click',function(){
-  var pre=document.getElementById('planpre');prevO=!prevO;
-  pre.style.display=prevO?'block':'none';
-  if(prevO)pre.textContent=buildText();
-  this.textContent=prevO?'🙈 Schließen':'👁️ Vorschau anzeigen';
-});
-var isIOS=/iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-document.getElementById('bexp').addEventListener('click',function(){
-  var blob=new Blob([JSON.stringify(ST,null,2)],{type:'application/json'});
-  var url=URL.createObjectURL(blob);
-  if(isIOS){var w=window.open(url,'_blank');if(!w)window.location.href=url;setTimeout(function(){URL.revokeObjectURL(url);},60000);}
-  else{var a=document.createElement('a');a.href=url;a.download='dormio26.json';a.click();URL.revokeObjectURL(url);}
-});
-document.getElementById('fimp').addEventListener('change',function(e){
-  var f=e.target.files[0];if(!f)return;
-  var r=new FileReader();
-  r.onload=function(ev){try{ST=Object.assign({p:{},n:{}},JSON.parse(ev.target.result));save();renderItems();renderCal();toast('Import ✓');}catch(er){toast('Fehler');}};
-  r.readAsText(f);
-});
-document.getElementById('breset').addEventListener('click',function(){
-  if(!confirm('Alles löschen?'))return;
-  ST={p:{},n:{}};save();renderItems();renderCal();toast('Zurückgesetzt');
-});
+    grid.addEventListener('click', function (e) {
+      var head = e.target.closest ? e.target.closest('.plan-head') : null;
+      if (!head) return;
+      var id = head.getAttribute('data-plan');
+      var body = document.getElementById('plan-body-' + id);
+      var arrow = head.querySelector('.plan-arrow');
+      if (!body) return;
+      var isOpen = body.classList.contains('open');
+      body.classList.toggle('open', !isOpen);
+      if (arrow) { arrow.style.transform = isOpen ? '' : 'rotate(180deg)'; }
+    });
 
-renderItems();
-renderCal();
+    grid.addEventListener('input', function (e) {
+      var ta = e.target;
+      if (!ta || ta.tagName !== 'TEXTAREA') return;
+      var d = ta.getAttribute('data-day');
+      try { localStorage.setItem('dormio_note_' + d, ta.value); } catch (e2) {}
+    });
+  }
+
+}());
 </script>
 </body>
 </html>
