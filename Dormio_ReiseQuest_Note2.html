@@ -102,11 +102,21 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 
 .maps-btn{
   display:inline-flex;align-items:center;gap:5px;margin-top:10px;
-  background:rgba(14,165,233,0.12);border:1px solid rgba(14,165,233,0.25);
-  color:var(--accent);font-size:12px;font-weight:600;
-  padding:6px 12px;border-radius:10px;text-decoration:none;
-  touch-action:manipulation;-webkit-tap-highlight-color:transparent
+  background:rgba(14,165,233,0.18);border:1px solid rgba(14,165,233,0.40);
+  color:var(--accent);font-size:13px;font-weight:700;
+  padding:8px 14px;border-radius:12px;text-decoration:none;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  transition:background .15s
 }
+.maps-btn:active{background:rgba(14,165,233,0.32)}
+
+.plan-activity{
+  width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(14,165,233,0.25);
+  border-radius:10px;color:var(--text);font-size:14px;font-family:inherit;font-weight:600;
+  padding:9px 12px;margin-top:10px;-webkit-appearance:none
+}
+.plan-activity:focus{outline:none;border-color:var(--accent)}
+.plan-activity-label{font-size:11px;color:var(--muted);margin-top:10px;display:block}
 
 .hl-num{
   width:28px;height:28px;border-radius:50%;
@@ -343,7 +353,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <div class="card-tags">
         <span class="tag">🌊 Strand</span><span class="tag">👶 Kids</span>
       </div>
-      <a class="maps-btn" href="https://maps.apple.com/?q=Cadzand-Bad,Netherlands" target="_blank">📍 Maps</a>
+      <a class="maps-btn" href="https://maps.apple.com/?daddr=Cadzand-Bad,Netherlands" target="_blank">🗺️ Navigation starten</a>
     </div>
 
     <div class="card" data-tags="stadt">
@@ -355,7 +365,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <div class="card-tags">
         <span class="tag">🏰 Stadt</span><span class="tag">🧀 Käse</span>
       </div>
-      <a class="maps-btn" href="https://maps.apple.com/?q=Sluis,Netherlands" target="_blank">📍 Maps</a>
+      <a class="maps-btn" href="https://maps.apple.com/?daddr=Sluis,Netherlands" target="_blank">🗺️ Navigation starten</a>
     </div>
 
     <div class="card" data-tags="natur essen">
@@ -367,7 +377,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <div class="card-tags">
         <span class="tag">🌿 Natur</span><span class="tag">🍽️ Essen</span><span class="tag">⛵ Fähre</span>
       </div>
-      <a class="maps-btn" href="https://maps.apple.com/?q=Breskens+harbor,Netherlands" target="_blank">📍 Maps</a>
+      <a class="maps-btn" href="https://maps.apple.com/?daddr=Breskens+harbor,Netherlands" target="_blank">🗺️ Navigation starten</a>
     </div>
 
     <div class="card" data-tags="stadt kids regen">
@@ -379,7 +389,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <div class="card-tags">
         <span class="tag">🏰 Stadt</span><span class="tag">👶 Kids</span><span class="tag">🌧️ Regen</span>
       </div>
-      <a class="maps-btn" href="https://maps.apple.com/?q=Bruges,Belgium" target="_blank">📍 Maps</a>
+      <a class="maps-btn" href="https://maps.apple.com/?daddr=Bruges,Belgium" target="_blank">🗺️ Navigation starten</a>
     </div>
 
     <div class="card" data-tags="strand stadt">
@@ -391,7 +401,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <div class="card-tags">
         <span class="tag">🌊 Strand</span><span class="tag">🏰 Stadt</span>
       </div>
-      <a class="maps-btn" href="https://maps.apple.com/?q=Knokke-Heist,Belgium" target="_blank">📍 Maps</a>
+      <a class="maps-btn" href="https://maps.apple.com/?daddr=Knokke-Heist,Belgium" target="_blank">🗺️ Navigation starten</a>
     </div>
 
     <div class="card" data-tags="strand">
@@ -403,7 +413,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <div class="card-tags">
         <span class="tag">🌊 Strand</span><span class="tag">⛵ Boot</span>
       </div>
-      <a class="maps-btn" href="https://maps.apple.com/?q=Vlissingen,Netherlands" target="_blank">📍 Maps</a>
+      <a class="maps-btn" href="https://maps.apple.com/?daddr=Vlissingen,Netherlands" target="_blank">🗺️ Navigation starten</a>
     </div>
 
     <div class="card" data-tags="stadt kids regen">
@@ -415,7 +425,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <div class="card-tags">
         <span class="tag">🏰 Stadt</span><span class="tag">👶 Kids</span><span class="tag">🌧️ Regen</span>
       </div>
-      <a class="maps-btn" href="https://maps.apple.com/?q=Middelburg,Netherlands" target="_blank">📍 Maps</a>
+      <a class="maps-btn" href="https://maps.apple.com/?daddr=Middelburg,Netherlands" target="_blank">🗺️ Navigation starten</a>
     </div>
 
     <div class="card" data-tags="kids natur">
@@ -427,7 +437,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <div class="card-tags">
         <span class="tag">👶 Kids</span><span class="tag">🌿 Natur</span>
       </div>
-      <a class="maps-btn" href="https://maps.apple.com/?q=Waterland+Neeltje+Jans,Netherlands" target="_blank">📍 Maps</a>
+      <a class="maps-btn" href="https://maps.apple.com/?daddr=Waterland+Neeltje+Jans,Netherlands" target="_blank">🗺️ Navigation starten</a>
     </div>
 
     <div class="card" data-tags="kids natur">
@@ -439,7 +449,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <div class="card-tags">
         <span class="tag">👶 Kids</span><span class="tag">🚲 Rad</span>
       </div>
-      <a class="maps-btn" href="https://maps.apple.com/?q=Groede,Netherlands" target="_blank">📍 Maps</a>
+      <a class="maps-btn" href="https://maps.apple.com/?daddr=Groede,Netherlands" target="_blank">🗺️ Navigation starten</a>
     </div>
 
     <div class="card" data-tags="stadt regen">
@@ -451,7 +461,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <div class="card-tags">
         <span class="tag">🏰 Stadt</span><span class="tag">🌧️ Regen</span>
       </div>
-      <a class="maps-btn" href="https://maps.apple.com/?q=Ghent,Belgium" target="_blank">📍 Maps</a>
+      <a class="maps-btn" href="https://maps.apple.com/?daddr=Ghent,Belgium" target="_blank">🗺️ Navigation starten</a>
     </div>
 
   </div>
@@ -998,21 +1008,21 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 
   // Plan: Tage generieren
   var days = [
-    { date: 'Mo 27.07', label: 'Ankunft ab 16:00 Uhr' },
-    { date: 'Di 28.07', label: 'Tag 2' },
-    { date: 'Mi 29.07', label: 'Tag 3 · Sluis Abendmarkt' },
-    { date: 'Do 30.07', label: 'Tag 4 · Cadzand Markt 9–13h' },
-    { date: 'Fr 31.07', label: 'Tag 5 · Breskens Markt 9–13h' },
-    { date: 'Sa 01.08', label: 'Tag 6' },
-    { date: 'So 02.08', label: 'Tag 7' },
-    { date: 'Mo 03.08', label: 'Tag 8' },
-    { date: 'Di 04.08', label: 'Tag 9' },
-    { date: 'Mi 05.08', label: 'Tag 10 · Sluis Abendmarkt' },
-    { date: 'Do 06.08', label: 'Tag 11 · Cadzand Markt 9–13h' },
-    { date: 'Fr 07.08', label: 'Tag 12 · Breskens Markt 9–13h' },
-    { date: 'Sa 08.08', label: 'Tag 13' },
-    { date: 'So 09.08', label: 'Tag 14' },
-    { date: 'Mo 10.08', label: 'Abreise bis 10:30 Uhr' }
+    { date: 'Mo 27.07', label: 'Ankunft',  hint: 'Ankunft ab 16:00 Uhr – Einleben & Strand' },
+    { date: 'Di 28.07', label: 'Tag 2',    hint: 'Erster Strandtag' },
+    { date: 'Mi 29.07', label: 'Tag 3',    hint: 'Vorschlag: Sluis Abendmarkt ab 18h' },
+    { date: 'Do 30.07', label: 'Tag 4',    hint: 'Vorschlag: Cadzand Markt 9–13h' },
+    { date: 'Fr 31.07', label: 'Tag 5',    hint: 'Vorschlag: Breskens Frischfischmarkt 9–13h' },
+    { date: 'Sa 01.08', label: 'Tag 6',    hint: 'Was habt ihr geplant?' },
+    { date: 'So 02.08', label: 'Tag 7',    hint: 'Was habt ihr geplant?' },
+    { date: 'Mo 03.08', label: 'Tag 8',    hint: 'Was habt ihr geplant?' },
+    { date: 'Di 04.08', label: 'Tag 9',    hint: 'Was habt ihr geplant?' },
+    { date: 'Mi 05.08', label: 'Tag 10',   hint: 'Vorschlag: Sluis Abendmarkt ab 18h' },
+    { date: 'Do 06.08', label: 'Tag 11',   hint: 'Vorschlag: Cadzand Markt 9–13h' },
+    { date: 'Fr 07.08', label: 'Tag 12',   hint: 'Vorschlag: Breskens Frischfischmarkt 9–13h' },
+    { date: 'Sa 08.08', label: 'Tag 13',   hint: 'Was habt ihr geplant?' },
+    { date: 'So 09.08', label: 'Tag 14',   hint: 'Letzter Abend – genießen!' },
+    { date: 'Mo 10.08', label: 'Abreise',  hint: 'Abreise bis 10:30 Uhr' }
   ];
 
   var todayStr = '';
@@ -1029,7 +1039,11 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       var isToday = todayStr !== '' && day.date.indexOf(todayStr) !== -1;
       var dotClass = isToday ? 'plan-dot today' : 'plan-dot';
       var savedNote = '';
-      try { savedNote = localStorage.getItem('dormio_note_' + i) || ''; } catch (e) {}
+      var savedActivity = '';
+      try {
+        savedNote     = localStorage.getItem('dormio_note_' + i) || '';
+        savedActivity = localStorage.getItem('dormio_act_'  + i) || '';
+      } catch (e) {}
       var el = document.createElement('div');
       el.className = 'plan-day';
       el.innerHTML =
@@ -1040,7 +1054,10 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
           '<span class="plan-arrow">&#9660;</span>' +
         '</div>' +
         '<div class="plan-body" id="plan-body-' + i + '">' +
-          '<textarea class="plan-note" placeholder="Notizen für diesen Tag…" data-day="' + i + '">' +
+          '<span class="plan-activity-label">📌 Geplante Aktivität</span>' +
+          '<input class="plan-activity" type="text" placeholder="' + day.hint + '" data-act="' + i + '" value="' + savedActivity.replace(/"/g, '&quot;') + '">' +
+          '<span class="plan-activity-label">📝 Notizen</span>' +
+          '<textarea class="plan-note" placeholder="Weitere Notizen…" data-day="' + i + '">' +
             savedNote.replace(/</g, '&lt;').replace(/>/g, '&gt;') +
           '</textarea>' +
         '</div>';
@@ -1048,6 +1065,8 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
     });
 
     grid.addEventListener('click', function (e) {
+      // Klick auf Input/Textarea nicht als accordion-toggle werten
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
       var head = e.target.closest ? e.target.closest('.plan-head') : null;
       if (!head) return;
       var id = head.getAttribute('data-plan');
@@ -1060,10 +1079,15 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
     });
 
     grid.addEventListener('input', function (e) {
-      var ta = e.target;
-      if (!ta || ta.tagName !== 'TEXTAREA') return;
-      var d = ta.getAttribute('data-day');
-      try { localStorage.setItem('dormio_note_' + d, ta.value); } catch (e2) {}
+      var el = e.target;
+      if (!el) return;
+      if (el.tagName === 'TEXTAREA') {
+        var d = el.getAttribute('data-day');
+        try { localStorage.setItem('dormio_note_' + d, el.value); } catch (e2) {}
+      } else if (el.tagName === 'INPUT' && el.classList.contains('plan-activity')) {
+        var a = el.getAttribute('data-act');
+        try { localStorage.setItem('dormio_act_' + a, el.value); } catch (e2) {}
+      }
     });
   }
 
