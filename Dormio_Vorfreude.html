@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Zeeland 2026 · Vorfreude</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --sun:#f59e0b;--sky:#0ea5e9;--sand:#fef3c7;--sea:#e0f2fe;
+  --green:#10b981;--red:#ef4444;
+  --text:#1e293b;--muted:#64748b;--card:#fff;
+  --bg:#f8fbff;--border:#e2e8f0;
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;
+  font-size:16px;line-height:1.55;-webkit-text-size-adjust:100%
+}
+
+/* ── HERO ─────────────────────────────────────── */
+.hero{
+  background:linear-gradient(160deg,#0a3d62 0%,#0ea5e9 55%,#38bdf8 100%);
+  padding:36px 20px 40px;text-align:center;color:#fff;position:relative;overflow:hidden
+}
+.hero::after{
+  content:'';position:absolute;bottom:-2px;left:0;right:0;height:40px;
+  background:var(--bg);
+  clip-path:ellipse(55% 100% at 50% 100%)
+}
+.hero-emoji{font-size:44px;display:block;margin-bottom:6px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.25))}
+.hero h1{font-size:30px;font-weight:900;letter-spacing:-.03em;line-height:1.1;margin-bottom:4px}
+.hero h1 span{color:#fde68a}
+.hero-sub{font-size:14px;opacity:.85;margin-bottom:24px}
+
+.countdown-box{
+  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.30);
+  border-radius:20px;padding:20px 24px 16px;margin:0 auto;max-width:320px;
+}
+.cnt-main{display:flex;align-items:baseline;justify-content:center;gap:8px;margin-bottom:6px}
+.cnt-num{
+  font-size:72px;font-weight:900;letter-spacing:-.04em;line-height:1;
+  color:#fff;text-shadow:0 2px 16px rgba(0,0,0,.3)
+}
+.cnt-unit{font-size:22px;font-weight:700;opacity:.85}
+.cnt-hms{
+  font-size:18px;font-weight:600;letter-spacing:.02em;opacity:.9;margin-bottom:12px
+}
+.cnt-hms span{opacity:.7;font-size:13px;margin:0 1px}
+.sleep-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(253,230,138,.20);border:1px solid rgba(253,230,138,.40);
+  color:#fde68a;font-size:14px;font-weight:700;
+  padding:6px 16px;border-radius:30px
+}
+
+.meter-wrap{margin:20px 0 16px}
+.meter-bar{
+  height:10px;background:rgba(255,255,255,.20);border-radius:10px;overflow:hidden;margin-bottom:6px
+}
+.meter-fill{height:100%;background:linear-gradient(90deg,#fde68a,#f59e0b);border-radius:10px;transition:width 1s ease}
+.meter-label{font-size:12px;opacity:.75;letter-spacing:.06em;text-transform:uppercase}
+
+.share-btn{
+  display:inline-flex;align-items:center;gap:8px;margin-top:4px;
+  background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);
+  color:#fff;font-size:14px;font-weight:700;
+  padding:10px 22px;border-radius:30px;cursor:pointer;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  transition:background .15s
+}
+.share-btn:active{background:rgba(255,255,255,.30)}
+.share-toast{
+  display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  background:#1e293b;color:#fff;font-size:14px;font-weight:600;
+  padding:10px 22px;border-radius:30px;z-index:999;white-space:nowrap
+}
+.share-toast.show{display:block;animation:fadeup .3s ease}
+@keyframes fadeup{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+/* ── SECTIONS ──────────────────────────────────── */
+.section{padding:32px 0 36px}
+.section.alt{background:#fff}
+.sec-head{padding:0 20px 18px}
+.sec-head h2{font-size:22px;font-weight:800;letter-spacing:-.02em}
+.sec-head p{font-size:14px;color:var(--muted);margin-top:3px}
+
+/* ── VORFREUDE KARTE ───────────────────────────── */
+.day-card{
+  margin:0 16px;background:var(--card);border-radius:20px;
+  box-shadow:0 4px 24px rgba(14,165,233,.12);
+  padding:24px;border-top:4px solid var(--sky);overflow:hidden;position:relative
+}
+.day-card::before{
+  content:'';position:absolute;top:0;right:0;width:120px;height:120px;
+  background:radial-gradient(circle,rgba(14,165,233,.07) 0%,transparent 70%);
+  pointer-events:none
+}
+.card-cat{
+  font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--sky);margin-bottom:6px;display:block
+}
+.card-icon-big{font-size:48px;display:block;margin-bottom:10px}
+.day-card h3{font-size:20px;font-weight:800;letter-spacing:-.02em;margin-bottom:10px;line-height:1.25}
+.day-card p{font-size:14px;color:var(--muted);line-height:1.6}
+.card-date-hint{
+  margin-top:16px;font-size:11px;color:var(--border);text-align:right;
+  border-top:1px solid var(--border);padding-top:10px
+}
+
+/* ── HIGHLIGHTS SCROLL ─────────────────────────── */
+.hl-scroll{
+  display:flex;gap:12px;overflow-x:auto;padding:4px 16px 12px;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none
+}
+.hl-scroll::-webkit-scrollbar{display:none}
+.hl-card{
+  flex:0 0 175px;background:var(--card);border-radius:16px;padding:16px 14px;
+  box-shadow:0 2px 12px rgba(0,0,0,.07);border:1px solid var(--border)
+}
+.hl-icon{font-size:32px;display:block;margin-bottom:8px}
+.hl-card h3{font-size:14px;font-weight:800;margin-bottom:4px;line-height:1.25}
+.hl-card p{font-size:12px;color:var(--muted);line-height:1.45}
+.hl-dist{
+  display:inline-block;margin-top:8px;font-size:11px;font-weight:700;
+  color:var(--sky);background:var(--sea);padding:3px 8px;border-radius:8px
+}
+
+/* ── WETTER BOX ────────────────────────────────── */
+.weather-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px
+}
+.w-card{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center
+}
+.w-icon{font-size:28px;display:block;margin-bottom:4px}
+.w-val{font-size:20px;font-weight:800;color:var(--sky)}
+.w-label{font-size:11px;color:var(--muted);margin-top:2px}
+.weather-tip{
+  margin:12px 16px 0;padding:12px 14px;background:var(--sea);
+  border-radius:12px;font-size:13px;color:var(--muted);line-height:1.5;
+  border-left:3px solid var(--sky)
+}
+
+/* ── CHECKLIST ─────────────────────────────────── */
+.pack-progress-wrap{
+  display:flex;align-items:center;gap:10px;padding:0 20px 16px
+}
+.pack-bar{flex:1;height:8px;background:var(--border);border-radius:8px;overflow:hidden}
+.pack-fill{height:100%;background:linear-gradient(90deg,var(--sky),var(--green));border-radius:8px;transition:width .4s ease}
+.pack-pct{font-size:13px;font-weight:700;color:var(--sky);white-space:nowrap}
+
+.cat-block{margin:0 16px 16px}
+.cat-title{
+  font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.06em;
+  text-transform:uppercase;padding:0 0 8px;border-bottom:1px solid var(--border);margin-bottom:6px
+}
+.check-item{
+  display:flex;align-items:center;gap:12px;padding:9px 2px;
+  border-bottom:1px solid rgba(226,232,240,.5);cursor:pointer;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent
+}
+.check-item:last-child{border-bottom:none}
+.check-box{
+  width:22px;height:22px;border-radius:6px;border:2px solid var(--border);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;background:#fff
+}
+.check-item.done .check-box{background:var(--green);border-color:var(--green)}
+.check-item.done .check-box::after{content:'✓';color:#fff;font-size:13px;font-weight:800}
+.check-label{font-size:14px;transition:color .15s}
+.check-item.done .check-label{color:var(--muted);text-decoration:line-through}
+
+.task-item{
+  display:flex;align-items:flex-start;gap:12px;padding:11px 16px;
+  border-bottom:1px solid var(--border);cursor:pointer;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent
+}
+.task-item:last-child{border-bottom:none}
+.task-box{
+  width:24px;height:24px;border-radius:50%;border:2px solid var(--border);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;margin-top:1px;background:#fff
+}
+.task-item.done .task-box{background:var(--green);border-color:var(--green)}
+.task-item.done .task-box::after{content:'✓';color:#fff;font-size:12px;font-weight:800}
+.task-main{flex:1}
+.task-label{font-size:14px;font-weight:600;transition:color .15s}
+.task-item.done .task-label{color:var(--muted);text-decoration:line-through}
+.task-hint{font-size:12px;color:var(--muted);margin-top:2px}
+
+/* ── RESET BUTTON ──────────────────────────────── */
+.reset-btn{
+  display:block;margin:0 auto;background:none;border:1px solid var(--border);
+  color:var(--muted);font-size:12px;padding:7px 18px;border-radius:20px;
+  cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent
+}
+
+/* ── FOOTER ────────────────────────────────────── */
+footer{
+  text-align:center;padding:28px 20px 48px;
+  color:var(--muted);font-size:12px;border-top:1px solid var(--border)
+}
+footer strong{color:var(--sky)}
+</style>
+</head>
+<body>
+
+<!-- ═══ HERO ═══ -->
+<header class="hero">
+  <span class="hero-emoji">🌊</span>
+  <h1>Zeeland <span>2026</span></h1>
+  <p class="hero-sub">Dormio Strand Resort Nieuwvliet-Bad · 27. Juli – 10. August</p>
+
+  <div class="countdown-box">
+    <div class="cnt-main">
+      <span id="cnt-days" class="cnt-num">--</span>
+      <span class="cnt-unit">Tage</span>
+    </div>
+    <div class="cnt-hms">
+      <span id="cnt-h">--</span><span>h</span>&nbsp;
+      <span id="cnt-m">--</span><span>min</span>&nbsp;
+      <span id="cnt-s">--</span><span>s</span>
+    </div>
+    <div class="sleep-pill">🌙 Noch <strong id="cnt-sleeps">&nbsp;--&nbsp;</strong> Schläfchen!</div>
+  </div>
+
+  <div class="meter-wrap">
+    <div class="meter-bar"><div class="meter-fill" id="meter-fill" style="width:0%"></div></div>
+    <div class="meter-label">Vorfreude-Meter ☀️</div>
+  </div>
+
+  <button class="share-btn" id="share-btn">📤 Countdown mit Familie teilen</button>
+</header>
+
+<div class="share-toast" id="share-toast">📋 Nachricht kopiert!</div>
+
+<!-- ═══ VORFREUDE KARTE ═══ -->
+<section class="section">
+  <div class="sec-head">
+    <h2>✨ Vorfreude des Tages</h2>
+    <p>Jeden Tag eine neue Inspiration</p>
+  </div>
+  <div class="day-card" id="day-card">
+    <span class="card-cat">Lade…</span>
+    <span class="card-icon-big">🌊</span>
+    <h3>Gleich geht's los!</h3>
+    <p>Deine tägliche Portion Vorfreude wird geladen…</p>
+  </div>
+</section>
+
+<!-- ═══ HIGHLIGHTS ═══ -->
+<section class="section alt">
+  <div class="sec-head">
+    <h2>🌟 Das erwartet euch!</h2>
+    <p>Die schönsten Momente eures Zeeland-Urlaubs</p>
+  </div>
+  <div class="hl-scroll">
+    <div class="hl-card">
+      <span class="hl-icon">🦭</span>
+      <h3>Robbensafari</h3>
+      <p>Seehunde in freier Wildbahn – ein Erlebnis für die ganze Familie</p>
+      <span class="hl-dist">15 Min · Breskens</span>
+    </div>
+    <div class="hl-card">
+      <span class="hl-icon">🏰</span>
+      <h3>Brügge</h3>
+      <p>UNESCO-Weltkulturerbe, Grachten, Schokolade & Mittelalter</p>
+      <span class="hl-dist">40 Min · Belgien</span>
+    </div>
+    <div class="hl-card">
+      <span class="hl-icon">💧</span>
+      <h3>Neeltje Jans</h3>
+      <p>Wasserrutschen, Deltawerke, Robben füttern – ganzer Kindertag!</p>
+      <span class="hl-dist">50 Min · Zeeland</span>
+    </div>
+    <div class="hl-card">
+      <span class="hl-icon">🐟</span>
+      <h3>Breskens Markt</h3>
+      <p>Frischfisch direkt vom Boot – freitags der beste Markt Zeelands</p>
+      <span class="hl-dist">15 Min · Breskens</span>
+    </div>
+    <div class="hl-card">
+      <span class="hl-icon">🌿</span>
+      <h3>Zwin Naturpark</h3>
+      <p>Salzwiesen, seltene Vögel, endloser Horizont an der Grenze</p>
+      <span class="hl-dist">30 Min · Knokke</span>
+    </div>
+    <div class="hl-card">
+      <span class="hl-icon">🌙</span>
+      <h3>Sluis Abendmarkt</h3>
+      <p>Mittelalterliche Altstadt bei Nacht – mittwochs magisch</p>
+      <span class="hl-dist">20 Min · Sluis</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ WETTER ═══ -->
+<section class="section">
+  <div class="sec-head">
+    <h2>☀️ Wetter in Zeeland im August</h2>
+    <p>Typische Werte – worauf ihr euch einstellen könnt</p>
+  </div>
+  <div class="weather-grid">
+    <div class="w-card">
+      <span class="w-icon">🌡️</span>
+      <div class="w-val">22°C</div>
+      <div class="w-label">Tageshöchst</div>
+    </div>
+    <div class="w-card">
+      <span class="w-icon">🌊</span>
+      <div class="w-val">19°C</div>
+      <div class="w-label">Wassertemperatur</div>
+    </div>
+    <div class="w-card">
+      <span class="w-icon">☀️</span>
+      <div class="w-val">8h</div>
+      <div class="w-label">Sonne täglich</div>
+    </div>
+    <div class="w-card">
+      <span class="w-icon">💨</span>
+      <div class="w-val">18 km/h</div>
+      <div class="w-label">Windgeschwind.</div>
+    </div>
+  </div>
+  <div class="weather-tip">
+    💡 Zeeland ist die <strong>sonnenscheinreichste Region der Niederlande</strong>. Aber an der Nordsee bläst immer ein Windchen – Windjacke nicht vergessen! Und für spontane Schauer: <strong>buienradar.nl</strong> zeigt minutengenau wann der Regen aufhört.
+  </div>
+</section>
+
+<!-- ═══ PACKLISTE ═══ -->
+<section class="section alt" id="pack">
+  <div class="sec-head">
+    <h2>🧳 Packliste</h2>
+  </div>
+  <div class="pack-progress-wrap">
+    <div class="pack-bar"><div class="pack-fill" id="pack-fill" style="width:0%"></div></div>
+    <span class="pack-pct" id="pack-pct">0% gepackt</span>
+  </div>
+  <div id="pack-list"></div>
+  <button class="reset-btn" id="reset-pack" style="margin-top:8px">Packliste zurücksetzen</button>
+</section>
+
+<!-- ═══ AUFGABEN ═══ -->
+<section class="section" id="aufgaben">
+  <div class="sec-head">
+    <h2>✅ Vor dem Urlaub erledigen</h2>
+    <p>Damit am Abreisetag nichts fehlt</p>
+  </div>
+  <div id="task-list"></div>
+  <button class="reset-btn" id="reset-tasks" style="margin:16px auto 0">Liste zurücksetzen</button>
+</section>
+
+<footer>
+  <strong>🌊 Zeeland 2026</strong><br>
+  Dormio Strand Resort Nieuwvliet-Bad · 27.07 – 10.08<br>
+  <span style="display:block;margin-top:6px;opacity:.6">Christian Polo Digital Guide · Viel Vorfreude!</span>
+</footer>
+
+<script>
+(function () {
+'use strict';
+
+/* ──────────────────────────────────────────────────────
+   1. COUNTDOWN
+────────────────────────────────────────────────────── */
+var TARGET = new Date('2026-07-27T14:00:00Z'); // 16:00 CEST
+var TRIP_START_MS = new Date('2026-05-24T00:00:00Z').getTime();
+
+function pad(n){ return n < 10 ? '0'+n : ''+n; }
+
+function updateCountdown(){
+  var now  = Date.now();
+  var diff = TARGET.getTime() - now;
+
+  if(diff <= 0){
+    document.getElementById('cnt-days').textContent = '0';
+    document.getElementById('cnt-h').textContent = '00';
+    document.getElementById('cnt-m').textContent = '00';
+    document.getElementById('cnt-s').textContent = '00';
+    document.getElementById('cnt-sleeps').textContent = '0';
+    document.getElementById('meter-fill').style.width = '100%';
+    return;
+  }
+
+  var totalSec  = Math.floor(diff / 1000);
+  var days      = Math.floor(totalSec / 86400);
+  var hours     = Math.floor((totalSec % 86400) / 3600);
+  var mins      = Math.floor((totalSec % 3600) / 60);
+  var secs      = totalSec % 60;
+
+  // Sleeps = nights remaining (count from tonight)
+  var now_local = new Date();
+  var target_local = new Date(TARGET.getTime());
+  var sleeps = Math.ceil((target_local - now_local) / 86400000);
+
+  document.getElementById('cnt-days').textContent  = days;
+  document.getElementById('cnt-h').textContent     = pad(hours);
+  document.getElementById('cnt-m').textContent     = pad(mins);
+  document.getElementById('cnt-s').textContent     = pad(secs);
+  document.getElementById('cnt-sleeps').textContent = sleeps;
+
+  // Meter: how far between TRIP_START and TARGET
+  var total   = TARGET.getTime() - TRIP_START_MS;
+  var elapsed = now - TRIP_START_MS;
+  var pct     = Math.min(100, Math.max(0, (elapsed / total) * 100));
+  document.getElementById('meter-fill').style.width = pct.toFixed(1) + '%';
+}
+
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+/* ──────────────────────────────────────────────────────
+   2. VORFREUDE KARTEN (64 Karten: 24.05 bis 26.07)
+────────────────────────────────────────────────────── */
+var CARDS = [
+  {icon:'🚀',cat:'Auf geht\'s!',title:'Der Countdown hat begonnen!',text:'Ab heute zählen wir die Tage – 64 Vorfreude-Karten warten auf euch. Jeden Morgen eine neue Portion Zeeland-Begeisterung. Willkommen beim Countdown zum schönsten Urlaub des Jahres!'},
+  {icon:'🏖️',cat:'Strand-Vorfreude',title:'Euer Privatstrand liegt direkt vor der Tür',text:'Das Dormio Resort liegt unmittelbar am Nieuwvliet-Bad Strand – einem der breitesten Nordseestränden Zeelands. Morgens die ersten Schritte im Sand, Wellenrauschen beim Frühstück. Das Meer wartet!'},
+  {icon:'🦭',cat:'Natur & Tiere',title:'Seehunde in freier Wildbahn!',text:'Die Robbensafari in Breskens ist ein Erlebnis das man nie vergisst. Echte Seehunde ohne Gitter, ohne Zoo – einfach in freier Natur. Unvergesslich für Groß und Klein!'},
+  {icon:'🏰',cat:'Ausflugsziel',title:'Brügge – schönste Stadt Belgiens',text:'Nur 40 Minuten entfernt liegt eines der schönsten UNESCO-Weltkulturerbe Europas. Gotische Türme, Grachten, Weltklasse-Schokolade. Plant einen ganzen Tag ein – er wird nicht reichen!'},
+  {icon:'🍫',cat:'Kulinarik',title:'Belgische Schokolade ist eine Religion',text:'In Brügge gibt es mehr Schokoladenläden pro Quadratmeter als irgendwo sonst. Selbstgemachte Pralinés, Schokoladenfontänen, Trüffel – ein Stück belgische Kultur zum Anbeißen.'},
+  {icon:'🐟',cat:'Kulinarik',title:'Frischer Fisch direkt vom Boot',text:'Am Freitagsmarkt in Breskens kaufen Einheimische Nordseekrabben und Muscheln – morgens angelandet, mittags auf dem Teller. Das ist Zeeland at its best!'},
+  {icon:'🚲',cat:'Outdoor',title:'Das Fahrradparadies Zeeland',text:'Zeeland ist flach wie ein Brett – und das ist hier ein Riesenvorteil! Entlang der Küste radeln, Meeresluft tanken, keine Steigungen. Der Küstenradweg ist einer der schönsten Europas.'},
+  {icon:'🌿',cat:'Natur',title:'Zwin Naturpark – wo Wildnis auf Meer trifft',text:'An der belgisch-niederländischen Grenze liegt das Zwin Naturreservat: weite Salzwiesen, seltene Vögel, endloser Horizont. Ein Ort absoluter Stille und Weite.'},
+  {icon:'💧',cat:'Kinder-Highlight',title:'Waterland Neeltje Jans – Deltawerke hautnah!',text:'Riesige Wasserrutschen, Robben füttern, die spektakulären Deltawerke von innen erleben – ein ganzer Kindertag! Nur 50 Minuten entfernt und absolut unvergesslich.'},
+  {icon:'🌙',cat:'Geheimtipp',title:'Sluis Abendmarkt – mittelalterlich und magisch',text:'Mittwochabends verwandelt sich Sluis in ein Marktspektakel: Stände, Musik, Fackeln in der Dämmerung. Die kleinste Stadt der Niederlande ganz groß!'},
+  {icon:'🐚',cat:'Strand-Vorfreude',title:'Muschelschätze im Morgengrauen',text:'Ebbe bringt Schätze: Muscheln, Bernstein, manchmal Seepferdchen. Die Kinder werden stundenlang am Wassersaum suchen – die schönsten Exemplare findet man wenn noch keiner da ist.'},
+  {icon:'🍺',cat:'Kulinarik',title:'Belgisches Bier – eine eigene Wissenschaft',text:'Über 1500 verschiedene belgische Biere gibt es – Trappisten, Gueuze, Quadruppel. In jedem Café an der Grenze eine Offenbarung. Die Kinder bekommen natürlich Fristi!'},
+  {icon:'🧀',cat:'Kulinarik',title:'Käse aus Sluis – direkt vom Händler',text:'Der Mittwochsmarkt in Sluis ist bekannt für Käsehändler: Edamer, Gouda, Boerenkaas in Qualitäten die man im Supermarkt nie findet. Probieren ist Pflicht!'},
+  {icon:'☀️',cat:'Klimafakt',title:'Zeeland – sonnenscheinreichste Region der Niederlande!',text:'Im August scheint die Sonne in Zeeland durchschnittlich 8 Stunden täglich. Pack die Sonnencreme schon mal bereit – ihr werdet sie brauchen!'},
+  {icon:'🐶',cat:'Mit Hund',title:'Euer Hund wird diesen Urlaub lieben!',text:'Hundefreundlicher Strand direkt am Resort, morgens und abends Freilauf am Hundestrand. Frische Meeresluft, endlose Sandwüste, neue Freundschaften. Ein Hundetraum!'},
+  {icon:'⛵',cat:'Ausflugsziel',title:'Fähre nach Vlissingen – 20 Min. Abenteuer',text:'Von Breskens fährt eine Fähre über die Westerschelde nach Vlissingen. Nebenbei sieht man die gigantischen Containerschiffe der Welthandelsroute direkt vor der Nase. Spektakulär!'},
+  {icon:'🌊',cat:'Strand-Vorfreude',title:'Sandburgen die bis zum Horizont reichen',text:'Nieuwvliet-Bad hat bei Ebbe einen Strand der so weit geht, dass man kaum das Wasser sieht. Perfekt für epische Sandburg-Projekte, Drachen steigen lassen, Strandkörbe. Viel Platz!'},
+  {icon:'🏛️',cat:'Ausflugsziel',title:'Middelburg – Hauptstadt Zeelands',text:'Die prächtige Abtei aus dem Mittelalter, der Rathausturm mit 48 Glocken, das Zeeuws Museum. Middelburg ist kompakt und voller Geschichte. Der Turmaufstieg gibt den besten Blick über Zeeland!'},
+  {icon:'🎨',cat:'Ausflugsziel',title:'Gent – das unterschätzte Juwel Belgiens',text:'Brüssel kennt jeder, Brügge kennt jeder – aber Gent? Gravensteen-Burg, bunte Grachtenhäuser am Graslei, lebhaftes Straßenleben. Nur 60 Minuten entfernt!'},
+  {icon:'🦞',cat:'Kulinarik',title:'Zeeland-Muscheln – die besten der Welt!',text:'Im August beginnt die Muschelsaison in Zeeland. „Mosselen" in weißem Wein, mit Pommes und Aioli – das Nationalgericht der Region. Am besten direkt in einem Hafenlokal in Breskens!'},
+  {icon:'🌅',cat:'Stimmungs-Boost',title:'Sonnenuntergang über der Nordsee',text:'An einem klaren Abend geht die Sonne am Nordseestrand in einem Spektakel aus Orange, Pink und Gold unter. Kein Filter nötig – nur hinsetzen, staunen und dankbar sein.'},
+  {icon:'🐦',cat:'Natur',title:'Zeeland ist ein Paradies für Vögel',text:'Der Löffler, der Säbelschnäbler, der Austernfischer – Zeeland hat einige der seltensten Küstenvögel Europas. Fernglas einpacken! Der Zwin Naturpark ist das Highlight für Vogelbeobachter.'},
+  {icon:'🎠',cat:'Familie',title:'Groede – das Kinderdorf 10 Minuten vom Resort',text:'Driftkarts, Trampolin, Spielplatz, Eiscafé – und das alles in einem Bilderbuchdörfchen. Perfekt wenn der Strand mal zu windig ist. 10 Minuten Autofahrt reichen!'},
+  {icon:'🌧️',cat:'Geheimtipp',title:'Schlechtes Wetter? Kein Problem!',text:'Regentag-Plan: Brügge für Schokolade und Museen, Kinepolis für Kinoabend, Middelburg für Zeeuws Museum. Zeeland langweilt sich nie – auch wenn die Sonne mal Pause macht.'},
+  {icon:'🍟',cat:'Kulinarik',title:'Belgische Pommes – inoffizielles Weltkulturerbe',text:'Keine Fritten der Welt kommen an belgische Frieten heran: zweimal frittiert, außen knusprig, innen weich, hausgemachte Mayo. An jeder Ecke in Belgien zu finden – und göttlich.'},
+  {icon:'🌍',cat:'Fun Fact',title:'Zeeland bedeutet „Meerland"',text:'Der Name kommt vom mittelalterlichen Niederländisch und bedeutet schlicht „Meerland". Weite Horizonte, Gezeiten, Salzluft überall – passender könnte der Name kaum sein.'},
+  {icon:'🏊',cat:'Strand-Vorfreude',title:'Die Nordsee: kühler als die Ostsee – aber besser!',text:'Um 18-20°C im August ist das Nordseewasser erfrischend kühl. Nach 10 Minuten fühlt man nichts mehr und will gar nicht raus. Die Kinder sowieso nicht!'},
+  {icon:'🌻',cat:'Landschaft',title:'Zeeland im Sommer – Sonnenblumenfelder überall',text:'Die Felder rund um Nieuwvliet-Bad blühen im Juli und August in leuchtendem Gelb. Fahrrad-Ausflüge durch Sonnenblumenfelder mit Meeresluft im Rücken – das ist Zeeland-Sommer pur.'},
+  {icon:'🏰',cat:'Fun Fact',title:'Brügge hat mehr Brücken als Venedig!',text:'50 Brücken für 20.000 Einwohner – mehr pro Kopf als Venedig! Jede Brücke hat ihre Geschichte. Ein ganzer Tag Brügge reicht trotzdem nicht – plan gleich zwei ein!'},
+  {icon:'🗺️',cat:'Fun Fact',title:'Zeeland hat fast 650 km Küstenlinie!',text:'Durch seine vielen Inseln und Halbinseln hat Zeeland fast 650 Kilometer Küste. Nie der gleiche Strand zweimal – eine endlose Entdeckungsreise!'},
+  {icon:'⚡',cat:'Geheimtipp',title:'Albert Heijn Nieuwvliet – euer täglicher Supermarkt',text:'Nur 5 Minuten vom Resort. Frische Stroopwafels, Hagelslag, Gouda, Speculaas – alles für ein echtes niederländisches Frühstück. Der erste Einkauf ist schon fast ein Erlebnis!'},
+  {icon:'🌊',cat:'Strand-Vorfreude',title:'Sandburg-Architektenwettbewerb',text:'Wer baut die beste Burg? Am Strand von Nieuwvliet-Bad gibt es Platz ohne Ende und Sand in perfekter Konsistenz. Eimer, Förmchen und ehrgeizige Pläne nicht vergessen!'},
+  {icon:'🌿',cat:'Natur',title:'Die Deltawerke – Ingenieurskunst die Leben rettet',text:'Nach der Sturmflutkatastrophe von 1953 bauten die Niederländer das größte Wasserbauprojekt der Geschichte. Hautnah erleben in Neeltje Jans – beeindruckend für die ganze Familie!'},
+  {icon:'🌙',cat:'Stimmungs-Boost',title:'Sternenhimmel an der Nordsee',text:'Weit weg von Großstädten – an einem klaren Augustabend am Strand ist der Sternenhimmel unglaublich. Die Milchstraße, Satelliten, Sternschnuppen. Decke mitnehmen!'},
+  {icon:'🍦',cat:'Kulinarik',title:'Eis in Belgien und den Niederlanden – auf anderem Niveau',text:'Belgisches Eis in Waffeltüten, niederländisches Softeis mit Streusel – beide Länder sind fanatisch beim Thema Eis. Jeden Tag ein anderes Eis ist absolut legitim. Das ist Urlaub!'},
+  {icon:'👶',cat:'Familie',title:'Krabben fangen – der älteste Strandsport der Welt',text:'Mit Eimer und Netz kann man in den Gezeitentümpeln kleine Krabben und Strandkrebse fangen. Kinder flippen aus! Danach wieder freilassen natürlich.'},
+  {icon:'🏖️',cat:'Strand-Vorfreude',title:'Strandkorb – ein Muss an der Nordsee!',text:'Ein Strandkorb bietet Windschutz, Schatten und Platz für die ganze Familie. Die holländischen Strandkörbe sind legendär – und buchbar. Am frühen Morgen sind die besten noch frei!'},
+  {icon:'🌊',cat:'Fun Fact',title:'Die Nordsee: manchmal grün, manchmal blau, manchmal grau',text:'Algen, Licht, Wind und Strömung bestimmen die Farbe. An guten Tagen leuchtet sie türkisblau – dann fühlt man sich fast in der Karibik. Fast!'},
+  {icon:'🗺️',cat:'Geheimtipp',title:'Mit dem Fahrrad nach Belgien – einfach so!',text:'Die Grenze ist offen – man radelt einfach drüber. Auf einmal belgische Straßenschilder, andere Häuser, andere Cafés. Europa at its best!'},
+  {icon:'🌅',cat:'Stimmungs-Boost',title:'Morgenschwimmen in der Nordsee',text:'Der erste Sprung in die Nordsee am frühen Morgen – vor dem Frühstück, bevor andere am Strand sind. Das Wasser ist frisch, der Horizont endlos. Wacht auf wie nichts anderes!'},
+  {icon:'🐶',cat:'Mit Hund',title:'Euer Hund am Hundestrand – Paradies pur',text:'500 Meter östlich der Hauptkasse liegt der offizielle Hundestrand. Ganztags frei laufen, im Meer toben, andere Hunde treffen. Morgens früh gehört er ganz euch!'},
+  {icon:'📸',cat:'Foto-Tipp',title:'Goldenes Stunden-Licht am Strand',text:'Eine Stunde nach Sonnenaufgang und vor Sonnenuntergang ist das Licht am Strand von Nieuwvliet-Bad magisch golden. Kamera oder Handy bereithalten – kein Filter nötig!'},
+  {icon:'🏰',cat:'Ausflugsziel',title:'Die Windmühle in Sluis – von innen begehbar!',text:'Die historische Windmühle im Zentrum von Sluis kann man besteigen. Von oben ein 360-Grad-Blick über das flache Land, die Felder, die Küste in der Ferne. Toller Ausblick!'},
+  {icon:'🦀',cat:'Fun Fact',title:'Ebbe und Flut – zweimal täglich Theater',text:'An der Nordseeküste gibt es zweimal täglich Ebbe und Flut. Bei Ebbe zieht das Meer weit zurück und gibt den Strand frei für Muschelsucher und Wattwanderer. Ebbe-Zeiten vorher checken!'},
+  {icon:'🌊',cat:'Strand-Vorfreude',title:'Wellenreiten für Anfänger',text:'Die Nordsee hat ordentliche Wellen – selten zu groß für Anfänger. Mit einem Bodyboard kann man wunderbar reiten. Die Kinder werden nicht mehr raus wollen!'},
+  {icon:'🌿',cat:'Natur',title:'Salzwiesen – das unterschätzte Ökosystem',text:'Die Salzwiesen rund um den Zwin sind einzigartig. Hier wächst Queller, hier nisten Seeschwalben, hier rasten Zugvögel auf dem Weg nach Afrika. Still beobachten und staunen.'},
+  {icon:'🎯',cat:'Countdown',title:'Nur noch 2 Wochen!',text:'Die Koffer sollten bald fertig gepackt sein! Die Vorfreude ist jetzt auf dem Höhepunkt. Noch 14 Tage bis Nieuwvliet-Bad. Bald!'},
+  {icon:'🍽️',cat:'Kulinarik',title:'Haring – Holländischer Streetfood-Klassiker',text:'Frischer Salzhering, gerollt um Zwiebeln und Essiggurken – gegessen im Stehen am Imbisswagen. Mutig sein und probieren! Die meisten sind danach begeistert.'},
+  {icon:'🏊',cat:'Strand-Vorfreude',title:'Jeden Morgen – das Meer ruft!',text:'Stellt euch vor: jeden Morgen aufwachen und in 5 Minuten am Meer sein. Kein Stau, kein Parkplatzsuche. Einfach raus und rein. Das ist echter Urlaubsluxus!'},
+  {icon:'🌻',cat:'Fun Fact',title:'Zeeland hat mehr Fahrräder als Einwohner',text:'Die Niederlande haben landesweit mehr Fahrräder als Menschen – und in Zeeland ist es nicht anders. Überall Radwege, überall Abstellmöglichkeiten. Fahrradfahren ist hier Lebensweise.'},
+  {icon:'🐶',cat:'Mit Hund',title:'Hund und Breskens Hafen – ein Perfect Match',text:'Im Hafen von Breskens kann der Hund mitspazieren – Fischgeruch macht ihn neugierig, andere Hunde freuen sich. Ein Nachmittag am Hafen mit Hund und Fischbrötchen: perfekt.'},
+  {icon:'💡',cat:'Geheimtipp',title:'Buienradar.nl – euer Wetterfreund',text:'Zeigen minutengenau wo es regnet und wann der Schauer vorbei ist. Für Strandtage unentbehrlich: 20 Minuten warten statt Strandtuch einpacken!'},
+  {icon:'🌊',cat:'Stimmungs-Boost',title:'Das Meer hat keine Emails, keine Meetings',text:'Bald ist alles andere weit weg – und das Einzige was zählt ist: Sonnencreme, Sand zwischen den Zehen, Wellen zählen. Noch ein paar Tage!'},
+  {icon:'🎪',cat:'Familie',title:'Spielplätze und Kinderkarussells überall',text:'Zeeland ist ein Familienparadies: in jedem Dorf Spielplätze, an jedem Strand Kinderangebote. Zeeland wurde für Familien gemacht!'},
+  {icon:'🌙',cat:'Geheimtipp',title:'Terrassenkultur – Abendessen im Freien',text:'In den Niederlanden und Belgien ist Terrassenkultur Religion. Solange kein Regen fällt sitzen alle draußen. Findet euer Lieblingslokal mit Blick aufs Meer!'},
+  {icon:'🏖️',cat:'Strand-Vorfreude',title:'Der erste Blick aufs Meer nach langer Fahrt',text:'Wenn der Letzte gearbeitet hat, der Koffer zu ist und das Auto gepackt ist – dann beginnt die Magie. Dieser erste Meerblick macht alles vergessen!'},
+  {icon:'📍',cat:'Countdown',title:'Nur noch eine Woche!',text:'Sieben Schläfchen noch! Die Vorfreude ist jetzt kaum noch zu halten. Letzte Einkäufe, letzte Vorbereitungen – und dann: Zeeland, wir kommen!'},
+  {icon:'🚗',cat:'Reise-Tipp',title:'Die Route: GPS-Adresse gespeichert?',text:'GPS-Adresse: Baanstpoldersedijk 4, Nieuwvliet. Check-in ab 16:00 Uhr. Plant genug Zeit für Pausen ein – mit Kindern und Hund lieber einen Stopp mehr!'},
+  {icon:'📋',cat:'Fast da!',title:'Checkliste: alles dabei?',text:'Schlüssel, Buchungsbestätigung Nr. 36801, Reisepässe, Heimtierausweis, EU-Krankenversicherungskarte, Bargeld. Alles? Dann kann\'s losgehen!'},
+  {icon:'🌊',cat:'Übermorgen geht\'s los!',title:'In 48 Stunden sitzt ihr im Auto!',text:'Habt ihr an alles gedacht? Alle aufgeregt? Gut so! Morgen noch einmal kurz durch die Checkliste – und dann wird eingeschlafen. Morgen ist Urlaubstag!'},
+  {icon:'🎉',cat:'MORGEN GEHT\'S LOS!',title:'Der letzte Abend zu Hause!',text:'Koffer gepackt, Auto bereit. Morgen früh: ab nach Zeeland! Gute Nacht – morgen wird der beste Urlaub des Jahres beginnen. 🌊☀️🐶'}
+];
+
+// Statt Datum-Index: wie viele Tage seit 24. Mai 2026
+var CARD_START = new Date('2026-05-24T00:00:00Z').getTime();
+
+function loadDayCard(){
+  var now = Date.now();
+  var dayIdx = Math.floor((now - CARD_START) / 86400000);
+  dayIdx = Math.max(0, Math.min(dayIdx, CARDS.length - 1));
+  var c = CARDS[dayIdx];
+  var el = document.getElementById('day-card');
+  el.innerHTML =
+    '<span class="card-cat">' + c.cat + '</span>' +
+    '<span class="card-icon-big">' + c.icon + '</span>' +
+    '<h3>' + c.title + '</h3>' +
+    '<p>' + c.text + '</p>' +
+    '<div class="card-date-hint">Karte ' + (dayIdx+1) + ' von ' + CARDS.length + '</div>';
+}
+loadDayCard();
+
+/* ──────────────────────────────────────────────────────
+   3. SHARE BUTTON
+────────────────────────────────────────────────────── */
+document.getElementById('share-btn').addEventListener('click', function(){
+  var diff  = TARGET.getTime() - Date.now();
+  var days  = diff > 0 ? Math.floor(diff/86400000) : 0;
+  var msg   = '🌊 Noch ' + days + ' Tage bis Zeeland!\n'
+    + '☀️ Dormio Strand Resort Nieuwvliet-Bad\n'
+    + '📅 27. Juli – 10. August 2026\n'
+    + '🦭 Robbensafari · 🏰 Brügge · 🐶 Hundestrand\n'
+    + 'Wir können es kaum erwarten! 🎉';
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(msg).then(showToast).catch(fallback);
+    } else { fallback(); }
+  } catch(e){ fallback(); }
+  function fallback(){
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = msg; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+      showToast();
+    } catch(e2){ alert(msg); }
+  }
+  function showToast(){
+    var t = document.getElementById('share-toast');
+    t.classList.add('show');
+    setTimeout(function(){ t.classList.remove('show'); }, 2500);
+  }
+});
+
+/* ──────────────────────────────────────────────────────
+   4. PACKLISTE
+────────────────────────────────────────────────────── */
+var PACK = [
+  {cat:'👗 Kleidung & Strand',items:['Badehose / Bikini (mehrere!)','Strandtuch (groß)','Flip-Flops','Sonnenhut / Sonnencap','Leichte Sommerkleidung','Windjacke / Fleece (Nordseewind!)','Regenjacke','Abendkleidung für Restaurants']},
+  {cat:'🏖️ Strand & Outdoor',items:['Sonnencreme SPF 50','After-Sun Lotion','Strandspielzeug (Eimer, Schaufel, Förmchen)','Windschutz / Strandmuschel','Fahrradhelme','Picknickdecke / Strandmatte']},
+  {cat:'📄 Dokumente',items:['Reisepässe (alle Familienmitglieder!)','EU-Krankenversicherungskarte','Buchungsbestätigung Nr. 36801','Kfz-Versicherung + Zulassung','Kreditkarte / Bargeld (Euro)']},
+  {cat:'🐶 Für den Hund',items:['Hundefutter (14 Tage!)','Futter- und Wassernapf','Leine(n)','Kotbeutel (viele!)','EU-Heimtierausweis / Impfpass','Hundekorb / Lieblingsdecke','Zeckenentferner']},
+  {cat:'💊 Apotheke',items:['Schmerzmittel','Pflaster & Verbandsmaterial','Mückenschutz','Zeckenzange / -karte','Durchfall-Medikamente','Sonnenbrand-Spray']},
+  {cat:'📱 Technik',items:['Handy-Ladekabel','Powerbank','Kamera / GoPro','Kopfhörer','Steckeradapter (NL/BE)']}
+];
+
+var packTotal = 0, packDone = 0;
+
+function buildPackList(){
+  var container = document.getElementById('pack-list');
+  container.innerHTML = '';
+  var idx = 0;
+  PACK.forEach(function(cat){
+    var block = document.createElement('div');
+    block.className = 'cat-block';
+    var title = document.createElement('div');
+    title.className = 'cat-title';
+    title.textContent = cat.cat;
+    block.appendChild(title);
+    cat.items.forEach(function(item){
+      var i = idx++;
+      var el = document.createElement('div');
+      el.className = 'check-item';
+      var checked = false;
+      try{ checked = localStorage.getItem('pack_'+i) === '1'; }catch(e){}
+      if(checked) el.classList.add('done');
+      el.innerHTML = '<div class="check-box"></div><span class="check-label">'+item+'</span>';
+      el.addEventListener('click', function(){
+        el.classList.toggle('done');
+        var isDone = el.classList.contains('done');
+        try{ localStorage.setItem('pack_'+i, isDone?'1':'0'); }catch(e){}
+        updatePackProgress();
+      });
+      block.appendChild(el);
+    });
+    container.appendChild(block);
+  });
+  packTotal = idx;
+  updatePackProgress();
+}
+
+function updatePackProgress(){
+  packDone = document.querySelectorAll('#pack-list .check-item.done').length;
+  var pct = packTotal > 0 ? Math.round((packDone/packTotal)*100) : 0;
+  document.getElementById('pack-fill').style.width = pct + '%';
+  document.getElementById('pack-pct').textContent = pct + '% gepackt';
+}
+
+buildPackList();
+
+document.getElementById('reset-pack').addEventListener('click', function(){
+  if(!confirm('Packliste wirklich zurücksetzen?')) return;
+  try{
+    for(var i=0;i<60;i++) localStorage.removeItem('pack_'+i);
+  }catch(e){}
+  buildPackList();
+});
+
+/* ──────────────────────────────────────────────────────
+   5. AUFGABEN VOR DEM URLAUB
+────────────────────────────────────────────────────── */
+var TASKS = [
+  {label:'Reisepässe prüfen',hint:'Mind. 6 Monate Gültigkeit ab Abreisedatum'},
+  {label:'EU-Krankenversicherungskarte besorgen',hint:'Für alle Familienmitglieder – kostenlos bei der Krankenkasse'},
+  {label:'Hunde-Heimtierausweis + Impfungen aktuell?',hint:'Tollwut-Impfung nötig für Belgien-Ausflüge'},
+  {label:'Robbensafari vorbuchen',hint:'Schnell ausgebucht! Website: robbensafari.nl (prüfen)'},
+  {label:'Waterland Neeltje Jans Tickets kaufen',hint:'Online vorab günstiger und sicherer'},
+  {label:'Nachbarn / Familie für Wohnung beauftragen',hint:'Schlüssel übergeben, Notfallkontakt hinterlassen'},
+  {label:'Pflanzen-Bewässerung organisieren',hint:'14 Tage ist lang – Pflanzenwächter finden'},
+  {label:'Post / Zeitschriften pausieren',hint:'Deutsche Post: Nachsendeauftrag online möglich'},
+  {label:'Auto: Ölstand, Reifendruck & HU prüfen',hint:'Lange Autofahrt mit Familie und Hund'},
+  {label:'Euro Bargeld besorgen',hint:'NL und BE nutzen beide Euro – praktisch!'},
+  {label:'Buienradar.nl als Favorit speichern',hint:'Der wichtigste Wetter-Tipp für Zeeland'},
+  {label:'GPS-Adresse gespeichert',hint:'Baanstpoldersedijk 4, Nieuwvliet'},
+  {label:'Check-in Zeit notiert: Mo 27.07 ab 16:00 Uhr',hint:'Reservierung Nr. 36801'},
+  {label:'Resort-Telefon gespeichert',hint:'+31 117 37 08 00'},
+  {label:'Kreditkarte für Ausland freischalten',hint:'Manche Banken blockieren Auslandszahlungen'}
+];
+
+function buildTaskList(){
+  var container = document.getElementById('task-list');
+  container.innerHTML = '';
+  TASKS.forEach(function(task, i){
+    var el = document.createElement('div');
+    el.className = 'task-item';
+    var done = false;
+    try{ done = localStorage.getItem('task_'+i) === '1'; }catch(e){}
+    if(done) el.classList.add('done');
+    el.innerHTML =
+      '<div class="task-box"></div>' +
+      '<div class="task-main">' +
+        '<div class="task-label">'+task.label+'</div>' +
+        '<div class="task-hint">'+task.hint+'</div>' +
+      '</div>';
+    el.addEventListener('click', function(){
+      el.classList.toggle('done');
+      try{ localStorage.setItem('task_'+i, el.classList.contains('done')?'1':'0'); }catch(e){}
+    });
+    container.appendChild(el);
+  });
+}
+
+buildTaskList();
+
+document.getElementById('reset-tasks').addEventListener('click', function(){
+  if(!confirm('Aufgabenliste zurücksetzen?')) return;
+  try{
+    for(var i=0;i<TASKS.length;i++) localStorage.removeItem('task_'+i);
+  }catch(e){}
+  buildTaskList();
+});
+
+}());
+</script>
+</body>
+</html>
