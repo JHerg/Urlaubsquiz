@@ -165,9 +165,22 @@ body{
   text-transform:uppercase;padding:0 0 8px;border-bottom:1px solid var(--border);margin-bottom:6px
 }
 /* native checkbox – immer funktioniert auf iOS */
-.native-cb{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
+/* Checkbox: unsichtbar, deckt die gesamte Label-Zeile ab, KEIN pointer-events:none!
+   iOS Safari: das Label-Click-Forwarding funktioniert nur wenn der Input
+   pointer-events empfangen kann und sich im Layout befindet. */
+.native-cb{
+  position:absolute;
+  top:0;left:0;
+  width:100%;height:100%;
+  opacity:0;
+  margin:0;padding:0;
+  cursor:pointer;
+  z-index:2;
+  -webkit-appearance:checkbox;appearance:checkbox
+}
 
 .check-item{
+  position:relative; /* nötig für absolut positionierten .native-cb */
   display:flex;align-items:center;gap:12px;padding:10px 2px;
   border-bottom:1px solid rgba(226,232,240,.5);
   cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
@@ -185,6 +198,7 @@ body{
 .native-cb:checked ~ .check-label{color:var(--muted);text-decoration:line-through}
 
 .task-item{
+  position:relative; /* nötig für absolut positionierten .native-cb */
   display:flex;align-items:flex-start;gap:12px;padding:12px 16px;
   border-bottom:1px solid var(--border);
   cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
