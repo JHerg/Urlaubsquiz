@@ -256,7 +256,6 @@ footer strong{color:var(--sky)}
       <span id="cnt-s">00</span><span>s</span>
     </div>
     <div class="sleep-pill">🌙 Noch <strong id="cnt-sleeps">64</strong> Schläfchen!</div>
-    <div id="js-status" style="font-size:10px;opacity:.55;margin-top:8px;letter-spacing:.05em">⏳ lade…</div>
   </div>
 
   <div class="meter-wrap">
@@ -553,18 +552,13 @@ footer strong{color:var(--sky)}
         mf.style.width = pct.toFixed(1) + '%';
       }
 
-      // Status-Anzeige: zeigt dass JS wirklich läuft
-      var s = el('js-status');
-      if(s){ s.textContent = '✓ live · '+new Date().toLocaleTimeString('de-DE'); s.style.color='#86efac'; s.style.opacity='.85'; }
+
     }
 
     tick();
     setInterval(tick, 1000);
 
-  } catch(e){
-    var s = document.getElementById('js-status');
-    if(s){ s.textContent = '⚠️ '+e.message; s.style.color='#fde68a'; }
-  }
+  } catch(e){}
 })();
 </script>
 
