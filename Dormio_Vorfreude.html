@@ -220,6 +220,10 @@ footer strong{color:var(--sky)}
 </head>
 <body>
 
+<noscript><div style="background:#fef3c7;color:#92400e;padding:14px 18px;text-align:center;font-size:14px;font-weight:600;border-bottom:2px solid #f59e0b">
+⚠️ JavaScript ist deaktiviert. Diese Datei in Safari öffnen (nicht im WhatsApp-Vorschau-Fenster)!
+</div></noscript>
+
 <!-- ═══ HERO ═══ -->
 <header class="hero">
   <span class="hero-emoji">🌊</span>
@@ -228,15 +232,16 @@ footer strong{color:var(--sky)}
 
   <div class="countdown-box">
     <div class="cnt-main">
-      <span id="cnt-days" class="cnt-num">--</span>
+      <span id="cnt-days" class="cnt-num">64</span>
       <span class="cnt-unit">Tage</span>
     </div>
     <div class="cnt-hms">
-      <span id="cnt-h">--</span><span>h</span>&nbsp;
-      <span id="cnt-m">--</span><span>min</span>&nbsp;
-      <span id="cnt-s">--</span><span>s</span>
+      <span id="cnt-h">00</span><span>h</span>&nbsp;
+      <span id="cnt-m">00</span><span>min</span>&nbsp;
+      <span id="cnt-s">00</span><span>s</span>
     </div>
-    <div class="sleep-pill">🌙 Noch <strong id="cnt-sleeps">&nbsp;--&nbsp;</strong> Schläfchen!</div>
+    <div class="sleep-pill">🌙 Noch <strong id="cnt-sleeps">64</strong> Schläfchen!</div>
+    <div id="js-status" style="font-size:10px;opacity:.55;margin-top:8px;letter-spacing:.05em">⚠️ statisch – tippe Safari zum Öffnen</div>
   </div>
 
   <div class="meter-wrap">
@@ -375,60 +380,82 @@ footer strong{color:var(--sky)}
   <span style="display:block;margin-top:6px;opacity:.6">Christian Polo Digital Guide · Viel Vorfreude!</span>
 </footer>
 
-<!-- SCRIPT 1: Countdown – läuft immer, unabhängig von allem anderen -->
+<!-- SCRIPT 1: Countdown – maximal kompatibel, läuft unter allen iOS-Versionen -->
 <script>
-try {
-var TARGET = new Date('2026-07-27T14:00:00Z');
-var TRIP_START_MS = new Date('2026-05-24T00:00:00Z').getTime();
+window.addEventListener('error', function(ev){
+  var s = document.getElementById('js-status');
+  if(s){ s.textContent = '⚠️ JS-Fehler: ' + (ev.message || 'unbekannt'); s.style.color='#fde68a'; }
+});
 
-function pad(n){ return n < 10 ? '0'+n : ''+n; }
+function startCountdown(){
+  // Date.UTC ist iOS-bug-sicher (kein String-Parsing nötig)
+  var TARGET_MS     = Date.UTC(2026, 6, 27, 14, 0, 0);  // 27.07.2026 14:00 UTC = 16:00 CEST
+  var TRIP_START_MS = Date.UTC(2026, 4, 24, 0, 0, 0);   // 24.05.2026 00:00 UTC
 
-function updateCountdown(){
-  try {
-    var now  = Date.now();
-    var diff = TARGET.getTime() - now;
+  function pad(n){ return n < 10 ? '0' + n : '' + n; }
+
+  function $(id){ return document.getElementById(id); }
+
+  function tick(){
+    var now  = new Date().getTime();
+    var diff = TARGET_MS - now;
+
+    var elDays  = $('cnt-days');
+    var elH     = $('cnt-h');
+    var elM     = $('cnt-m');
+    var elS     = $('cnt-s');
+    var elSleep = $('cnt-sleeps');
+    var elMeter = $('meter-fill');
+
+    if(!elDays){ return; }  // DOM noch nicht da
 
     if(diff <= 0){
-      document.getElementById('cnt-days').textContent = '0';
-      document.getElementById('cnt-h').textContent = '00';
-      document.getElementById('cnt-m').textContent = '00';
-      document.getElementById('cnt-s').textContent = '00';
-      document.getElementById('cnt-sleeps').textContent = '0';
-      document.getElementById('meter-fill').style.width = '100%';
+      elDays.textContent = '0';
+      elH.textContent = '00'; elM.textContent = '00'; elS.textContent = '00';
+      elSleep.textContent = '0';
+      if(elMeter) elMeter.style.width = '100%';
       return;
     }
 
-    var totalSec  = Math.floor(diff / 1000);
-    var days      = Math.floor(totalSec / 86400);
-    var hours     = Math.floor((totalSec % 86400) / 3600);
-    var mins      = Math.floor((totalSec % 3600) / 60);
-    var secs      = totalSec % 60;
+    var totalSec = Math.floor(diff / 1000);
+    var days     = Math.floor(totalSec / 86400);
+    var hours    = Math.floor((totalSec % 86400) / 3600);
+    var mins     = Math.floor((totalSec % 3600) / 60);
+    var secs     = totalSec % 60;
+    var sleeps   = Math.ceil(diff / 86400000);
 
-    var now_local    = new Date();
-    var target_local = new Date(TARGET.getTime());
-    var sleeps = Math.ceil((target_local - now_local) / 86400000);
+    elDays.textContent  = days;
+    elH.textContent     = pad(hours);
+    elM.textContent     = pad(mins);
+    elS.textContent     = pad(secs);
+    elSleep.textContent = sleeps;
 
-    document.getElementById('cnt-days').textContent   = days;
-    document.getElementById('cnt-h').textContent      = pad(hours);
-    document.getElementById('cnt-m').textContent      = pad(mins);
-    document.getElementById('cnt-s').textContent      = pad(secs);
-    document.getElementById('cnt-sleeps').textContent = sleeps;
+    if(elMeter){
+      var total   = TARGET_MS - TRIP_START_MS;
+      var elapsed = now - TRIP_START_MS;
+      var pct = (elapsed / total) * 100;
+      if(pct < 0) pct = 0; if(pct > 100) pct = 100;
+      elMeter.style.width = pct.toFixed(1) + '%';
+    }
+  }
 
-    var total   = TARGET.getTime() - TRIP_START_MS;
-    var elapsed = now - TRIP_START_MS;
-    var pct     = Math.min(100, Math.max(0, (elapsed / total) * 100));
-    document.getElementById('meter-fill').style.width = pct.toFixed(1) + '%';
-  } catch(e){}
+  tick();
+  setInterval(tick, 1000);
+
+  // Status-Indikator: zeigt dass JS wirklich läuft
+  var s = $('js-status');
+  if(s){ s.textContent = '✓ live aktualisiert · ' + new Date().toLocaleTimeString('de-DE'); s.style.color='#86efac'; s.style.opacity='.85'; }
 }
 
-updateCountdown();
-setInterval(updateCountdown, 1000);
-} catch(e){}
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', startCountdown);
+} else {
+  startCountdown();
+}
 </script>
 
 <!-- SCRIPT 2: Vorfreude-Karte – unabhängig vom Countdown -->
 <script>
-try {
 var CARDS = [
   {icon:"🚀",cat:"Auf geht's!",title:"Der Countdown hat begonnen!",text:"Ab heute zählen wir die Tage – 64 Vorfreude-Karten warten auf euch. Jeden Morgen eine neue Portion Zeeland-Begeisterung. Willkommen beim Countdown zum schönsten Urlaub des Jahres!"},
   {icon:"🏖️",cat:"Strand-Vorfreude",title:"Euer Privatstrand liegt direkt vor der Tür",text:"Das Dormio Resort liegt unmittelbar am Nieuwvliet-Bad Strand – einem der breitesten Nordseestränden Zeelands. Morgens die ersten Schritte im Sand, Wellenrauschen beim Frühstück. Das Meer wartet!"},
@@ -493,14 +520,16 @@ var CARDS = [
   {icon:"🎉",cat:"MORGEN GEHT ES LOS!",title:"Der letzte Abend zu Hause!",text:"Koffer gepackt, Auto bereit. Morgen früh: ab nach Zeeland! Gute Nacht – morgen wird der beste Urlaub des Jahres beginnen. 🌊☀️🐶"}
 ];
 
-var CARD_START = new Date('2026-05-24T00:00:00Z').getTime();
+var CARD_START_MS = Date.UTC(2026, 4, 24, 0, 0, 0);
 
 function loadDayCard(){
-  var now = Date.now();
-  var dayIdx = Math.floor((now - CARD_START) / 86400000);
-  dayIdx = Math.max(0, Math.min(dayIdx, CARDS.length - 1));
-  var c = CARDS[dayIdx];
   var el = document.getElementById('day-card');
+  if(!el) return;
+  var now = new Date().getTime();
+  var dayIdx = Math.floor((now - CARD_START_MS) / 86400000);
+  if(dayIdx < 0) dayIdx = 0;
+  if(dayIdx >= CARDS.length) dayIdx = CARDS.length - 1;
+  var c = CARDS[dayIdx];
   el.innerHTML =
     '<span class="card-cat">' + c.cat + '</span>' +
     '<span class="card-icon-big">' + c.icon + '</span>' +
@@ -508,16 +537,22 @@ function loadDayCard(){
     '<p>' + c.text + '</p>' +
     '<div class="card-date-hint">Karte ' + (dayIdx+1) + ' von ' + CARDS.length + '</div>';
 }
-loadDayCard();
-} catch(e){}
+
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', loadDayCard);
+} else {
+  loadDayCard();
+}
 </script>
 
-<!-- SCRIPT 3: Share Button – braucht TARGET aus Script 1 -->
+<!-- SCRIPT 3: Share Button -->
 <script>
-try {
-document.getElementById('share-btn').addEventListener('click', function(){
-  var tgt  = new Date('2026-07-27T14:00:00Z');
-  var diff = tgt.getTime() - Date.now();
+function initShare(){
+  var btn = document.getElementById('share-btn');
+  if(!btn) return;
+  btn.addEventListener('click', function(){
+  var tgt_ms = Date.UTC(2026, 6, 27, 14, 0, 0);
+  var diff = tgt_ms - new Date().getTime();
   var days = diff > 0 ? Math.floor(diff / 86400000) : 0;
   var msg  = "🌊 Noch " + days + " Tage bis Zeeland!\n"
     + "☀️ Dormio Strand Resort Nieuwvliet-Bad\n"
@@ -552,13 +587,18 @@ document.getElementById('share-btn').addEventListener('click', function(){
     t.classList.add('show');
     setTimeout(function(){ t.classList.remove('show'); }, 2500);
   }
-});
-} catch(e){}
+  });
+}
+
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', initShare);
+} else {
+  initShare();
+}
 </script>
 
 <!-- SCRIPT 4: Packliste & Aufgaben -->
 <script>
-try {
 var PACK = [
   {cat:"👗 Kleidung & Strand",items:["Badehose / Bikini (mehrere!)","Strandtuch (groß)","Flip-Flops","Sonnenhut / Sonnencap","Leichte Sommerkleidung","Windjacke / Fleece (Nordseewind!)","Regenjacke","Abendkleidung für Restaurants"]},
   {cat:"🏖️ Strand & Outdoor",items:["Sonnencreme SPF 50","After-Sun Lotion","Strandspielzeug (Eimer, Schaufel, Förmchen)","Windschutz / Strandmuschel","Fahrradhelme","Picknickdecke / Strandmatte"]},
@@ -623,12 +663,15 @@ function updatePackProgress(){
   document.getElementById('pack-pct').textContent  = pct + '% gepackt';
 }
 
-buildPackList();
-
-document.getElementById('reset-pack').addEventListener('click', function(){
-  try { for(var i=0;i<60;i++) localStorage.removeItem('pack_'+i); } catch(e){}
+function initPack(){
+  if(!document.getElementById('pack-list')) return;
   buildPackList();
-});
+  var rp = document.getElementById('reset-pack');
+  if(rp) rp.addEventListener('click', function(){
+    try { for(var i=0;i<60;i++) localStorage.removeItem('pack_'+i); } catch(e){}
+    buildPackList();
+  });
+}
 
 /* ──────────────────────────────────────────────────────
    5. AUFGABEN VOR DEM URLAUB
@@ -684,14 +727,23 @@ function buildTaskList(){
   });
 }
 
-buildTaskList();
-
-document.getElementById('reset-tasks').addEventListener('click', function(){
-  try { for(var i=0;i<TASKS.length;i++) localStorage.removeItem('task_'+i); } catch(e){}
+function initTasks(){
+  if(!document.getElementById('task-list')) return;
   buildTaskList();
-});
+  var rt = document.getElementById('reset-tasks');
+  if(rt) rt.addEventListener('click', function(){
+    try { for(var i=0;i<TASKS.length;i++) localStorage.removeItem('task_'+i); } catch(e){}
+    buildTaskList();
+  });
+}
 
-} catch(e){}
+function initLists(){ initPack(); initTasks(); }
+
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', initLists);
+} else {
+  initLists();
+}
 </script>
 </body>
 </html>
