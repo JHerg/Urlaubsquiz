@@ -250,13 +250,13 @@ footer strong{color:var(--sky)}
       <span id="cnt-days" class="cnt-num">64</span>
       <span class="cnt-unit">Tage</span>
     </div>
-    <div class="cnt-hms">
+    <div class="cnt-hms" id="cnt-hms-row" style="opacity:0;transition:opacity .3s">
       <span id="cnt-h">00</span><span>h</span>&nbsp;
       <span id="cnt-m">00</span><span>min</span>&nbsp;
       <span id="cnt-s">00</span><span>s</span>
     </div>
     <div class="sleep-pill">🌙 Noch <strong id="cnt-sleeps">64</strong> Schläfchen!</div>
-    <div id="js-status" style="font-size:10px;opacity:.55;margin-top:8px;letter-spacing:.05em">⚠️ statisch – tippe Safari zum Öffnen</div>
+    <div id="js-status" style="font-size:10px;opacity:.55;margin-top:8px;letter-spacing:.05em">⏳ lade…</div>
   </div>
 
   <div class="meter-wrap">
@@ -507,78 +507,65 @@ footer strong{color:var(--sky)}
   <span style="display:block;margin-top:6px;opacity:.6">Christian Polo Digital Guide · Viel Vorfreude!</span>
 </footer>
 
-<!-- SCRIPT 1: Countdown – maximal kompatibel, läuft unter allen iOS-Versionen -->
+<!-- SCRIPT 1: Countdown – direktes IIFE, kein Event-Listener nötig (läuft am Ende des body) -->
 <script>
-window.addEventListener('error', function(ev){
-  var s = document.getElementById('js-status');
-  if(s){ s.textContent = '⚠️ JS-Fehler: ' + (ev.message || 'unbekannt'); s.style.color='#fde68a'; }
-});
+(function(){
+  try{
+    var TARGET     = Date.UTC(2026, 6, 27, 14, 0, 0);  // 27.07.2026 16:00 CEST
+    var TRIP_START = Date.UTC(2026, 4, 24, 0, 0, 0);   // 24.05.2026
 
-function startCountdown(){
-  // Date.UTC ist iOS-bug-sicher (kein String-Parsing nötig)
-  var TARGET_MS     = Date.UTC(2026, 6, 27, 14, 0, 0);  // 27.07.2026 14:00 UTC = 16:00 CEST
-  var TRIP_START_MS = Date.UTC(2026, 4, 24, 0, 0, 0);   // 24.05.2026 00:00 UTC
+    function pad(n){ return n < 10 ? '0'+n : ''+n; }
+    function el(id){ return document.getElementById(id); }
 
-  function pad(n){ return n < 10 ? '0' + n : '' + n; }
+    function tick(){
+      var now  = Date.now();
+      var diff = TARGET - now;
+      var elDays = el('cnt-days');
+      if(!elDays) return;
 
-  function $(id){ return document.getElementById(id); }
+      if(diff <= 0){
+        elDays.textContent = '0';
+        el('cnt-sleeps').textContent = '0';
+        var m = el('meter-fill'); if(m) m.style.width='100%';
+        return;
+      }
 
-  function tick(){
-    var now  = new Date().getTime();
-    var diff = TARGET_MS - now;
+      var ts    = Math.floor(diff / 1000);
+      var days  = Math.floor(ts / 86400);
+      var hours = Math.floor((ts % 86400) / 3600);
+      var mins  = Math.floor((ts % 3600) / 60);
+      var secs  = ts % 60;
 
-    var elDays  = $('cnt-days');
-    var elH     = $('cnt-h');
-    var elM     = $('cnt-m');
-    var elS     = $('cnt-s');
-    var elSleep = $('cnt-sleeps');
-    var elMeter = $('meter-fill');
+      elDays.textContent = days;
+      el('cnt-h').textContent = pad(hours);
+      el('cnt-m').textContent = pad(mins);
+      el('cnt-s').textContent = pad(secs);
+      el('cnt-sleeps').textContent = Math.ceil(diff / 86400000);
 
-    if(!elDays){ return; }  // DOM noch nicht da
+      // h/m/s einblenden sobald JS läuft
+      var hmsRow = el('cnt-hms-row');
+      if(hmsRow) hmsRow.style.opacity = '1';
 
-    if(diff <= 0){
-      elDays.textContent = '0';
-      elH.textContent = '00'; elM.textContent = '00'; elS.textContent = '00';
-      elSleep.textContent = '0';
-      if(elMeter) elMeter.style.width = '100%';
-      return;
+      // Vorfreude-Meter
+      var mf = el('meter-fill');
+      if(mf){
+        var pct = Math.max(0, Math.min(100, ((now - TRIP_START) / (TARGET - TRIP_START)) * 100));
+        mf.style.width = pct.toFixed(1) + '%';
+      }
+
+      // Status-Anzeige: zeigt dass JS wirklich läuft
+      var s = el('js-status');
+      if(s){ s.textContent = '✓ live · '+new Date().toLocaleTimeString('de-DE'); s.style.color='#86efac'; s.style.opacity='.85'; }
     }
 
-    var totalSec = Math.floor(diff / 1000);
-    var days     = Math.floor(totalSec / 86400);
-    var hours    = Math.floor((totalSec % 86400) / 3600);
-    var mins     = Math.floor((totalSec % 3600) / 60);
-    var secs     = totalSec % 60;
-    var sleeps   = Math.ceil(diff / 86400000);
+    tick();
+    setInterval(tick, 1000);
 
-    elDays.textContent  = days;
-    elH.textContent     = pad(hours);
-    elM.textContent     = pad(mins);
-    elS.textContent     = pad(secs);
-    elSleep.textContent = sleeps;
-
-    if(elMeter){
-      var total   = TARGET_MS - TRIP_START_MS;
-      var elapsed = now - TRIP_START_MS;
-      var pct = (elapsed / total) * 100;
-      if(pct < 0) pct = 0; if(pct > 100) pct = 100;
-      elMeter.style.width = pct.toFixed(1) + '%';
-    }
+  } catch(e){
+    var s = document.getElementById('js-status');
+    if(s){ s.textContent = '⚠️ '+e.message; s.style.color='#fde68a'; }
   }
-
-  tick();
-  setInterval(tick, 1000);
-
-  // Status-Indikator: zeigt dass JS wirklich läuft
-  var s = $('js-status');
-  if(s){ s.textContent = '✓ live aktualisiert · ' + new Date().toLocaleTimeString('de-DE'); s.style.color='#86efac'; s.style.opacity='.85'; }
-}
-
-if(document.readyState === 'loading'){
-  document.addEventListener('DOMContentLoaded', startCountdown);
-} else {
-  startCountdown();
-}
+})();
 </script>
 
 <!-- SCRIPT 2: Vorfreude-Karte – unabhängig vom Countdown -->
