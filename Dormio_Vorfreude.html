@@ -189,52 +189,47 @@ body{
   font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.06em;
   text-transform:uppercase;padding:0 0 8px;border-bottom:1px solid var(--border);margin-bottom:6px
 }
-/* ── CHECKLISTEN (Packliste & Aufgaben) ────────────── */
-/* Kein label/input/CSS-:checked-Konstrukt – zu fragil auf iOS file://
-   Stattdessen: JS togglet .is-checked Klasse direkt per click-Handler */
+/* ── CHECKLISTEN: natives input:checkbox + label + CSS :checked ──────────
+   Funktioniert ohne JavaScript – auch in WhatsApp / Quick Look Viewer.
+   Input-Checkbox: display:none, Sibling vor dem Label, verbunden via for= */
+.chk{display:none}
 
 .check-item{
   display:flex;align-items:center;gap:12px;padding:10px 4px;
   border-bottom:1px solid rgba(226,232,240,.5);
-  cursor:pointer;touch-action:manipulation;
-  -webkit-tap-highlight-color:transparent;
-  -webkit-user-select:none;user-select:none;
-  width:100%;background:none;border:none;border-radius:0;
-  text-align:left;font:inherit;color:inherit
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none
 }
 .check-item:last-child{border-bottom:none}
 .check-box{
   width:26px;height:26px;border-radius:7px;border:2px solid var(--border);
   flex-shrink:0;display:flex;align-items:center;justify-content:center;
-  transition:background .15s,border-color .15s;background:#fff;
-  font-size:15px;font-weight:800;color:transparent
+  background:#fff;font-size:15px;font-weight:800;color:transparent;
+  transition:background .15s,border-color .15s
 }
-.check-item.is-checked .check-box{background:var(--green);border-color:var(--green);color:#fff}
-.check-item.is-checked .check-box::after{content:'✓'}
-.check-label{font-size:14px;transition:color .15s;flex:1}
-.check-item.is-checked .check-label{color:var(--muted);text-decoration:line-through}
+.chk:checked + .check-item .check-box{background:var(--green);border-color:var(--green);color:#fff}
+.chk:checked + .check-item .check-box::after{content:'✓'}
+.check-label{font-size:14px;flex:1}
+.chk:checked + .check-item .check-label{color:var(--muted);text-decoration:line-through}
 
 .task-item{
   display:flex;align-items:flex-start;gap:12px;padding:12px 16px;
   border-bottom:1px solid var(--border);
-  cursor:pointer;touch-action:manipulation;
-  -webkit-tap-highlight-color:transparent;
-  -webkit-user-select:none;user-select:none;
-  width:100%;background:none;border:none;border-radius:0;
-  text-align:left;font:inherit;color:inherit
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none
 }
 .task-item:last-child{border-bottom:none}
 .task-box{
   width:26px;height:26px;border-radius:50%;border:2px solid var(--border);
   flex-shrink:0;display:flex;align-items:center;justify-content:center;
-  transition:background .15s,border-color .15s;margin-top:1px;background:#fff;
-  font-size:14px;font-weight:800;color:transparent
+  margin-top:1px;background:#fff;font-size:14px;font-weight:800;color:transparent;
+  transition:background .15s,border-color .15s
 }
-.task-item.is-checked .task-box{background:var(--green);border-color:var(--green);color:#fff}
-.task-item.is-checked .task-box::after{content:'✓'}
+.chk:checked + .task-item .task-box{background:var(--green);border-color:var(--green);color:#fff}
+.chk:checked + .task-item .task-box::after{content:'✓'}
 .task-main{flex:1}
-.task-label{font-size:14px;font-weight:600;transition:color .15s}
-.task-item.is-checked .task-main .task-label{color:var(--muted);text-decoration:line-through}
+.task-label{font-size:14px;font-weight:600}
+.chk:checked + .task-item .task-main .task-label{color:var(--muted);text-decoration:line-through}
 .task-hint{font-size:12px;color:var(--muted);margin-top:2px}
 
 /* ── RESET BUTTON ──────────────────────────────── */
@@ -397,61 +392,61 @@ footer strong{color:var(--sky)}
   <div id="pack-list">
     <div class="cat-block">
       <div class="cat-title">👗 Kleidung &amp; Strand</div>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',0)"><span class="check-box"></span><span class="check-label">Badehose / Bikini (mehrere!)</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',1)"><span class="check-box"></span><span class="check-label">Strandtuch (groß)</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',2)"><span class="check-box"></span><span class="check-label">Flip-Flops</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',3)"><span class="check-box"></span><span class="check-label">Sonnenhut / Sonnencap</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',4)"><span class="check-box"></span><span class="check-label">Leichte Sommerkleidung</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',5)"><span class="check-box"></span><span class="check-label">Windjacke / Fleece (Nordseewind!)</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',6)"><span class="check-box"></span><span class="check-label">Regenjacke</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',7)"><span class="check-box"></span><span class="check-label">Abendkleidung für Restaurants</span></button>
+      <input type="checkbox" id="pk-0" class="chk"><label for="pk-0" class="check-item"><span class="check-box"></span><span class="check-label">Badehose / Bikini (mehrere!)</span></label>
+      <input type="checkbox" id="pk-1" class="chk"><label for="pk-1" class="check-item"><span class="check-box"></span><span class="check-label">Strandtuch (groß)</span></label>
+      <input type="checkbox" id="pk-2" class="chk"><label for="pk-2" class="check-item"><span class="check-box"></span><span class="check-label">Flip-Flops</span></label>
+      <input type="checkbox" id="pk-3" class="chk"><label for="pk-3" class="check-item"><span class="check-box"></span><span class="check-label">Sonnenhut / Sonnencap</span></label>
+      <input type="checkbox" id="pk-4" class="chk"><label for="pk-4" class="check-item"><span class="check-box"></span><span class="check-label">Leichte Sommerkleidung</span></label>
+      <input type="checkbox" id="pk-5" class="chk"><label for="pk-5" class="check-item"><span class="check-box"></span><span class="check-label">Windjacke / Fleece (Nordseewind!)</span></label>
+      <input type="checkbox" id="pk-6" class="chk"><label for="pk-6" class="check-item"><span class="check-box"></span><span class="check-label">Regenjacke</span></label>
+      <input type="checkbox" id="pk-7" class="chk"><label for="pk-7" class="check-item"><span class="check-box"></span><span class="check-label">Abendkleidung für Restaurants</span></label>
     </div>
     <div class="cat-block">
       <div class="cat-title">🏖️ Strand &amp; Outdoor</div>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',8)"><span class="check-box"></span><span class="check-label">Sonnencreme SPF 50</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',9)"><span class="check-box"></span><span class="check-label">After-Sun Lotion</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',10)"><span class="check-box"></span><span class="check-label">Strandspielzeug (Eimer, Schaufel, Förmchen)</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',11)"><span class="check-box"></span><span class="check-label">Windschutz / Strandmuschel</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',12)"><span class="check-box"></span><span class="check-label">Fahrradhelme</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',13)"><span class="check-box"></span><span class="check-label">Picknickdecke / Strandmatte</span></button>
+      <input type="checkbox" id="pk-8" class="chk"><label for="pk-8" class="check-item"><span class="check-box"></span><span class="check-label">Sonnencreme SPF 50</span></label>
+      <input type="checkbox" id="pk-9" class="chk"><label for="pk-9" class="check-item"><span class="check-box"></span><span class="check-label">After-Sun Lotion</span></label>
+      <input type="checkbox" id="pk-10" class="chk"><label for="pk-10" class="check-item"><span class="check-box"></span><span class="check-label">Strandspielzeug (Eimer, Schaufel, Förmchen)</span></label>
+      <input type="checkbox" id="pk-11" class="chk"><label for="pk-11" class="check-item"><span class="check-box"></span><span class="check-label">Windschutz / Strandmuschel</span></label>
+      <input type="checkbox" id="pk-12" class="chk"><label for="pk-12" class="check-item"><span class="check-box"></span><span class="check-label">Fahrradhelme</span></label>
+      <input type="checkbox" id="pk-13" class="chk"><label for="pk-13" class="check-item"><span class="check-box"></span><span class="check-label">Picknickdecke / Strandmatte</span></label>
     </div>
     <div class="cat-block">
       <div class="cat-title">📄 Dokumente</div>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',14)"><span class="check-box"></span><span class="check-label">Reisepässe (alle Familienmitglieder!)</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',15)"><span class="check-box"></span><span class="check-label">EU-Krankenversicherungskarte</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',16)"><span class="check-box"></span><span class="check-label">Buchungsbestätigung Nr. 36801</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',17)"><span class="check-box"></span><span class="check-label">Kfz-Versicherung + Zulassung</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',18)"><span class="check-box"></span><span class="check-label">Kreditkarte / Bargeld (Euro)</span></button>
+      <input type="checkbox" id="pk-14" class="chk"><label for="pk-14" class="check-item"><span class="check-box"></span><span class="check-label">Reisepässe (alle Familienmitglieder!)</span></label>
+      <input type="checkbox" id="pk-15" class="chk"><label for="pk-15" class="check-item"><span class="check-box"></span><span class="check-label">EU-Krankenversicherungskarte</span></label>
+      <input type="checkbox" id="pk-16" class="chk"><label for="pk-16" class="check-item"><span class="check-box"></span><span class="check-label">Buchungsbestätigung Nr. 36801</span></label>
+      <input type="checkbox" id="pk-17" class="chk"><label for="pk-17" class="check-item"><span class="check-box"></span><span class="check-label">Kfz-Versicherung + Zulassung</span></label>
+      <input type="checkbox" id="pk-18" class="chk"><label for="pk-18" class="check-item"><span class="check-box"></span><span class="check-label">Kreditkarte / Bargeld (Euro)</span></label>
     </div>
     <div class="cat-block">
       <div class="cat-title">🐶 Für den Hund</div>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',19)"><span class="check-box"></span><span class="check-label">Hundefutter (14 Tage!)</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',20)"><span class="check-box"></span><span class="check-label">Futter- und Wassernapf</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',21)"><span class="check-box"></span><span class="check-label">Leine(n)</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',22)"><span class="check-box"></span><span class="check-label">Kotbeutel (viele!)</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',23)"><span class="check-box"></span><span class="check-label">EU-Heimtierausweis / Impfpass</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',24)"><span class="check-box"></span><span class="check-label">Hundekorb / Lieblingsdecke</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',25)"><span class="check-box"></span><span class="check-label">Zeckenentferner</span></button>
+      <input type="checkbox" id="pk-19" class="chk"><label for="pk-19" class="check-item"><span class="check-box"></span><span class="check-label">Hundefutter (14 Tage!)</span></label>
+      <input type="checkbox" id="pk-20" class="chk"><label for="pk-20" class="check-item"><span class="check-box"></span><span class="check-label">Futter- und Wassernapf</span></label>
+      <input type="checkbox" id="pk-21" class="chk"><label for="pk-21" class="check-item"><span class="check-box"></span><span class="check-label">Leine(n)</span></label>
+      <input type="checkbox" id="pk-22" class="chk"><label for="pk-22" class="check-item"><span class="check-box"></span><span class="check-label">Kotbeutel (viele!)</span></label>
+      <input type="checkbox" id="pk-23" class="chk"><label for="pk-23" class="check-item"><span class="check-box"></span><span class="check-label">EU-Heimtierausweis / Impfpass</span></label>
+      <input type="checkbox" id="pk-24" class="chk"><label for="pk-24" class="check-item"><span class="check-box"></span><span class="check-label">Hundekorb / Lieblingsdecke</span></label>
+      <input type="checkbox" id="pk-25" class="chk"><label for="pk-25" class="check-item"><span class="check-box"></span><span class="check-label">Zeckenentferner</span></label>
     </div>
     <div class="cat-block">
       <div class="cat-title">💊 Apotheke</div>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',26)"><span class="check-box"></span><span class="check-label">Schmerzmittel</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',27)"><span class="check-box"></span><span class="check-label">Pflaster &amp; Verbandsmaterial</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',28)"><span class="check-box"></span><span class="check-label">Mückenschutz</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',29)"><span class="check-box"></span><span class="check-label">Zeckenzange / -karte</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',30)"><span class="check-box"></span><span class="check-label">Durchfall-Medikamente</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',31)"><span class="check-box"></span><span class="check-label">Sonnenbrand-Spray</span></button>
+      <input type="checkbox" id="pk-26" class="chk"><label for="pk-26" class="check-item"><span class="check-box"></span><span class="check-label">Schmerzmittel</span></label>
+      <input type="checkbox" id="pk-27" class="chk"><label for="pk-27" class="check-item"><span class="check-box"></span><span class="check-label">Pflaster &amp; Verbandsmaterial</span></label>
+      <input type="checkbox" id="pk-28" class="chk"><label for="pk-28" class="check-item"><span class="check-box"></span><span class="check-label">Mückenschutz</span></label>
+      <input type="checkbox" id="pk-29" class="chk"><label for="pk-29" class="check-item"><span class="check-box"></span><span class="check-label">Zeckenzange / -karte</span></label>
+      <input type="checkbox" id="pk-30" class="chk"><label for="pk-30" class="check-item"><span class="check-box"></span><span class="check-label">Durchfall-Medikamente</span></label>
+      <input type="checkbox" id="pk-31" class="chk"><label for="pk-31" class="check-item"><span class="check-box"></span><span class="check-label">Sonnenbrand-Spray</span></label>
     </div>
     <div class="cat-block">
       <div class="cat-title">📱 Technik</div>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',32)"><span class="check-box"></span><span class="check-label">Handy-Ladekabel</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',33)"><span class="check-box"></span><span class="check-label">Powerbank</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',34)"><span class="check-box"></span><span class="check-label">Kamera / GoPro</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',35)"><span class="check-box"></span><span class="check-label">Kopfhörer</span></button>
-      <button type="button" class="check-item" onclick="toggleItem(this,'pack',36)"><span class="check-box"></span><span class="check-label">Steckeradapter (NL/BE)</span></button>
+      <input type="checkbox" id="pk-32" class="chk"><label for="pk-32" class="check-item"><span class="check-box"></span><span class="check-label">Handy-Ladekabel</span></label>
+      <input type="checkbox" id="pk-33" class="chk"><label for="pk-33" class="check-item"><span class="check-box"></span><span class="check-label">Powerbank</span></label>
+      <input type="checkbox" id="pk-34" class="chk"><label for="pk-34" class="check-item"><span class="check-box"></span><span class="check-label">Kamera / GoPro</span></label>
+      <input type="checkbox" id="pk-35" class="chk"><label for="pk-35" class="check-item"><span class="check-box"></span><span class="check-label">Kopfhörer</span></label>
+      <input type="checkbox" id="pk-36" class="chk"><label for="pk-36" class="check-item"><span class="check-box"></span><span class="check-label">Steckeradapter (NL/BE)</span></label>
     </div>
   </div>
-  <button class="reset-btn" onclick="resetList('pack')" style="margin-top:8px">Packliste zurücksetzen</button>
+  <button class="reset-btn" id="reset-pack" style="margin-top:8px">Packliste zurücksetzen</button>
 </section>
 
 <!-- ═══ AUFGABEN ═══ -->
@@ -461,23 +456,23 @@ footer strong{color:var(--sky)}
     <p>Damit am Abreisetag nichts fehlt</p>
   </div>
   <div id="task-list">
-    <button type="button" class="task-item" onclick="toggleItem(this,'task',0)"><span class="task-box"></span><div class="task-main"><div class="task-label">Reisepässe prüfen</div><div class="task-hint">Mind. 6 Monate Gültigkeit ab Abreisedatum</div></div></button>
-    <button type="button" class="task-item" onclick="toggleItem(this,'task',1)"><span class="task-box"></span><div class="task-main"><div class="task-label">EU-Krankenversicherungskarte besorgen</div><div class="task-hint">Für alle Familienmitglieder – kostenlos bei der Krankenkasse</div></div></button>
-    <button type="button" class="task-item" onclick="toggleItem(this,'task',2)"><span class="task-box"></span><div class="task-main"><div class="task-label">Hunde-Heimtierausweis + Impfungen aktuell?</div><div class="task-hint">Tollwut-Impfung nötig für Belgien-Ausflüge</div></div></button>
-    <button type="button" class="task-item" onclick="toggleItem(this,'task',3)"><span class="task-box"></span><div class="task-main"><div class="task-label">Robbensafari vorbuchen</div><div class="task-hint">Schnell ausgebucht! Website: robbensafari.nl (prüfen)</div></div></button>
-    <button type="button" class="task-item" onclick="toggleItem(this,'task',4)"><span class="task-box"></span><div class="task-main"><div class="task-label">Waterland Neeltje Jans Tickets kaufen</div><div class="task-hint">Online vorab günstiger und sicherer</div></div></button>
-    <button type="button" class="task-item" onclick="toggleItem(this,'task',5)"><span class="task-box"></span><div class="task-main"><div class="task-label">Nachbarn / Familie für Wohnung beauftragen</div><div class="task-hint">Schlüssel übergeben, Notfallkontakt hinterlassen</div></div></button>
-    <button type="button" class="task-item" onclick="toggleItem(this,'task',6)"><span class="task-box"></span><div class="task-main"><div class="task-label">Pflanzen-Bewässerung organisieren</div><div class="task-hint">14 Tage ist lang – Pflanzenwächter finden</div></div></button>
-    <button type="button" class="task-item" onclick="toggleItem(this,'task',7)"><span class="task-box"></span><div class="task-main"><div class="task-label">Post / Zeitschriften pausieren</div><div class="task-hint">Deutsche Post: Nachsendeauftrag online möglich</div></div></button>
-    <button type="button" class="task-item" onclick="toggleItem(this,'task',8)"><span class="task-box"></span><div class="task-main"><div class="task-label">Auto: Ölstand, Reifendruck &amp; HU prüfen</div><div class="task-hint">Lange Autofahrt mit Familie und Hund</div></div></button>
-    <button type="button" class="task-item" onclick="toggleItem(this,'task',9)"><span class="task-box"></span><div class="task-main"><div class="task-label">Euro Bargeld besorgen</div><div class="task-hint">NL und BE nutzen beide Euro – praktisch!</div></div></button>
-    <button type="button" class="task-item" onclick="toggleItem(this,'task',10)"><span class="task-box"></span><div class="task-main"><div class="task-label">Buienradar.nl als Favorit speichern</div><div class="task-hint">Der wichtigste Wetter-Tipp für Zeeland</div></div></button>
-    <button type="button" class="task-item" onclick="toggleItem(this,'task',11)"><span class="task-box"></span><div class="task-main"><div class="task-label">GPS-Adresse gespeichert</div><div class="task-hint">Baanstpoldersedijk 4, Nieuwvliet</div></div></button>
-    <button type="button" class="task-item" onclick="toggleItem(this,'task',12)"><span class="task-box"></span><div class="task-main"><div class="task-label">Check-in Zeit notiert: Mo 27.07 ab 16:00 Uhr</div><div class="task-hint">Reservierung Nr. 36801</div></div></button>
-    <button type="button" class="task-item" onclick="toggleItem(this,'task',13)"><span class="task-box"></span><div class="task-main"><div class="task-label">Resort-Telefon gespeichert</div><div class="task-hint">+31 117 37 08 00</div></div></button>
-    <button type="button" class="task-item" onclick="toggleItem(this,'task',14)"><span class="task-box"></span><div class="task-main"><div class="task-label">Kreditkarte für Ausland freischalten</div><div class="task-hint">Manche Banken blockieren Auslandszahlungen</div></div></button>
+    <input type="checkbox" id="tk-0" class="chk"><label for="tk-0" class="task-item"><span class="task-box"></span><div class="task-main"><div class="task-label">Reisepässe prüfen</div><div class="task-hint">Mind. 6 Monate Gültigkeit ab Abreisedatum</div></div></label>
+    <input type="checkbox" id="tk-1" class="chk"><label for="tk-1" class="task-item"><span class="task-box"></span><div class="task-main"><div class="task-label">EU-Krankenversicherungskarte besorgen</div><div class="task-hint">Für alle Familienmitglieder – kostenlos bei der Krankenkasse</div></div></label>
+    <input type="checkbox" id="tk-2" class="chk"><label for="tk-2" class="task-item"><span class="task-box"></span><div class="task-main"><div class="task-label">Hunde-Heimtierausweis + Impfungen aktuell?</div><div class="task-hint">Tollwut-Impfung nötig für Belgien-Ausflüge</div></div></label>
+    <input type="checkbox" id="tk-3" class="chk"><label for="tk-3" class="task-item"><span class="task-box"></span><div class="task-main"><div class="task-label">Robbensafari vorbuchen</div><div class="task-hint">Schnell ausgebucht! Website: robbensafari.nl (prüfen)</div></div></label>
+    <input type="checkbox" id="tk-4" class="chk"><label for="tk-4" class="task-item"><span class="task-box"></span><div class="task-main"><div class="task-label">Waterland Neeltje Jans Tickets kaufen</div><div class="task-hint">Online vorab günstiger und sicherer</div></div></label>
+    <input type="checkbox" id="tk-5" class="chk"><label for="tk-5" class="task-item"><span class="task-box"></span><div class="task-main"><div class="task-label">Nachbarn / Familie für Wohnung beauftragen</div><div class="task-hint">Schlüssel übergeben, Notfallkontakt hinterlassen</div></div></label>
+    <input type="checkbox" id="tk-6" class="chk"><label for="tk-6" class="task-item"><span class="task-box"></span><div class="task-main"><div class="task-label">Pflanzen-Bewässerung organisieren</div><div class="task-hint">14 Tage ist lang – Pflanzenwächter finden</div></div></label>
+    <input type="checkbox" id="tk-7" class="chk"><label for="tk-7" class="task-item"><span class="task-box"></span><div class="task-main"><div class="task-label">Post / Zeitschriften pausieren</div><div class="task-hint">Deutsche Post: Nachsendeauftrag online möglich</div></div></label>
+    <input type="checkbox" id="tk-8" class="chk"><label for="tk-8" class="task-item"><span class="task-box"></span><div class="task-main"><div class="task-label">Auto: Ölstand, Reifendruck &amp; HU prüfen</div><div class="task-hint">Lange Autofahrt mit Familie und Hund</div></div></label>
+    <input type="checkbox" id="tk-9" class="chk"><label for="tk-9" class="task-item"><span class="task-box"></span><div class="task-main"><div class="task-label">Euro Bargeld besorgen</div><div class="task-hint">NL und BE nutzen beide Euro – praktisch!</div></div></label>
+    <input type="checkbox" id="tk-10" class="chk"><label for="tk-10" class="task-item"><span class="task-box"></span><div class="task-main"><div class="task-label">Buienradar.nl als Favorit speichern</div><div class="task-hint">Der wichtigste Wetter-Tipp für Zeeland</div></div></label>
+    <input type="checkbox" id="tk-11" class="chk"><label for="tk-11" class="task-item"><span class="task-box"></span><div class="task-main"><div class="task-label">GPS-Adresse gespeichert</div><div class="task-hint">Baanstpoldersedijk 4, Nieuwvliet</div></div></label>
+    <input type="checkbox" id="tk-12" class="chk"><label for="tk-12" class="task-item"><span class="task-box"></span><div class="task-main"><div class="task-label">Check-in Zeit notiert: Mo 27.07 ab 16:00 Uhr</div><div class="task-hint">Reservierung Nr. 36801</div></div></label>
+    <input type="checkbox" id="tk-13" class="chk"><label for="tk-13" class="task-item"><span class="task-box"></span><div class="task-main"><div class="task-label">Resort-Telefon gespeichert</div><div class="task-hint">+31 117 37 08 00</div></div></label>
+    <input type="checkbox" id="tk-14" class="chk"><label for="tk-14" class="task-item"><span class="task-box"></span><div class="task-main"><div class="task-label">Kreditkarte für Ausland freischalten</div><div class="task-hint">Manche Banken blockieren Auslandszahlungen</div></div></label>
   </div>
-  <button class="reset-btn" onclick="resetList('task')" style="margin:16px auto 0">Liste zurücksetzen</button>
+  <button class="reset-btn" id="reset-tasks" style="margin:16px auto 0">Liste zurücksetzen</button>
 </section>
 
 <footer>
@@ -703,44 +698,60 @@ if(document.readyState === 'loading'){
 }
 </script>
 
-<!-- SCRIPT 4: Toggle-Funktionen – inline onclick auf buttons, kein addEventListener nötig -->
+<!-- SCRIPT 4: localStorage Enhancement – Toggle läuft via CSS :checked, kein JS nötig.
+     JS speichert nur den Zustand und stellt ihn beim Laden wieder her. -->
 <script>
-function toggleItem(el, prefix, idx){
-  el.classList.toggle('is-checked');
-  var on = el.classList.contains('is-checked');
-  try { localStorage.setItem(prefix+'_'+idx, on ? '1' : '0'); } catch(e){}
-  if(prefix === 'pack') updatePackProgress();
-}
-
-function resetList(prefix){
-  var sel = prefix === 'pack' ? '#pack-list .check-item' : '#task-list .task-item';
-  var items = document.querySelectorAll(sel);
-  for(var i = 0; i < items.length; i++){
-    items[i].classList.remove('is-checked');
-    try { localStorage.removeItem(prefix+'_'+i); } catch(e){}
-  }
-  if(prefix === 'pack') updatePackProgress();
-}
-
 function updatePackProgress(){
-  var all  = document.querySelectorAll('#pack-list .check-item');
-  var done = document.querySelectorAll('#pack-list .check-item.is-checked');
+  var all  = document.querySelectorAll('#pack-list .chk');
+  var done = document.querySelectorAll('#pack-list .chk:checked');
   var pct  = all.length ? Math.round(done.length / all.length * 100) : 0;
   var f = document.getElementById('pack-fill');  if(f) f.style.width = pct + '%';
   var p = document.getElementById('pack-pct');   if(p) p.textContent = pct + '% gepackt';
 }
 
-// Gespeicherten Status beim Laden wiederherstellen
 window.addEventListener('load', function(){
-  var p = document.querySelectorAll('#pack-list .check-item');
-  for(var i = 0; i < p.length; i++){
-    try { if(localStorage.getItem('pack_'+i) === '1') p[i].classList.add('is-checked'); } catch(e){}
+  // Gespeicherten Pack-Status laden
+  var packs = document.querySelectorAll('#pack-list .chk');
+  for(var i = 0; i < packs.length; i++){
+    try { if(localStorage.getItem('pack_'+i) === '1') packs[i].checked = true; } catch(e){}
+    (function(cb, idx){
+      cb.addEventListener('change', function(){
+        try { localStorage.setItem('pack_'+idx, cb.checked ? '1':'0'); } catch(e){}
+        updatePackProgress();
+      });
+    }(packs[i], i));
   }
   updatePackProgress();
-  var t = document.querySelectorAll('#task-list .task-item');
-  for(var i = 0; i < t.length; i++){
-    try { if(localStorage.getItem('task_'+i) === '1') t[i].classList.add('is-checked'); } catch(e){}
+
+  // Gespeicherten Task-Status laden
+  var tasks = document.querySelectorAll('#task-list .chk');
+  for(var i = 0; i < tasks.length; i++){
+    try { if(localStorage.getItem('task_'+i) === '1') tasks[i].checked = true; } catch(e){}
+    (function(cb, idx){
+      cb.addEventListener('change', function(){
+        try { localStorage.setItem('task_'+idx, cb.checked ? '1':'0'); } catch(e){}
+      });
+    }(tasks[i], i));
   }
+
+  // Reset-Buttons
+  var rp = document.getElementById('reset-pack');
+  if(rp) rp.addEventListener('click', function(){
+    var cbs = document.querySelectorAll('#pack-list .chk');
+    for(var i=0;i<cbs.length;i++){
+      cbs[i].checked = false;
+      try { localStorage.removeItem('pack_'+i); } catch(e){}
+    }
+    updatePackProgress();
+  });
+  var rt = document.getElementById('reset-tasks');
+  if(rt) rt.addEventListener('click', function(){
+    var cbs = document.querySelectorAll('#task-list .chk');
+    for(var i=0;i<cbs.length;i++){
+      cbs[i].checked = false;
+      try { localStorage.removeItem('task_'+i); } catch(e){}
+    }
+  });
 });
 </script>
 </body>
