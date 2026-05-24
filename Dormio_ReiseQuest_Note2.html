@@ -163,21 +163,17 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .cal-head.has-note .note-dot{display:block}
 /* Textarea immer sichtbar – kein Öffnen nötig */
 .cal-plan{padding:0 14px 10px;border-top:1px solid var(--border)}
-.cal-body{display:none;padding:0 14px 14px}
-.cal-body.open{display:block}
-.cal-body p{font-size:13px;color:var(--muted);padding-top:0;line-height:1.5}
-.polo-toggle{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:8px 0 0;cursor:pointer;touch-action:manipulation;
-  -webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none
+.cal-plan{padding:10px 14px 6px;border-top:1px solid var(--border)}
+.cal-body{
+  display:block;padding:10px 14px 14px;
+  background:rgba(245,158,11,0.05);border-top:1px solid rgba(245,158,11,0.18);
+  border-radius:0 0 14px 14px
 }
-.polo-toggle-label{font-size:11px;font-weight:700;color:var(--amber);letter-spacing:.04em}
-.polo-toggle-arrow{font-size:11px;color:var(--amber);transition:transform .2s}
-
-.cal-plan{padding:10px 14px 10px;border-top:1px solid var(--border)}
-.cal-body{display:none;padding:4px 14px 14px}
-.cal-body.open{display:block}
-.cal-body p{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:8px}
+.cal-body p{font-size:13px;color:var(--muted);line-height:1.5;margin:4px 0 8px}
+.polo-tip-head{
+  display:block;font-size:10px;font-weight:800;color:var(--amber);
+  letter-spacing:.08em;margin-bottom:2px
+}
 
 .recurring{padding:16px 12px 0;display:flex;flex-direction:column;gap:8px}
 .rec-card{
@@ -495,13 +491,9 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-plan">
         <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="0"></textarea>
-        <div class="polo-toggle" data-polo="0">
-          <span class="polo-toggle-label">💡 POLO-TIPP anzeigen</span>
-          <span class="polo-toggle-arrow">▼</span>
-        </div>
       </div>
-      <div class="cal-body" id="cal-0">
-        <p>Ankunft am Resort ab 16:00 Uhr. Reservierung Nr. 36801. Resort-Tel: +31 117 37 08 00. Erster Abend: kurzer Spaziergang zum Strand, Abendessen im Resort oder Supermarkt. Einleben und entspannen!</p>
+      <div class="cal-body open" id="cal-0">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Ankunft am Resort ab 16:00 Uhr. Reservierung Nr. 36801. Resort-Tel: +31 117 37 08 00. Erster Abend: kurzer Spaziergang zum Strand, Abendessen im Resort oder Supermarkt. Einleben und entspannen!</p>
         <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Dormio+Strand+Resort+Nieuwvliet-Bad" target="_blank">📍 Ort anzeigen</a>
       </div>
     </div>
@@ -517,13 +509,9 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-plan">
         <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="1"></textarea>
-        <div class="polo-toggle" data-polo="1">
-          <span class="polo-toggle-label">💡 POLO-TIPP anzeigen</span>
-          <span class="polo-toggle-arrow">▼</span>
-        </div>
       </div>
-      <div class="cal-body" id="cal-1">
-        <p>Erster richtiger Strandtag – Nieuwvliet-Bad kennenlernen. Sandburg bauen, Wellen genießen, Strandkörbe erkunden. Abends früh ins Bett nach der Anreise.</p>
+      <div class="cal-body open" id="cal-1">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Erster richtiger Strandtag – Nieuwvliet-Bad kennenlernen. Sandburg bauen, Wellen genießen, Strandkörbe erkunden. Abends früh ins Bett nach der Anreise.</p>
         <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Nieuwvliet-Bad+Strand" target="_blank">📍 Ort anzeigen</a>
       </div>
     </div>
@@ -539,13 +527,9 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-plan">
         <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="2"></textarea>
-        <div class="polo-toggle" data-polo="2">
-          <span class="polo-toggle-label">💡 POLO-TIPP anzeigen</span>
-          <span class="polo-toggle-arrow">▼</span>
-        </div>
       </div>
-      <div class="cal-body" id="cal-2">
-        <p>Sluis Abendmarkt ab 18 Uhr – mittelalterliche Kulisse, Marktstände, Straßenmusik. Tagsüber Strand oder Cadzand-Bad erkunden. Abendmarkt ist einer der schönsten in ganz Zeeland.</p>
+      <div class="cal-body open" id="cal-2">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Sluis Abendmarkt ab 18 Uhr – mittelalterliche Kulisse, Marktstände, Straßenmusik. Tagsüber Strand oder Cadzand-Bad erkunden. Abendmarkt ist einer der schönsten in ganz Zeeland.</p>
         <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Sluis,Netherlands" target="_blank">📍 Ort anzeigen</a>
       </div>
     </div>
@@ -561,13 +545,9 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-plan">
         <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="3"></textarea>
-        <div class="polo-toggle" data-polo="3">
-          <span class="polo-toggle-label">💡 POLO-TIPP anzeigen</span>
-          <span class="polo-toggle-arrow">▼</span>
-        </div>
       </div>
-      <div class="cal-body" id="cal-3">
-        <p>Cadzand-Bad Wochenmarkt am Morgen – frische Produkte, lokale Spezialitäten, Blumen. Perfekt für das Frühstückseinkaufen. Nachmittag: Strand in Cadzand oder zurück zum Dormio-Strand.</p>
+      <div class="cal-body open" id="cal-3">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Cadzand-Bad Wochenmarkt am Morgen – frische Produkte, lokale Spezialitäten, Blumen. Perfekt für das Frühstückseinkaufen. Nachmittag: Strand in Cadzand oder zurück zum Dormio-Strand.</p>
         <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Cadzand-Bad,Netherlands" target="_blank">📍 Ort anzeigen</a>
       </div>
     </div>
@@ -583,13 +563,9 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-plan">
         <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="4"></textarea>
-        <div class="polo-toggle" data-polo="4">
-          <span class="polo-toggle-label">💡 POLO-TIPP anzeigen</span>
-          <span class="polo-toggle-arrow">▼</span>
-        </div>
       </div>
-      <div class="cal-body" id="cal-4">
-        <p>Breskens Freitagsmarkt für den frischesten Fisch – Muscheln, Krabben, Hering. Hafenspaziergang danach. Nachmittag: Fähre nach Vlissingen oder Rückkehr zum Strand. Abend: frisch gekochter Fisch.</p>
+      <div class="cal-body open" id="cal-4">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Breskens Freitagsmarkt für den frischesten Fisch – Muscheln, Krabben, Hering. Hafenspaziergang danach. Nachmittag: Fähre nach Vlissingen oder Rückkehr zum Strand. Abend: frisch gekochter Fisch.</p>
         <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Breskens+harbor,Netherlands" target="_blank">📍 Ort anzeigen</a>
       </div>
     </div>
@@ -605,13 +581,9 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-plan">
         <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="5"></textarea>
-        <div class="polo-toggle" data-polo="5">
-          <span class="polo-toggle-label">💡 POLO-TIPP anzeigen</span>
-          <span class="polo-toggle-arrow">▼</span>
-        </div>
       </div>
-      <div class="cal-body" id="cal-5">
-        <p>Brügge – ein ganzer Tag für die schönste Stadt Belgiens. Grachtenfahrt, Schokoladenläden, Altstadt. Groeningemuseum für Flämische Primitive. Waffeln zum Mittagessen nicht vergessen!</p>
+      <div class="cal-body open" id="cal-5">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Brügge – ein ganzer Tag für die schönste Stadt Belgiens. Grachtenfahrt, Schokoladenläden, Altstadt. Groeningemuseum für Flämische Primitive. Waffeln zum Mittagessen nicht vergessen!</p>
         <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Bruges,Belgium" target="_blank">📍 Ort anzeigen</a>
       </div>
     </div>
@@ -627,13 +599,9 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-plan">
         <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="6"></textarea>
-        <div class="polo-toggle" data-polo="6">
-          <span class="polo-toggle-label">💡 POLO-TIPP anzeigen</span>
-          <span class="polo-toggle-arrow">▼</span>
-        </div>
       </div>
-      <div class="cal-body" id="cal-6">
-        <p>Robbensafari – Seehunde in freier Wildbahn. Frühzeitig buchen! Nachmittag: entspannter Strandtag am Dormio-Strand. Abend: Essen im Resort oder Cadzand-Bad.</p>
+      <div class="cal-body open" id="cal-6">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Robbensafari – Seehunde in freier Wildbahn. Frühzeitig buchen! Nachmittag: entspannter Strandtag am Dormio-Strand. Abend: Essen im Resort oder Cadzand-Bad.</p>
         <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Breskens+harbor,Netherlands" target="_blank">📍 Ort anzeigen</a>
       </div>
     </div>
@@ -649,13 +617,9 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-plan">
         <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="7"></textarea>
-        <div class="polo-toggle" data-polo="7">
-          <span class="polo-toggle-label">💡 POLO-TIPP anzeigen</span>
-          <span class="polo-toggle-arrow">▼</span>
-        </div>
       </div>
-      <div class="cal-body" id="cal-7">
-        <p>Zwin Naturpark bei Knokke – Salzwiesen, seltene Vögel, Meeresblick. Anschließend kurzer Bummel durch Knokke-Heist. Strandspaziergang am belgischen Nordseeküstenstreifen.</p>
+      <div class="cal-body open" id="cal-7">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Zwin Naturpark bei Knokke – Salzwiesen, seltene Vögel, Meeresblick. Anschließend kurzer Bummel durch Knokke-Heist. Strandspaziergang am belgischen Nordseeküstenstreifen.</p>
         <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Zwin+Nature+Park,Knokke" target="_blank">📍 Ort anzeigen</a>
       </div>
     </div>
@@ -671,13 +635,9 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-plan">
         <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="8"></textarea>
-        <div class="polo-toggle" data-polo="8">
-          <span class="polo-toggle-label">💡 POLO-TIPP anzeigen</span>
-          <span class="polo-toggle-arrow">▼</span>
-        </div>
       </div>
-      <div class="cal-body" id="cal-8">
-        <p>Fahrräder ausleihen und den flachen Küstenradweg erkunden – Richtung Cadzand oder Breskens. Zeeland ist das Paradies für Radfahrer: kein Hügel, Meeresluft, weite Dünenlandschaft.</p>
+      <div class="cal-body open" id="cal-8">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Fahrräder ausleihen und den flachen Küstenradweg erkunden – Richtung Cadzand oder Breskens. Zeeland ist das Paradies für Radfahrer: kein Hügel, Meeresluft, weite Dünenlandschaft.</p>
         <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Nieuwvliet-Bad,Netherlands" target="_blank">📍 Ort anzeigen</a>
       </div>
     </div>
@@ -693,13 +653,9 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-plan">
         <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="9"></textarea>
-        <div class="polo-toggle" data-polo="9">
-          <span class="polo-toggle-label">💡 POLO-TIPP anzeigen</span>
-          <span class="polo-toggle-arrow">▼</span>
-        </div>
       </div>
-      <div class="cal-body" id="cal-9">
-        <p>Zweite Runde Sluis Abendmarkt – oder tagsüber Sluis besuchen: Windmühle, Stadtmauern, Käseläden. Abend dann mit dem Marktbesuch abrunden. Ein schöner Wiederbesuch!</p>
+      <div class="cal-body open" id="cal-9">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Zweite Runde Sluis Abendmarkt – oder tagsüber Sluis besuchen: Windmühle, Stadtmauern, Käseläden. Abend dann mit dem Marktbesuch abrunden. Ein schöner Wiederbesuch!</p>
         <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Sluis,Netherlands" target="_blank">📍 Ort anzeigen</a>
       </div>
     </div>
@@ -715,13 +671,9 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-plan">
         <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="10"></textarea>
-        <div class="polo-toggle" data-polo="10">
-          <span class="polo-toggle-label">💡 POLO-TIPP anzeigen</span>
-          <span class="polo-toggle-arrow">▼</span>
-        </div>
       </div>
-      <div class="cal-body" id="cal-10">
-        <p>Cadzand Wochenmarkt oder Middelburg besuchen. Nachmittag: letzter großer Strandtag vor dem Wochenende planen. Abends essen gehen in Cadzand oder Breskens.</p>
+      <div class="cal-body open" id="cal-10">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Cadzand Wochenmarkt oder Middelburg besuchen. Nachmittag: letzter großer Strandtag vor dem Wochenende planen. Abends essen gehen in Cadzand oder Breskens.</p>
         <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Cadzand-Bad,Netherlands" target="_blank">📍 Ort anzeigen</a>
       </div>
     </div>
@@ -737,13 +689,9 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-plan">
         <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="11"></textarea>
-        <div class="polo-toggle" data-polo="11">
-          <span class="polo-toggle-label">💡 POLO-TIPP anzeigen</span>
-          <span class="polo-toggle-arrow">▼</span>
-        </div>
       </div>
-      <div class="cal-body" id="cal-11">
-        <p>Letzter Freitagsmarkt Breskens – noch einmal frischen Fisch für das Wochenende kaufen. Nachmittag: Gent Tagesausflug oder Neeltje Jans als letztes großes Highlight.</p>
+      <div class="cal-body open" id="cal-11">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Letzter Freitagsmarkt Breskens – noch einmal frischen Fisch für das Wochenende kaufen. Nachmittag: Gent Tagesausflug oder Neeltje Jans als letztes großes Highlight.</p>
         <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Breskens+harbor,Netherlands" target="_blank">📍 Ort anzeigen</a>
       </div>
     </div>
@@ -759,13 +707,9 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-plan">
         <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="12"></textarea>
-        <div class="polo-toggle" data-polo="12">
-          <span class="polo-toggle-label">💡 POLO-TIPP anzeigen</span>
-          <span class="polo-toggle-arrow">▼</span>
-        </div>
       </div>
-      <div class="cal-body" id="cal-12">
-        <p>Waterland Neeltje Jans – Deltawerke, Wasserpark, Robben füttern. Ein ganzer Kindertag. Abends zurück und Koffer für die Abreise beginnen. Schöner Abschluss-Höhepunkt für die Kinder.</p>
+      <div class="cal-body open" id="cal-12">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Waterland Neeltje Jans – Deltawerke, Wasserpark, Robben füttern. Ein ganzer Kindertag. Abends zurück und Koffer für die Abreise beginnen. Schöner Abschluss-Höhepunkt für die Kinder.</p>
         <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Waterland+Neeltje+Jans,Netherlands" target="_blank">📍 Ort anzeigen</a>
       </div>
     </div>
@@ -781,13 +725,9 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-plan">
         <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="13"></textarea>
-        <div class="polo-toggle" data-polo="13">
-          <span class="polo-toggle-label">💡 POLO-TIPP anzeigen</span>
-          <span class="polo-toggle-arrow">▼</span>
-        </div>
       </div>
-      <div class="cal-body" id="cal-13">
-        <p>Letzter voller Tag: Strand genießen, Abschiedsrunde im Resort, Abendessen an einem Lieblingsplatz. Koffer packen für morgen früh. Die letzten Muscheln und Krabben am Abend genießen.</p>
+      <div class="cal-body open" id="cal-13">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Letzter voller Tag: Strand genießen, Abschiedsrunde im Resort, Abendessen an einem Lieblingsplatz. Koffer packen für morgen früh. Die letzten Muscheln und Krabben am Abend genießen.</p>
         <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Nieuwvliet-Bad+Strand" target="_blank">📍 Ort anzeigen</a>
       </div>
     </div>
@@ -803,13 +743,9 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-plan">
         <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="14"></textarea>
-        <div class="polo-toggle" data-polo="14">
-          <span class="polo-toggle-label">💡 POLO-TIPP anzeigen</span>
-          <span class="polo-toggle-arrow">▼</span>
-        </div>
       </div>
-      <div class="cal-body" id="cal-14">
-        <p>Abreise bis spätestens 10:30 Uhr. Schlüssel abgeben, letzte Kontrolle der Unterkunft. Letzten Blick auf die Nordsee genießen. Bis zum nächsten Mal, Zeeland! 🌊</p>
+      <div class="cal-body open" id="cal-14">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Abreise bis spätestens 10:30 Uhr. Schlüssel abgeben, letzte Kontrolle der Unterkunft. Letzten Blick auf die Nordsee genießen. Bis zum nächsten Mal, Zeeland! 🌊</p>
       </div>
     </div>
 
@@ -1111,25 +1047,11 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
     });
   });
 
-  // Polo-Tipp Toggle
+  // Notiz-Dot Indikator-Helper
   function updateDot(head, hasContent) {
     if (!head) return;
     head.classList.toggle('has-note', !!hasContent);
   }
-
-  document.querySelectorAll('.polo-toggle').forEach(function(toggle) {
-    var pid   = toggle.getAttribute('data-polo');
-    var body  = document.getElementById('cal-' + pid);
-    var arrow = toggle.querySelector('.polo-toggle-arrow');
-    var label = toggle.querySelector('.polo-toggle-label');
-    toggle.addEventListener('click', function() {
-      if (!body) return;
-      var isOpen = body.classList.contains('open');
-      body.classList.toggle('open', !isOpen);
-      if (arrow) arrow.style.transform = isOpen ? '' : 'rotate(180deg)';
-      if (label) label.textContent = isOpen ? '💡 POLO-TIPP anzeigen' : '💡 POLO-TIPP schließen';
-    });
-  });
 
   // Notizen laden, speichern und Dot-Indikator
   document.querySelectorAll('.cal-plan .plan-note').forEach(function(ta) {
