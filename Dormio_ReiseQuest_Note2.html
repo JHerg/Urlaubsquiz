@@ -110,13 +110,6 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 }
 .maps-btn:active{background:rgba(14,165,233,0.32)}
 
-.plan-activity{
-  width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(14,165,233,0.25);
-  border-radius:10px;color:var(--text);font-size:14px;font-family:inherit;font-weight:600;
-  padding:9px 12px;margin-top:10px;-webkit-appearance:none
-}
-.plan-activity:focus{outline:none;border-color:var(--accent)}
-.plan-activity-label{font-size:11px;color:var(--muted);margin-top:10px;display:block}
 
 .hl-num{
   width:28px;height:28px;border-radius:50%;
@@ -203,18 +196,6 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .info-row .label{font-size:13px;color:var(--muted);flex-shrink:0}
 .info-row .val{font-size:13px;font-weight:600;text-align:right}
 
-.plan-grid{padding:0 12px;display:flex;flex-direction:column;gap:8px}
-.plan-day{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
-.plan-head{
-  display:flex;align-items:center;gap:10px;padding:12px 16px;
-  cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none
-}
-.plan-dot{width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0}
-.plan-dot.today{background:var(--accent);box-shadow:0 0 8px var(--accent)}
-.plan-head strong{font-size:14px;flex:1}
-.plan-arrow{font-size:12px;color:var(--muted);transition:transform .2s}
-.plan-body{display:none;padding:0 14px 12px;border-top:1px solid var(--border)}
-.plan-body.open{display:block}
 .plan-note{
   width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--border);
   border-radius:10px;color:var(--text);font-size:13px;font-family:inherit;
@@ -234,12 +215,11 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
   <div class="nav-chips">
     <a href="#highlights">⭐ Highlights</a>
     <a href="#orte">📍 Orte</a>
-    <a href="#termine">📅 Termine</a>
+    <a href="#termine">📅 Tagesplan</a>
     <a href="#kinder">👶 Kinder</a>
     <a href="#hund">🐶 Hund</a>
     <a href="#kulinarik">🍽️ Kulinarik</a>
     <a href="#infos">ℹ️ Infos</a>
-    <a href="#plan">📋 Plan</a>
   </div>
 </nav>
 
@@ -353,7 +333,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <div class="card-tags">
         <span class="tag">🌊 Strand</span><span class="tag">👶 Kids</span>
       </div>
-      <a class="maps-btn" href="https://maps.apple.com/?daddr=Cadzand-Bad,Netherlands" target="_blank">🗺️ Navigation starten</a>
+      <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Cadzand-Bad,Netherlands" target="_blank">📍 Ort anzeigen</a>
     </div>
 
     <div class="card" data-tags="stadt">
@@ -365,7 +345,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <div class="card-tags">
         <span class="tag">🏰 Stadt</span><span class="tag">🧀 Käse</span>
       </div>
-      <a class="maps-btn" href="https://maps.apple.com/?daddr=Sluis,Netherlands" target="_blank">🗺️ Navigation starten</a>
+      <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Sluis,Netherlands" target="_blank">📍 Ort anzeigen</a>
     </div>
 
     <div class="card" data-tags="natur essen">
@@ -377,7 +357,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <div class="card-tags">
         <span class="tag">🌿 Natur</span><span class="tag">🍽️ Essen</span><span class="tag">⛵ Fähre</span>
       </div>
-      <a class="maps-btn" href="https://maps.apple.com/?daddr=Breskens+harbor,Netherlands" target="_blank">🗺️ Navigation starten</a>
+      <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Breskens+harbor,Netherlands" target="_blank">📍 Ort anzeigen</a>
     </div>
 
     <div class="card" data-tags="stadt kids regen">
@@ -389,7 +369,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <div class="card-tags">
         <span class="tag">🏰 Stadt</span><span class="tag">👶 Kids</span><span class="tag">🌧️ Regen</span>
       </div>
-      <a class="maps-btn" href="https://maps.apple.com/?daddr=Bruges,Belgium" target="_blank">🗺️ Navigation starten</a>
+      <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Bruges,Belgium" target="_blank">📍 Ort anzeigen</a>
     </div>
 
     <div class="card" data-tags="strand stadt">
@@ -401,7 +381,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <div class="card-tags">
         <span class="tag">🌊 Strand</span><span class="tag">🏰 Stadt</span>
       </div>
-      <a class="maps-btn" href="https://maps.apple.com/?daddr=Knokke-Heist,Belgium" target="_blank">🗺️ Navigation starten</a>
+      <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Knokke-Heist,Belgium" target="_blank">📍 Ort anzeigen</a>
     </div>
 
     <div class="card" data-tags="strand">
@@ -413,7 +393,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <div class="card-tags">
         <span class="tag">🌊 Strand</span><span class="tag">⛵ Boot</span>
       </div>
-      <a class="maps-btn" href="https://maps.apple.com/?daddr=Vlissingen,Netherlands" target="_blank">🗺️ Navigation starten</a>
+      <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Vlissingen,Netherlands" target="_blank">📍 Ort anzeigen</a>
     </div>
 
     <div class="card" data-tags="stadt kids regen">
@@ -425,7 +405,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <div class="card-tags">
         <span class="tag">🏰 Stadt</span><span class="tag">👶 Kids</span><span class="tag">🌧️ Regen</span>
       </div>
-      <a class="maps-btn" href="https://maps.apple.com/?daddr=Middelburg,Netherlands" target="_blank">🗺️ Navigation starten</a>
+      <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Middelburg,Netherlands" target="_blank">📍 Ort anzeigen</a>
     </div>
 
     <div class="card" data-tags="kids natur">
@@ -437,7 +417,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <div class="card-tags">
         <span class="tag">👶 Kids</span><span class="tag">🌿 Natur</span>
       </div>
-      <a class="maps-btn" href="https://maps.apple.com/?daddr=Waterland+Neeltje+Jans,Netherlands" target="_blank">🗺️ Navigation starten</a>
+      <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Waterland+Neeltje+Jans,Netherlands" target="_blank">📍 Ort anzeigen</a>
     </div>
 
     <div class="card" data-tags="kids natur">
@@ -449,7 +429,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <div class="card-tags">
         <span class="tag">👶 Kids</span><span class="tag">🚲 Rad</span>
       </div>
-      <a class="maps-btn" href="https://maps.apple.com/?daddr=Groede,Netherlands" target="_blank">🗺️ Navigation starten</a>
+      <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Groede,Netherlands" target="_blank">📍 Ort anzeigen</a>
     </div>
 
     <div class="card" data-tags="stadt regen">
@@ -461,7 +441,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       <div class="card-tags">
         <span class="tag">🏰 Stadt</span><span class="tag">🌧️ Regen</span>
       </div>
-      <a class="maps-btn" href="https://maps.apple.com/?daddr=Ghent,Belgium" target="_blank">🗺️ Navigation starten</a>
+      <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Ghent,Belgium" target="_blank">📍 Ort anzeigen</a>
     </div>
 
   </div>
@@ -470,8 +450,8 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 <!-- TERMINE -->
 <section class="section" id="termine">
   <div class="section-header">
-    <h2>📅 Termine &amp; Events</h2>
-    <p>Kalender 27. Juli – 10. August 2026</p>
+    <h2>📅 Tagesplan &amp; Events</h2>
+    <p>Vorschläge + dein persönlicher Plan · 27. Juli – 10. August 2026</p>
   </div>
 
   <div class="calendar">
@@ -487,6 +467,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-body" id="cal-0">
         <p>Ankunft am Resort ab 16:00 Uhr. Reservierung Nr. 36801. Resort-Tel: +31 117 37 08 00. Erster Abend: kurzer Spaziergang zum Strand, Abendessen im Resort oder Supermarkt. Einleben und entspannen!</p>
+        <textarea class="plan-note" placeholder="Euer Plan für heute…" data-day="0"></textarea>
       </div>
     </div>
 
@@ -501,6 +482,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-body" id="cal-1">
         <p>Erster richtiger Strandtag – Nieuwvliet-Bad kennenlernen. Sandburg bauen, Wellen genießen, Strandkörbe erkunden. Abends früh ins Bett nach der Anreise.</p>
+        <textarea class="plan-note" placeholder="Euer Plan für heute…" data-day="1"></textarea>
       </div>
     </div>
 
@@ -515,6 +497,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-body" id="cal-2">
         <p>Sluis Abendmarkt ab 18 Uhr – mittelalterliche Kulisse, Marktstände, Straßenmusik. Tagsüber Strand oder Cadzand-Bad erkunden. Abendmarkt ist einer der schönsten in ganz Zeeland.</p>
+        <textarea class="plan-note" placeholder="Euer Plan für heute…" data-day="2"></textarea>
       </div>
     </div>
 
@@ -529,6 +512,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-body" id="cal-3">
         <p>Cadzand-Bad Wochenmarkt am Morgen – frische Produkte, lokale Spezialitäten, Blumen. Perfekt für das Frühstückseinkaufen. Nachmittag: Strand in Cadzand oder zurück zum Dormio-Strand.</p>
+        <textarea class="plan-note" placeholder="Euer Plan für heute…" data-day="3"></textarea>
       </div>
     </div>
 
@@ -543,6 +527,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-body" id="cal-4">
         <p>Breskens Freitagsmarkt für den frischesten Fisch – Muscheln, Krabben, Hering. Hafenspaziergang danach. Nachmittag: Fähre nach Vlissingen oder Rückkehr zum Strand. Abend: frisch gekochter Fisch.</p>
+        <textarea class="plan-note" placeholder="Euer Plan für heute…" data-day="4"></textarea>
       </div>
     </div>
 
@@ -557,6 +542,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-body" id="cal-5">
         <p>Brügge – ein ganzer Tag für die schönste Stadt Belgiens. Grachtenfahrt, Schokoladenläden, Altstadt. Groeningemuseum für Flämische Primitive. Waffeln zum Mittagessen nicht vergessen!</p>
+        <textarea class="plan-note" placeholder="Euer Plan für heute…" data-day="5"></textarea>
       </div>
     </div>
 
@@ -571,6 +557,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-body" id="cal-6">
         <p>Robbensafari – Seehunde in freier Wildbahn. Frühzeitig buchen! Nachmittag: entspannter Strandtag am Dormio-Strand. Abend: Essen im Resort oder Cadzand-Bad.</p>
+        <textarea class="plan-note" placeholder="Euer Plan für heute…" data-day="6"></textarea>
       </div>
     </div>
 
@@ -585,6 +572,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-body" id="cal-7">
         <p>Zwin Naturpark bei Knokke – Salzwiesen, seltene Vögel, Meeresblick. Anschließend kurzer Bummel durch Knokke-Heist. Strandspaziergang am belgischen Nordseeküstenstreifen.</p>
+        <textarea class="plan-note" placeholder="Euer Plan für heute…" data-day="7"></textarea>
       </div>
     </div>
 
@@ -599,6 +587,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-body" id="cal-8">
         <p>Fahrräder ausleihen und den flachen Küstenradweg erkunden – Richtung Cadzand oder Breskens. Zeeland ist das Paradies für Radfahrer: kein Hügel, Meeresluft, weite Dünenlandschaft.</p>
+        <textarea class="plan-note" placeholder="Euer Plan für heute…" data-day="8"></textarea>
       </div>
     </div>
 
@@ -613,6 +602,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-body" id="cal-9">
         <p>Zweite Runde Sluis Abendmarkt – oder tagsüber Sluis besuchen: Windmühle, Stadtmauern, Käseläden. Abend dann mit dem Marktbesuch abrunden. Ein schöner Wiederbesuch!</p>
+        <textarea class="plan-note" placeholder="Euer Plan für heute…" data-day="9"></textarea>
       </div>
     </div>
 
@@ -627,6 +617,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-body" id="cal-10">
         <p>Cadzand Wochenmarkt oder Middelburg besuchen. Nachmittag: letzter großer Strandtag vor dem Wochenende planen. Abends essen gehen in Cadzand oder Breskens.</p>
+        <textarea class="plan-note" placeholder="Euer Plan für heute…" data-day="10"></textarea>
       </div>
     </div>
 
@@ -641,6 +632,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-body" id="cal-11">
         <p>Letzter Freitagsmarkt Breskens – noch einmal frischen Fisch für das Wochenende kaufen. Nachmittag: Gent Tagesausflug oder Neeltje Jans als letztes großes Highlight.</p>
+        <textarea class="plan-note" placeholder="Euer Plan für heute…" data-day="11"></textarea>
       </div>
     </div>
 
@@ -655,6 +647,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-body" id="cal-12">
         <p>Waterland Neeltje Jans – Deltawerke, Wasserpark, Robben füttern. Ein ganzer Kindertag. Abends zurück und Koffer für die Abreise beginnen. Schöner Abschluss-Höhepunkt für die Kinder.</p>
+        <textarea class="plan-note" placeholder="Euer Plan für heute…" data-day="12"></textarea>
       </div>
     </div>
 
@@ -669,6 +662,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-body" id="cal-13">
         <p>Letzter voller Tag: Strand genießen, Abschiedsrunde im Resort, Abendessen an einem Lieblingsplatz. Koffer packen für morgen früh. Die letzten Muscheln und Krabben am Abend genießen.</p>
+        <textarea class="plan-note" placeholder="Euer Plan für heute…" data-day="13"></textarea>
       </div>
     </div>
 
@@ -683,6 +677,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
       </div>
       <div class="cal-body" id="cal-14">
         <p>Abreise bis spätestens 10:30 Uhr. Schlüssel abgeben, letzte Kontrolle der Unterkunft. Letzten Blick auf die Nordsee genießen. Bis zum nächsten Mal, Zeeland! 🌊</p>
+        <textarea class="plan-note" placeholder="Euer Plan für heute…" data-day="14"></textarea>
       </div>
     </div>
 
@@ -954,14 +949,6 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
   </div>
 </section>
 
-<!-- PLAN -->
-<section class="section" id="plan">
-  <div class="section-header">
-    <h2>📋 Mein Urlaubsplan</h2>
-    <p>14 Tage, deine Notizen – automatisch gespeichert</p>
-  </div>
-  <div class="plan-grid" id="plan-grid"></div>
-</section>
 
 <footer class="footer">
   <strong>🌊 Dormio Zeeland 2026</strong><br>
@@ -1006,90 +993,17 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
     });
   });
 
-  // Plan: Tage generieren
-  var days = [
-    { date: 'Mo 27.07', label: 'Ankunft',  hint: 'Ankunft ab 16:00 Uhr – Einleben & Strand' },
-    { date: 'Di 28.07', label: 'Tag 2',    hint: 'Erster Strandtag' },
-    { date: 'Mi 29.07', label: 'Tag 3',    hint: 'Vorschlag: Sluis Abendmarkt ab 18h' },
-    { date: 'Do 30.07', label: 'Tag 4',    hint: 'Vorschlag: Cadzand Markt 9–13h' },
-    { date: 'Fr 31.07', label: 'Tag 5',    hint: 'Vorschlag: Breskens Frischfischmarkt 9–13h' },
-    { date: 'Sa 01.08', label: 'Tag 6',    hint: 'Was habt ihr geplant?' },
-    { date: 'So 02.08', label: 'Tag 7',    hint: 'Was habt ihr geplant?' },
-    { date: 'Mo 03.08', label: 'Tag 8',    hint: 'Was habt ihr geplant?' },
-    { date: 'Di 04.08', label: 'Tag 9',    hint: 'Was habt ihr geplant?' },
-    { date: 'Mi 05.08', label: 'Tag 10',   hint: 'Vorschlag: Sluis Abendmarkt ab 18h' },
-    { date: 'Do 06.08', label: 'Tag 11',   hint: 'Vorschlag: Cadzand Markt 9–13h' },
-    { date: 'Fr 07.08', label: 'Tag 12',   hint: 'Vorschlag: Breskens Frischfischmarkt 9–13h' },
-    { date: 'Sa 08.08', label: 'Tag 13',   hint: 'Was habt ihr geplant?' },
-    { date: 'So 09.08', label: 'Tag 14',   hint: 'Letzter Abend – genießen!' },
-    { date: 'Mo 10.08', label: 'Abreise',  hint: 'Abreise bis 10:30 Uhr' }
-  ];
-
-  var todayStr = '';
-  try {
-    var now = new Date();
-    var mo = now.getMonth() + 1;
-    var dy = now.getDate();
-    todayStr = (dy < 10 ? '0' + dy : '' + dy) + '.' + (mo < 10 ? '0' + mo : '' + mo);
-  } catch (e) {}
-
-  var grid = document.getElementById('plan-grid');
-  if (grid) {
-    days.forEach(function (day, i) {
-      var isToday = todayStr !== '' && day.date.indexOf(todayStr) !== -1;
-      var dotClass = isToday ? 'plan-dot today' : 'plan-dot';
-      var savedNote = '';
-      var savedActivity = '';
-      try {
-        savedNote     = localStorage.getItem('dormio_note_' + i) || '';
-        savedActivity = localStorage.getItem('dormio_act_'  + i) || '';
-      } catch (e) {}
-      var el = document.createElement('div');
-      el.className = 'plan-day';
-      el.innerHTML =
-        '<div class="plan-head" data-plan="' + i + '">' +
-          '<div class="' + dotClass + '"></div>' +
-          '<div class="cal-date">' + day.date + '</div>' +
-          '<strong>' + day.label + (isToday ? ' &#x1F535;' : '') + '</strong>' +
-          '<span class="plan-arrow">&#9660;</span>' +
-        '</div>' +
-        '<div class="plan-body" id="plan-body-' + i + '">' +
-          '<span class="plan-activity-label">📌 Geplante Aktivität</span>' +
-          '<input class="plan-activity" type="text" placeholder="' + day.hint + '" data-act="' + i + '" value="' + savedActivity.replace(/"/g, '&quot;') + '">' +
-          '<span class="plan-activity-label">📝 Notizen</span>' +
-          '<textarea class="plan-note" placeholder="Weitere Notizen…" data-day="' + i + '">' +
-            savedNote.replace(/</g, '&lt;').replace(/>/g, '&gt;') +
-          '</textarea>' +
-        '</div>';
-      grid.appendChild(el);
+  // Plan-Notizen: laden und speichern
+  var planNotes = document.querySelectorAll('.cal-body .plan-note');
+  planNotes.forEach(function(ta) {
+    var d = ta.getAttribute('data-day');
+    try { ta.value = localStorage.getItem('dormio_note_' + d) || ''; } catch(e) {}
+    ta.addEventListener('input', function() {
+      try { localStorage.setItem('dormio_note_' + d, ta.value); } catch(e) {}
     });
-
-    grid.addEventListener('click', function (e) {
-      // Klick auf Input/Textarea nicht als accordion-toggle werten
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-      var head = e.target.closest ? e.target.closest('.plan-head') : null;
-      if (!head) return;
-      var id = head.getAttribute('data-plan');
-      var body = document.getElementById('plan-body-' + id);
-      var arrow = head.querySelector('.plan-arrow');
-      if (!body) return;
-      var isOpen = body.classList.contains('open');
-      body.classList.toggle('open', !isOpen);
-      if (arrow) { arrow.style.transform = isOpen ? '' : 'rotate(180deg)'; }
-    });
-
-    grid.addEventListener('input', function (e) {
-      var el = e.target;
-      if (!el) return;
-      if (el.tagName === 'TEXTAREA') {
-        var d = el.getAttribute('data-day');
-        try { localStorage.setItem('dormio_note_' + d, el.value); } catch (e2) {}
-      } else if (el.tagName === 'INPUT' && el.classList.contains('plan-activity')) {
-        var a = el.getAttribute('data-act');
-        try { localStorage.setItem('dormio_act_' + a, el.value); } catch (e2) {}
-      }
-    });
-  }
+    // Klick auf Textarea öffnet nicht das Accordion (Bubbling stoppen)
+    ta.addEventListener('click', function(e) { e.stopPropagation(); });
+  });
 
 }());
 </script>
