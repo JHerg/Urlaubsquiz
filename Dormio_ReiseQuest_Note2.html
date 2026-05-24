@@ -1111,25 +1111,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
     });
   });
 
-  // Hilfsfunktion: toggle mit touchend+click (kein Doppelfire)
-  function makeTapToggle(el, fn) {
-    var touched = false;
-    el.addEventListener('touchend', function(e) {
-      e.preventDefault();
-      touched = true;
-      fn();
-    });
-    el.addEventListener('click', function() {
-      if (touched) { touched = false; return; }
-      fn();
-    });
-  }
-
-  // Cal-head: zeigt/versteckt nichts mehr (nur noch Info-Header)
-  // → cal-arrow entfernen oder deaktivieren
-  document.querySelectorAll('.cal-arrow').forEach(function(a) { a.style.display = 'none'; });
-
-  // Polo-Tipp Toggle: öffnet/schließt Details unterhalb der Textarea
+  // Polo-Tipp Toggle
   function updateDot(head, hasContent) {
     if (!head) return;
     head.classList.toggle('has-note', !!hasContent);
@@ -1140,7 +1122,7 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
     var body  = document.getElementById('cal-' + pid);
     var arrow = toggle.querySelector('.polo-toggle-arrow');
     var label = toggle.querySelector('.polo-toggle-label');
-    makeTapToggle(toggle, function() {
+    toggle.addEventListener('click', function() {
       if (!body) return;
       var isOpen = body.classList.contains('open');
       body.classList.toggle('open', !isOpen);
