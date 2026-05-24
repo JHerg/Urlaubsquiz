@@ -69,14 +69,9 @@ body{
   color:#fff;font-size:14px;font-weight:700;
   padding:10px 22px;border-radius:30px;cursor:pointer;
   touch-action:manipulation;-webkit-tap-highlight-color:transparent;
-  transition:background .15s
+  transition:background .15s;text-decoration:none
 }
 .share-btn:active{background:rgba(255,255,255,.30)}
-.share-toast{
-  display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
-  background:#1e293b;color:#fff;font-size:14px;font-weight:600;
-  padding:10px 22px;border-radius:30px;z-index:999;white-space:nowrap
-}
 .share-toast.show{display:block;animation:fadeup .3s ease}
 @keyframes fadeup{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 
@@ -263,10 +258,9 @@ footer strong{color:var(--sky)}
     <div class="meter-label">Vorfreude-Meter ☀️</div>
   </div>
 
-  <button class="share-btn" id="share-btn">📤 Countdown mit Familie teilen</button>
+  <a class="share-btn" href="https://wa.me/?text=%F0%9F%8C%8A%20Noch%2064%20Tage%20bis%20Zeeland%21%20%F0%9F%8F%96%EF%B8%8F%0A%E2%98%80%EF%B8%8F%20Dormio%20Strand%20Resort%20Nieuwvliet-Bad%0A%F0%9F%93%85%2027.%20Juli%20%E2%80%93%2010.%20August%202026%0A%F0%9F%A6%AD%20Robbensafari%20%C2%B7%20%F0%9F%8F%B0%20Br%C3%BCgge%20%C2%B7%20%F0%9F%90%B6%20Hundestrand%0AWir%20k%C3%B6nnen%20es%20kaum%20erwarten%21%20%F0%9F%8E%89">📤 Countdown mit Familie teilen</a>
 </header>
 
-<div class="share-toast" id="share-toast">📋 Nachricht kopiert!</div>
 
 <!-- ═══ VORFREUDE KARTE ═══ -->
 <section class="section">
@@ -653,57 +647,6 @@ if(document.readyState === 'loading'){
 }
 </script>
 
-<!-- SCRIPT 3: Share Button -->
-<script>
-function initShare(){
-  var btn = document.getElementById('share-btn');
-  if(!btn) return;
-  btn.addEventListener('click', function(){
-  var tgt_ms = Date.UTC(2026, 6, 27, 14, 0, 0);
-  var diff = tgt_ms - new Date().getTime();
-  var days = diff > 0 ? Math.floor(diff / 86400000) : 0;
-  var msg  = "🌊 Noch " + days + " Tage bis Zeeland!\n"
-    + "☀️ Dormio Strand Resort Nieuwvliet-Bad\n"
-    + "📅 27. Juli – 10. August 2026\n"
-    + "🦭 Robbensafari · 🏰 Brügge · 🐶 Hundestrand\n"
-    + "Wir können es kaum erwarten! 🎉";
-
-  if (navigator.share) {
-    navigator.share({ title: "Zeeland 2026 Countdown", text: msg })
-      .catch(function(){});
-    return;
-  }
-  // Fallback: Clipboard
-  try {
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(msg).then(showToast).catch(copyFallback);
-    } else { copyFallback(); }
-  } catch(e){ copyFallback(); }
-
-  function copyFallback(){
-    try {
-      var ta = document.createElement('textarea');
-      ta.value = msg; ta.style.cssText='position:fixed;opacity:0;top:0;left:0';
-      document.body.appendChild(ta); ta.focus(); ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      showToast();
-    } catch(e2){ alert(msg); }
-  }
-  function showToast(){
-    var t = document.getElementById('share-toast');
-    t.classList.add('show');
-    setTimeout(function(){ t.classList.remove('show'); }, 2500);
-  }
-  });
-}
-
-if(document.readyState === 'loading'){
-  document.addEventListener('DOMContentLoaded', initShare);
-} else {
-  initShare();
-}
-</script>
 
 </body>
 </html>
