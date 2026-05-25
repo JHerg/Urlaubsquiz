@@ -49,12 +49,6 @@ body{
   font-size:18px;font-weight:600;letter-spacing:.02em;opacity:.9;margin-bottom:12px
 }
 .cnt-hms span{opacity:.7;font-size:13px;margin:0 1px}
-.sleep-pill{
-  display:inline-flex;align-items:center;gap:6px;
-  background:rgba(253,230,138,.20);border:1px solid rgba(253,230,138,.40);
-  color:#fde68a;font-size:14px;font-weight:700;
-  padding:6px 16px;border-radius:30px
-}
 
 .meter-wrap{margin:20px 0 16px}
 .meter-bar{
@@ -264,7 +258,6 @@ footer strong{color:var(--sky)}
       <span id="cnt-m">00</span><span>min</span>&nbsp;
       <span id="cnt-s">00</span><span>s</span>
     </div>
-    <div class="sleep-pill">🌙 Noch <strong id="cnt-sleeps">63</strong> Schläfchen!</div>
   </div>
 
   <div class="meter-wrap">
@@ -592,7 +585,6 @@ footer strong{color:var(--sky)}
 
       if(diff <= 0){
         elDays.textContent = '0';
-        el('cnt-sleeps').textContent = '0';
         var m = el('meter-fill'); if(m) m.style.width='100%';
         return;
       }
@@ -607,7 +599,6 @@ footer strong{color:var(--sky)}
       el('cnt-h').textContent = pad(hours);
       el('cnt-m').textContent = pad(mins);
       el('cnt-s').textContent = pad(secs);
-      el('cnt-sleeps').textContent = Math.floor(diff / 86400000);
 
       // h/m/s einblenden sobald JS läuft
       var hmsRow = el('cnt-hms-row');
