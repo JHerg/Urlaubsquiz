@@ -256,7 +256,7 @@ footer strong{color:var(--sky)}
 
   <div class="countdown-box">
     <div class="cnt-main">
-      <span id="cnt-days" class="cnt-num">64</span>
+      <span id="cnt-days" class="cnt-num">63</span>
       <span class="cnt-unit">Tage</span>
     </div>
     <div class="cnt-hms" id="cnt-hms-row" style="opacity:0;transition:opacity .3s">
@@ -264,7 +264,7 @@ footer strong{color:var(--sky)}
       <span id="cnt-m">00</span><span>min</span>&nbsp;
       <span id="cnt-s">00</span><span>s</span>
     </div>
-    <div class="sleep-pill">🌙 Noch <strong id="cnt-sleeps">64</strong> Schläfchen!</div>
+    <div class="sleep-pill">🌙 Noch <strong id="cnt-sleeps">63</strong> Schläfchen!</div>
   </div>
 
   <div class="meter-wrap">
@@ -272,7 +272,7 @@ footer strong{color:var(--sky)}
     <div class="meter-label">Vorfreude-Meter ☀️</div>
   </div>
 
-  <a class="share-btn" href="https://wa.me/?text=%F0%9F%8C%8A%20Noch%2064%20Tage%20bis%20Zeeland%21%20%F0%9F%8F%96%EF%B8%8F%0A%E2%98%80%EF%B8%8F%20Dormio%20Strand%20Resort%20Nieuwvliet-Bad%0A%F0%9F%93%85%2027.%20Juli%20%E2%80%93%2010.%20August%202026%0A%F0%9F%A6%AD%20Robbensafari%20%C2%B7%20%F0%9F%8F%B0%20Br%C3%BCgge%20%C2%B7%20%F0%9F%90%B6%20Hundestrand%0AWir%20k%C3%B6nnen%20es%20kaum%20erwarten%21%20%F0%9F%8E%89">📤 Countdown mit Familie teilen</a>
+  <a class="share-btn" id="share-btn" href="https://wa.me/?text=%F0%9F%8C%8A%20Noch%2063%20Tage%20bis%20Zeeland%21%20%F0%9F%8F%96%EF%B8%8F%0A%E2%98%80%EF%B8%8F%20Dormio%20Strand%20Resort%20Nieuwvliet-Bad%0A%F0%9F%93%85%2027.%20Juli%20%E2%80%93%2010.%20August%202026%0A%F0%9F%A6%AD%20Robbensafari%20%C2%B7%20%F0%9F%8F%B0%20Br%C3%BCgge%20%C2%B7%20%F0%9F%90%B6%20Hundestrand%0AWir%20k%C3%B6nnen%20es%20kaum%20erwarten%21%20%F0%9F%8E%89">📤 Countdown mit Familie teilen</a>
 </header>
 
 
@@ -646,6 +646,22 @@ footer strong{color:var(--sky)}
 })();
 </script>
 
+<!-- SCRIPT 3: Share-Button dynamisch mit aktuellem Tage-Stand -->
+<script>
+(function(){
+  try{
+    var btn = document.getElementById('share-btn');
+    if(!btn) return;
+    var days = Math.max(0, Math.ceil((Date.UTC(2026,6,27,14,0,0) - Date.now()) / 86400000));
+    var msg = '🌊 Noch ' + days + ' Tage bis Zeeland! 🏖️\n'
+      + '☀️ Dormio Strand Resort Nieuwvliet-Bad\n'
+      + '📅 27. Juli – 10. August 2026\n'
+      + '🦭 Robbensafari · 🏰 Brügge · 🐶 Hundestrand\n'
+      + 'Wir können es kaum erwarten! 🎉';
+    btn.href = 'https://wa.me/?text=' + encodeURIComponent(msg);
+  } catch(e){}
+})();
+</script>
 
 </body>
 </html>
