@@ -607,7 +607,7 @@ footer strong{color:var(--sky)}
       el('cnt-h').textContent = pad(hours);
       el('cnt-m').textContent = pad(mins);
       el('cnt-s').textContent = pad(secs);
-      el('cnt-sleeps').textContent = Math.ceil(diff / 86400000);
+      el('cnt-sleeps').textContent = Math.floor(diff / 86400000);
 
       // h/m/s einblenden sobald JS läuft
       var hmsRow = el('cnt-hms-row');
