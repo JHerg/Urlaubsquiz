@@ -86,6 +86,10 @@ canvas.addEventListener('touchstart', e => {
   e.preventDefault();
   handleTouches(e.touches);
   requestGyroPermission();
+  // Start/restart on tap (iOS: click doesn't fire after preventDefault)
+  if (state === 'menu' || state === 'over' || state === 'win') {
+    startGame();
+  }
 }, { passive: false });
 canvas.addEventListener('touchmove', e => {
   e.preventDefault();
