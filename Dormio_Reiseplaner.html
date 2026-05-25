@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Dormio Zeeland 2026 · Christian Polo Guide</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#08111e;
+  --card:rgba(255,255,255,0.07);
+  --border:rgba(255,255,255,0.10);
+  --text:#f0f4ff;
+  --muted:rgba(240,244,255,0.52);
+  --accent:#0ea5e9;
+  --amber:#f59e0b;
+  --green:#10b981;
+  --gold:#f59e0b;
+  --nav-h:108px;
+}
+html{scroll-behavior:smooth;scroll-padding-top:var(--nav-h)}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;font-size:16px;line-height:1.55;-webkit-text-size-adjust:100%;overscroll-behavior:none}
+
+.nav{position:sticky;top:0;z-index:100;background:rgba(8,17,30,0.97);border-bottom:1px solid var(--border);padding:0}
+.nav-title{font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--muted);text-align:center;padding:6px 12px 0}
+.nav-chips{display:flex;gap:8px;overflow-x:auto;padding:8px 12px 10px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.nav-chips::-webkit-scrollbar{display:none}
+.nav-chips a{
+  display:inline-flex;align-items:center;gap:4px;white-space:nowrap;
+  background:var(--card);border:1px solid var(--border);
+  color:var(--text);text-decoration:none;font-size:13px;font-weight:500;
+  padding:6px 13px;border-radius:20px;flex-shrink:0;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  transition:background .15s,border-color .15s
+}
+.nav-chips a:hover{background:rgba(14,165,233,0.18);border-color:var(--accent)}
+
+.hero{
+  background:linear-gradient(160deg,#0a2540 0%,#0c3a5c 35%,#0e4a70 60%,#083052 100%);
+  padding:40px 20px 36px;text-align:center;position:relative;overflow:hidden
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 100%,rgba(14,165,233,0.20) 0%,transparent 70%);
+  pointer-events:none
+}
+.hero-wave{font-size:52px;display:block;margin-bottom:8px;filter:drop-shadow(0 4px 16px rgba(14,165,233,0.4))}
+.hero h1{font-size:28px;font-weight:800;letter-spacing:-.02em;line-height:1.2;margin-bottom:4px}
+.hero h1 span{color:var(--accent)}
+.hero-sub{font-size:15px;color:var(--muted);margin-bottom:6px}
+.hero-dates{
+  display:inline-block;background:rgba(14,165,233,0.18);border:1px solid rgba(14,165,233,0.35);
+  color:var(--accent);font-size:13px;font-weight:600;padding:5px 14px;border-radius:20px;margin-bottom:18px
+}
+.hero-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.hero-chip{
+  background:rgba(255,255,255,0.09);border:1px solid rgba(255,255,255,0.14);
+  font-size:13px;padding:6px 13px;border-radius:20px;font-weight:500
+}
+
+.section{padding:0 0 48px}
+.section-header{
+  padding:28px 20px 16px;
+  border-top:3px solid var(--accent);
+}
+.section-header h2{font-size:22px;font-weight:800;letter-spacing:-.02em}
+.section-header p{font-size:14px;color:var(--muted);margin-top:4px}
+
+.cards{padding:0 12px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cards.single{grid-template-columns:1fr}
+
+.card{
+  background:var(--card);border:1px solid var(--border);border-radius:16px;
+  padding:16px;position:relative;overflow:hidden
+}
+.card-icon{font-size:30px;margin-bottom:8px;display:block}
+.card-badge{
+  position:absolute;top:12px;right:12px;
+  background:linear-gradient(135deg,var(--gold),#e07b00);
+  color:#1a0a00;font-size:10px;font-weight:800;
+  padding:3px 8px;border-radius:10px;letter-spacing:.02em
+}
+.card h3{font-size:15px;font-weight:700;margin-bottom:5px;line-height:1.25}
+.card p{font-size:13px;color:var(--muted);line-height:1.5}
+.card-dist{
+  display:inline-flex;align-items:center;gap:4px;
+  background:rgba(14,165,233,0.15);border:1px solid rgba(14,165,233,0.25);
+  color:var(--accent);font-size:11px;font-weight:600;
+  padding:3px 9px;border-radius:10px;margin:8px 0 6px
+}
+.card-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.tag{font-size:11px;padding:3px 8px;border-radius:8px;font-weight:600;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.10)}
+
+.insider{
+  background:rgba(245,158,11,0.10);border:1px solid rgba(245,158,11,0.28);
+  border-radius:12px;padding:11px 13px;margin-top:10px;
+  font-size:12px;color:rgba(245,158,11,0.95);line-height:1.5
+}
+.insider::before{content:'💡 Insider: ';font-weight:700}
+
+.maps-btn{
+  display:inline-flex;align-items:center;gap:5px;margin-top:10px;
+  background:rgba(14,165,233,0.18);border:1px solid rgba(14,165,233,0.40);
+  color:var(--accent);font-size:13px;font-weight:700;
+  padding:8px 14px;border-radius:12px;text-decoration:none;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  transition:background .15s
+}
+.maps-btn:active{background:rgba(14,165,233,0.32)}
+
+
+.hl-num{
+  width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),#0870a8);
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:800;flex-shrink:0;margin-bottom:8px
+}
+
+.filter-wrap{display:flex;gap:8px;overflow-x:auto;padding:0 12px 14px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.filter-wrap::-webkit-scrollbar{display:none}
+.filter-btn{
+  display:inline-flex;align-items:center;gap:4px;white-space:nowrap;
+  background:var(--card);border:1px solid var(--border);
+  color:var(--text);font-size:13px;font-weight:500;
+  padding:7px 14px;border-radius:20px;cursor:pointer;flex-shrink:0;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  transition:all .15s
+}
+.filter-btn.active{background:rgba(14,165,233,0.20);border-color:var(--accent);color:var(--accent)}
+
+.calendar{padding:0 12px;display:flex;flex-direction:column;gap:8px}
+/* overflow:hidden entfernt – blockiert Textarea-Input auf iOS/Android */
+.cal-day{background:var(--card);border:1px solid var(--border);border-radius:14px;transition:border-color .2s}
+.cal-day.today{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 4px 16px rgba(14,165,233,0.15)}
+.cal-head{
+  display:flex;align-items:center;gap:12px;padding:13px 16px;
+  cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  user-select:none;-webkit-user-select:none;border-radius:14px
+}
+.cal-head.arrive{border-left:3px solid var(--green)}
+.cal-head.depart{border-left:3px solid #ef4444}
+.cal-head.event-day{border-left:3px solid var(--amber)}
+.cal-date{
+  background:rgba(14,165,233,0.15);border:1px solid rgba(14,165,233,0.20);
+  border-radius:10px;padding:4px 10px;font-size:12px;font-weight:700;
+  color:var(--accent);min-width:62px;text-align:center;flex-shrink:0
+}
+.cal-day.today .cal-date{background:var(--accent);color:#001523}
+.today-pill{
+  display:inline-block;background:var(--accent);color:#001523;font-size:9px;font-weight:800;
+  padding:2px 6px;border-radius:6px;margin-left:6px;letter-spacing:.04em;vertical-align:middle
+}
+.cal-info{flex:1;min-width:0}
+.cal-info strong{font-size:14px;display:block;line-height:1.3}
+.cal-info small{font-size:12px;color:var(--muted)}
+.cal-arrow{font-size:13px;color:var(--muted);transition:transform .2s;flex-shrink:0}
+.note-dot{
+  width:8px;height:8px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 6px rgba(16,185,129,0.6);flex-shrink:0;display:none
+}
+.cal-head.has-note .note-dot{display:block}
+/* Textarea immer sichtbar – kein Öffnen nötig */
+.cal-plan{padding:0 14px 10px;border-top:1px solid var(--border)}
+.cal-plan{padding:10px 14px 6px;border-top:1px solid var(--border)}
+.cal-body{
+  display:block;padding:10px 14px 14px;
+  background:rgba(245,158,11,0.05);border-top:1px solid rgba(245,158,11,0.18);
+  border-radius:0 0 14px 14px
+}
+.cal-body p{font-size:13px;color:var(--muted);line-height:1.5;margin:4px 0 8px}
+.polo-tip-head{
+  display:block;font-size:10px;font-weight:800;color:var(--amber);
+  letter-spacing:.08em;margin-bottom:2px
+}
+
+.recurring{padding:16px 12px 0;display:flex;flex-direction:column;gap:8px}
+.rec-card{
+  background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.20);
+  border-radius:12px;padding:13px 15px;display:flex;align-items:center;gap:12px
+}
+.rec-icon{font-size:24px;flex-shrink:0}
+.rec-info strong{font-size:14px;display:block}
+.rec-info small{font-size:12px;color:var(--muted)}
+
+.age-badge{
+  display:inline-block;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.25);
+  color:var(--green);font-size:11px;font-weight:700;
+  padding:3px 9px;border-radius:10px;margin-top:7px
+}
+
+.rain-box{
+  margin:16px 12px 0;background:rgba(14,165,233,0.08);border:1px solid rgba(14,165,233,0.20);
+  border-radius:14px;padding:16px;
+}
+.rain-box h3{font-size:15px;font-weight:700;margin-bottom:8px}
+.rain-box ul{padding-left:18px}
+.rain-box li{font-size:13px;color:var(--muted);margin-bottom:5px;line-height:1.45}
+
+.dog-rule{
+  background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.20);
+  border-radius:12px;padding:14px;margin:0 12px 12px;
+}
+.dog-rule h3{font-size:14px;font-weight:700;color:var(--amber);margin-bottom:6px}
+.dog-rule p{font-size:13px;color:var(--muted);line-height:1.5}
+
+.food-grid{padding:0 12px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.food-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px}
+.food-icon{font-size:28px;margin-bottom:6px}
+.food-card h3{font-size:14px;font-weight:700;margin-bottom:4px}
+.food-card p{font-size:12px;color:var(--muted);line-height:1.45}
+
+.info-block{margin:0 12px 14px}
+.info-block h3{font-size:15px;font-weight:700;margin-bottom:8px;color:var(--accent)}
+.info-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px}
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);gap:8px}
+.info-row:last-child{border-bottom:none}
+.info-row .label{font-size:13px;color:var(--muted);flex-shrink:0}
+.info-row .val{font-size:13px;font-weight:600;text-align:right}
+
+.plan-note{
+  width:100%;background:rgba(14,165,233,0.05);border:1.5px solid rgba(14,165,233,0.25);
+  border-radius:12px;color:var(--text);font-size:14px;font-family:inherit;
+  padding:12px 14px;resize:vertical;min-height:80px;-webkit-appearance:none
+}
+.plan-note:focus{outline:none;border-color:var(--accent);background:rgba(14,165,233,0.08)}
+.plan-note::placeholder{color:rgba(240,244,255,0.35)}
+
+.footer{text-align:center;padding:32px 20px 48px;color:var(--muted);font-size:12px}
+.footer strong{color:var(--accent)}
+</style>
+</head>
+<body>
+
+<!-- STICKY NAV -->
+<nav class="nav" id="top">
+  <div class="nav-title">🏖️ Dormio · Zeeland 2026 · 27.07 – 10.08</div>
+  <div class="nav-chips">
+    <a href="#highlights">⭐ Highlights</a>
+    <a href="#orte">📍 Orte</a>
+    <a href="#termine">📅 Tagesplan</a>
+    <a href="#kinder">👶 Kinder</a>
+    <a href="#hund">🐶 Hund</a>
+    <a href="#kulinarik">🍽️ Kulinarik</a>
+    <a href="#infos">ℹ️ Infos</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <span class="hero-wave">🌊</span>
+  <h1>Dormio Strand<br><span>Resort Zeeland</span></h1>
+  <p class="hero-sub">Nieuwvliet-Bad · Zeeland · Niederlande</p>
+  <div class="hero-dates">📅 27. Juli – 10. August 2026 · 14 Nächte</div>
+  <div class="hero-chips">
+    <span class="hero-chip">🐶 Hundestrand</span>
+    <span class="hero-chip">🧒 Familien</span>
+    <span class="hero-chip">🌊 Nordseeküste</span>
+    <span class="hero-chip">🇧🇪 Nahe Belgien</span>
+  </div>
+</div>
+
+<!-- HIGHLIGHTS -->
+<section class="section" id="highlights">
+  <div class="section-header">
+    <h2>⭐ Top Highlights</h2>
+    <p>Die 8 Must-Sees eures Zeeland-Urlaubs</p>
+  </div>
+  <div class="cards">
+
+    <div class="card">
+      <div class="hl-num">1</div>
+      <div class="card-badge">⭐ Top</div>
+      <span class="card-icon">🌊</span>
+      <h3>Nieuwvliet-Bad Strand</h3>
+      <p>Der eigene Strand vor der Haustür – breiter Nordseestrand direkt am Resort.</p>
+    </div>
+
+    <div class="card">
+      <div class="hl-num">2</div>
+      <div class="card-badge">⭐ Top</div>
+      <span class="card-icon">🏰</span>
+      <h3>Brügge</h3>
+      <p>Belgiens schönste Stadt, nur 40 Min. entfernt – UNESCO-Weltkulturerbe.</p>
+    </div>
+
+    <div class="card">
+      <div class="hl-num">3</div>
+      <span class="card-icon">🦭</span>
+      <h3>Robbensafari Breskens</h3>
+      <p>Seehunde in freier Wildbahn beobachten – einmalig für die ganze Familie.</p>
+    </div>
+
+    <div class="card">
+      <div class="hl-num">4</div>
+      <span class="card-icon">🌿</span>
+      <h3>Zwin Naturpark</h3>
+      <p>Wo Nordsee auf Wildnis trifft – seltene Vogelarten und weite Salzwiesen.</p>
+    </div>
+
+    <div class="card">
+      <div class="hl-num">5</div>
+      <span class="card-icon">💧</span>
+      <h3>Waterland Neeltje Jans</h3>
+      <p>Deltawerke hautnah erleben plus spektakulärer Wasserpark für Kinder.</p>
+    </div>
+
+    <div class="card">
+      <div class="hl-num">6</div>
+      <span class="card-icon">🌙</span>
+      <h3>Sluis Abendmarkt</h3>
+      <p>Mittelalterliche Altstadt bei Nacht – mittwochs ab 18 Uhr zauberhaft.</p>
+    </div>
+
+    <div class="card">
+      <div class="hl-num">7</div>
+      <span class="card-icon">🐟</span>
+      <h3>Breskens Hafen</h3>
+      <p>Frischer Fisch direkt vom Boot – Muscheln und Krabben am Freitagsmarkt.</p>
+    </div>
+
+    <div class="card">
+      <div class="hl-num">8</div>
+      <span class="card-icon">🚲</span>
+      <h3>Küstenradweg</h3>
+      <p>Pedalrittour entlang der Nordsee – flaches Land, Meereswind, Freiheit.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ORTE -->
+<section class="section" id="orte">
+  <div class="section-header">
+    <h2>📍 Orte &amp; Ausflüge</h2>
+    <p>10 Ziele in der Umgebung mit Insider-Tipps</p>
+  </div>
+
+  <div class="filter-wrap">
+    <button type="button" class="filter-btn active" data-filter="alle">Alle</button>
+    <button type="button" class="filter-btn" data-filter="strand">🌊 Strand</button>
+    <button type="button" class="filter-btn" data-filter="stadt">🏰 Stadt</button>
+    <button type="button" class="filter-btn" data-filter="natur">🌿 Natur</button>
+    <button type="button" class="filter-btn" data-filter="kids">👶 Kinder</button>
+    <button type="button" class="filter-btn" data-filter="regen">🌧️ Regen</button>
+  </div>
+
+  <div class="cards single" id="orte-cards">
+
+    <div class="card" data-tags="strand kids">
+      <span class="card-icon">🌊</span>
+      <h3>Cadzand-Bad</h3>
+      <span class="card-dist">🚗 10 Min · 8 km</span>
+      <p>Lebhafterer Strand mit Strandrestaurants und breitem Sandstreifen. Schöner Bummel durch das Seebad – Boutiquen und Eiscafés laden ein. Abends gute Fischrestaurants direkt am Wasser.</p>
+      <div class="insider">Früh morgens ist der Strand noch leer – perfekt für einen Spaziergang im Morgennebel.</div>
+      <div class="card-tags">
+        <span class="tag">🌊 Strand</span><span class="tag">👶 Kids</span>
+      </div>
+      <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Cadzand-Bad,Netherlands" target="_blank">📍 Ort anzeigen</a>
+    </div>
+
+    <div class="card" data-tags="stadt">
+      <span class="card-icon">🏰</span>
+      <h3>Sluis</h3>
+      <span class="card-dist">🚗 20 Min · 15 km</span>
+      <p>Kleinste Stadt der Niederlande mit wunderschön erhaltenen Stadtmauern. Windmühle, Boutiquen und Käseläden prägen das Ortsbild. Mittwochabend findet der beliebte Abendmarkt statt.</p>
+      <div class="insider">Die Windmühle ist von innen begehbar – wunderbare Aussicht über das flache Zeeland.</div>
+      <div class="card-tags">
+        <span class="tag">🏰 Stadt</span><span class="tag">🧀 Käse</span>
+      </div>
+      <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Sluis,Netherlands" target="_blank">📍 Ort anzeigen</a>
+    </div>
+
+    <div class="card" data-tags="natur essen">
+      <span class="card-icon">🐟</span>
+      <h3>Breskens</h3>
+      <span class="card-dist">🚗 15 Min · 12 km</span>
+      <p>Kleines Hafenstädtchen mit echten Fischerbooten – der Alltag am Meer ist hier noch spürbar. Frische Muscheln und Nordseekrabben direkt am Kai. Fähre nach Vlissingen ist eine schöne Bootsfahrt.</p>
+      <div class="insider">Freitagsmarkt (9–13 Uhr) für den besten und frischesten Fisch der ganzen Region.</div>
+      <div class="card-tags">
+        <span class="tag">🌿 Natur</span><span class="tag">🍽️ Essen</span><span class="tag">⛵ Fähre</span>
+      </div>
+      <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Breskens+harbor,Netherlands" target="_blank">📍 Ort anzeigen</a>
+    </div>
+
+    <div class="card" data-tags="stadt kids regen">
+      <span class="card-icon">🏰</span>
+      <h3>Brügge</h3>
+      <span class="card-dist">🚗 40 Min · 32 km</span>
+      <p>UNESCO-Weltkulturerbe mit traumhaften Grachten, gotischer Architektur und weltberühmter Schokolade. Ein ganzer Tag ist das absolute Minimum für diese Stadt. Grachtenrundfahrten, Brauereien und Märkte.</p>
+      <div class="insider">Groeningemuseum für Flämische Primitive – absolute Weltklasse-Kunstwerke, kaum Warteschlangen morgens.</div>
+      <div class="card-tags">
+        <span class="tag">🏰 Stadt</span><span class="tag">👶 Kids</span><span class="tag">🌧️ Regen</span>
+      </div>
+      <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Bruges,Belgium" target="_blank">📍 Ort anzeigen</a>
+    </div>
+
+    <div class="card" data-tags="strand stadt">
+      <span class="card-icon">🌊</span>
+      <h3>Knokke-Heist</h3>
+      <span class="card-dist">🚗 30 Min · 22 km</span>
+      <p>Schickstes belgisches Seebad mit Luxusboutiquen und langen Sandstränden. Gehobenes Restaurantniveau – perfekt für einen eleganten Abend. Lebhafter Ortskern mit Galerien und Cafés.</p>
+      <div class="insider">Naturschutzgebiet "Het Zwin" liegt direkt nebenan – Übergang zwischen Belgien und Niederlanden.</div>
+      <div class="card-tags">
+        <span class="tag">🌊 Strand</span><span class="tag">🏰 Stadt</span>
+      </div>
+      <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Knokke-Heist,Belgium" target="_blank">📍 Ort anzeigen</a>
+    </div>
+
+    <div class="card" data-tags="strand">
+      <span class="card-icon">⛵</span>
+      <h3>Vlissingen</h3>
+      <span class="card-dist">🚗 40 Min · 35 km</span>
+      <p>Fähre von Breskens oder auf der Autobahn erreichbar. Schöne Boulevard-Promenade direkt am Meer – ideal für einen Strandspaziergang. Historische Festungsanlagen prägen das Stadtbild.</p>
+      <div class="insider">Von der Festung aus sieht man die riesigen Containerschiffe in der Westerschelde – spektakulär!</div>
+      <div class="card-tags">
+        <span class="tag">🌊 Strand</span><span class="tag">⛵ Boot</span>
+      </div>
+      <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Vlissingen,Netherlands" target="_blank">📍 Ort anzeigen</a>
+    </div>
+
+    <div class="card" data-tags="stadt kids regen">
+      <span class="card-icon">🏛️</span>
+      <h3>Middelburg</h3>
+      <span class="card-dist">🚗 45 Min · 38 km</span>
+      <p>Historische Hauptstadt Zeelands mit prächtiger Abtei und Rathausturm. Zeeuws Museum mit lebendiger regionaler Geschichte. Dienstags und samstags findet der große Wochenmarkt statt.</p>
+      <div class="insider">Turmbesteigung der Abtei für die beste Aussicht über ganz Zeeland – absolut empfehlenswert.</div>
+      <div class="card-tags">
+        <span class="tag">🏰 Stadt</span><span class="tag">👶 Kids</span><span class="tag">🌧️ Regen</span>
+      </div>
+      <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Middelburg,Netherlands" target="_blank">📍 Ort anzeigen</a>
+    </div>
+
+    <div class="card" data-tags="kids natur">
+      <span class="card-icon">💧</span>
+      <h3>Neeltje Jans</h3>
+      <span class="card-dist">🚗 50 Min · 55 km</span>
+      <p>Künstliche Insel im Herzen der Deltawerke – Ingenieurskunst auf höchstem Niveau. Riesenrutschenpark und Robbenstation zum Füttern. Für Kinder ist das ein ganzer Tag volles Programm.</p>
+      <div class="insider">Deltawerke-Führung separat buchen – lohnt sich sehr und ist schnell ausverkauft.</div>
+      <div class="card-tags">
+        <span class="tag">👶 Kids</span><span class="tag">🌿 Natur</span>
+      </div>
+      <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Waterland+Neeltje+Jans,Netherlands" target="_blank">📍 Ort anzeigen</a>
+    </div>
+
+    <div class="card" data-tags="kids natur">
+      <span class="card-icon">🌿</span>
+      <h3>Groede</h3>
+      <span class="card-dist">🚗 10 Min · 7 km</span>
+      <p>Winziges idyllisches Dorf mit malerischer Backsteinkirche und Dorfplatz. Driftkartbahn und Spielpark für Kinder direkt vor Ort. Perfekte entspannte Fahrradpause mit Kindern.</p>
+      <div class="insider">"De Groede" Restaurant für günstige und authentische niederländische Hausmannskost.</div>
+      <div class="card-tags">
+        <span class="tag">👶 Kids</span><span class="tag">🚲 Rad</span>
+      </div>
+      <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Groede,Netherlands" target="_blank">📍 Ort anzeigen</a>
+    </div>
+
+    <div class="card" data-tags="stadt regen">
+      <span class="card-icon">🎨</span>
+      <h3>Gent</h3>
+      <span class="card-dist">🚗 60 Min · 65 km</span>
+      <p>Flämisches Juwel mit dem imposanten Gravensteen-Burgmuseum und bunten Grachtenhäusern am Graslei. Tolle Gastronomie und lebhaftes Nachtleben. Für einen langen Tagesausflug einplanen.</p>
+      <div class="insider">Gratis-Grachtenrundfahrt am frühen Abend – Guides zeigen die besten versteckten Ecken der Stadt.</div>
+      <div class="card-tags">
+        <span class="tag">🏰 Stadt</span><span class="tag">🌧️ Regen</span>
+      </div>
+      <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Ghent,Belgium" target="_blank">📍 Ort anzeigen</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- TERMINE -->
+<section class="section" id="termine">
+  <div class="section-header">
+    <h2>📅 Tagesplan &amp; Events</h2>
+    <p>Vorschläge + dein persönlicher Plan · 27. Juli – 10. August 2026</p>
+  </div>
+
+  <div class="calendar">
+
+    <div class="cal-day">
+      <div class="cal-head arrive" data-cal="0">
+        <div class="cal-date">Mo 27.07</div>
+        <div class="cal-info">
+          <strong>🏠 Anreise &amp; Ankunft</strong>
+          <small>Check-in ab 16:00 Uhr</small>
+        </div>
+        <div class="note-dot"></div><span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-plan">
+        <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="0"></textarea>
+      </div>
+      <div class="cal-body open" id="cal-0">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Ankunft am Resort ab 16:00 Uhr. Reservierung Nr. 36801. Resort-Tel: +31 117 37 08 00. Erster Abend: kurzer Spaziergang zum Strand, Abendessen im Resort oder Supermarkt. Einleben und entspannen!</p>
+        <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Dormio+Strand+Resort+Nieuwvliet-Bad" target="_blank">📍 Ort anzeigen</a>
+      </div>
+    </div>
+
+    <div class="cal-day">
+      <div class="cal-head" data-cal="1">
+        <div class="cal-date">Di 28.07</div>
+        <div class="cal-info">
+          <strong>🌊 Erster Strandtag</strong>
+          <small>Den Strand entdecken</small>
+        </div>
+        <div class="note-dot"></div><span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-plan">
+        <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="1"></textarea>
+      </div>
+      <div class="cal-body open" id="cal-1">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Erster richtiger Strandtag – Nieuwvliet-Bad kennenlernen. Sandburg bauen, Wellen genießen, Strandkörbe erkunden. Abends früh ins Bett nach der Anreise.</p>
+        <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Nieuwvliet-Bad+Strand" target="_blank">📍 Ort anzeigen</a>
+      </div>
+    </div>
+
+    <div class="cal-day">
+      <div class="cal-head event-day" data-cal="2">
+        <div class="cal-date">Mi 29.07</div>
+        <div class="cal-info">
+          <strong>🌙 Sluis Abendmarkt</strong>
+          <small>Ab 18:00 Uhr · 20 Min. entfernt</small>
+        </div>
+        <div class="note-dot"></div><span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-plan">
+        <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="2"></textarea>
+      </div>
+      <div class="cal-body open" id="cal-2">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Sluis Abendmarkt ab 18 Uhr – mittelalterliche Kulisse, Marktstände, Straßenmusik. Tagsüber Strand oder Cadzand-Bad erkunden. Abendmarkt ist einer der schönsten in ganz Zeeland.</p>
+        <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Sluis,Netherlands" target="_blank">📍 Ort anzeigen</a>
+      </div>
+    </div>
+
+    <div class="cal-day">
+      <div class="cal-head event-day" data-cal="3">
+        <div class="cal-date">Do 30.07</div>
+        <div class="cal-info">
+          <strong>🛒 Cadzand Wochenmarkt</strong>
+          <small>9–13 Uhr · 10 Min. entfernt</small>
+        </div>
+        <div class="note-dot"></div><span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-plan">
+        <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="3"></textarea>
+      </div>
+      <div class="cal-body open" id="cal-3">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Cadzand-Bad Wochenmarkt am Morgen – frische Produkte, lokale Spezialitäten, Blumen. Perfekt für das Frühstückseinkaufen. Nachmittag: Strand in Cadzand oder zurück zum Dormio-Strand.</p>
+        <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Cadzand-Bad,Netherlands" target="_blank">📍 Ort anzeigen</a>
+      </div>
+    </div>
+
+    <div class="cal-day">
+      <div class="cal-head event-day" data-cal="4">
+        <div class="cal-date">Fr 31.07</div>
+        <div class="cal-info">
+          <strong>🐟 Breskens Hafenmarkt</strong>
+          <small>9–13 Uhr · 15 Min. entfernt</small>
+        </div>
+        <div class="note-dot"></div><span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-plan">
+        <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="4"></textarea>
+      </div>
+      <div class="cal-body open" id="cal-4">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Breskens Freitagsmarkt für den frischesten Fisch – Muscheln, Krabben, Hering. Hafenspaziergang danach. Nachmittag: Fähre nach Vlissingen oder Rückkehr zum Strand. Abend: frisch gekochter Fisch.</p>
+        <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Breskens+harbor,Netherlands" target="_blank">📍 Ort anzeigen</a>
+      </div>
+    </div>
+
+    <div class="cal-day">
+      <div class="cal-head" data-cal="5">
+        <div class="cal-date">Sa 01.08</div>
+        <div class="cal-info">
+          <strong>🏰 Brügge Tagesausflug</strong>
+          <small>40 Min. · Ganzer Tag empfohlen</small>
+        </div>
+        <div class="note-dot"></div><span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-plan">
+        <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="5"></textarea>
+      </div>
+      <div class="cal-body open" id="cal-5">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Brügge – ein ganzer Tag für die schönste Stadt Belgiens. Grachtenfahrt, Schokoladenläden, Altstadt. Groeningemuseum für Flämische Primitive. Waffeln zum Mittagessen nicht vergessen!</p>
+        <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Bruges,Belgium" target="_blank">📍 Ort anzeigen</a>
+      </div>
+    </div>
+
+    <div class="cal-day">
+      <div class="cal-head" data-cal="6">
+        <div class="cal-date">So 02.08</div>
+        <div class="cal-info">
+          <strong>🦭 Robbensafari Breskens</strong>
+          <small>Täglich buchbar · 15 Min.</small>
+        </div>
+        <div class="note-dot"></div><span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-plan">
+        <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="6"></textarea>
+      </div>
+      <div class="cal-body open" id="cal-6">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Robbensafari – Seehunde in freier Wildbahn. Frühzeitig buchen! Nachmittag: entspannter Strandtag am Dormio-Strand. Abend: Essen im Resort oder Cadzand-Bad.</p>
+        <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Breskens+harbor,Netherlands" target="_blank">📍 Ort anzeigen</a>
+      </div>
+    </div>
+
+    <div class="cal-day">
+      <div class="cal-head" data-cal="7">
+        <div class="cal-date">Mo 03.08</div>
+        <div class="cal-info">
+          <strong>🌿 Zwin Naturpark</strong>
+          <small>Knokke · 30 Min. entfernt</small>
+        </div>
+        <div class="note-dot"></div><span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-plan">
+        <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="7"></textarea>
+      </div>
+      <div class="cal-body open" id="cal-7">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Zwin Naturpark bei Knokke – Salzwiesen, seltene Vögel, Meeresblick. Anschließend kurzer Bummel durch Knokke-Heist. Strandspaziergang am belgischen Nordseeküstenstreifen.</p>
+        <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Zwin+Nature+Park,Knokke" target="_blank">📍 Ort anzeigen</a>
+      </div>
+    </div>
+
+    <div class="cal-day">
+      <div class="cal-head" data-cal="8">
+        <div class="cal-date">Di 04.08</div>
+        <div class="cal-info">
+          <strong>🚲 Küstenradtour</strong>
+          <small>Entlang der Nordsee</small>
+        </div>
+        <div class="note-dot"></div><span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-plan">
+        <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="8"></textarea>
+      </div>
+      <div class="cal-body open" id="cal-8">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Fahrräder ausleihen und den flachen Küstenradweg erkunden – Richtung Cadzand oder Breskens. Zeeland ist das Paradies für Radfahrer: kein Hügel, Meeresluft, weite Dünenlandschaft.</p>
+        <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Nieuwvliet-Bad,Netherlands" target="_blank">📍 Ort anzeigen</a>
+      </div>
+    </div>
+
+    <div class="cal-day">
+      <div class="cal-head event-day" data-cal="9">
+        <div class="cal-date">Mi 05.08</div>
+        <div class="cal-info">
+          <strong>🌙 Sluis Abendmarkt</strong>
+          <small>Ab 18:00 Uhr · 20 Min. entfernt</small>
+        </div>
+        <div class="note-dot"></div><span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-plan">
+        <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="9"></textarea>
+      </div>
+      <div class="cal-body open" id="cal-9">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Zweite Runde Sluis Abendmarkt – oder tagsüber Sluis besuchen: Windmühle, Stadtmauern, Käseläden. Abend dann mit dem Marktbesuch abrunden. Ein schöner Wiederbesuch!</p>
+        <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Sluis,Netherlands" target="_blank">📍 Ort anzeigen</a>
+      </div>
+    </div>
+
+    <div class="cal-day">
+      <div class="cal-head event-day" data-cal="10">
+        <div class="cal-date">Do 06.08</div>
+        <div class="cal-info">
+          <strong>🛒 Cadzand Wochenmarkt</strong>
+          <small>9–13 Uhr · 10 Min. entfernt</small>
+        </div>
+        <div class="note-dot"></div><span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-plan">
+        <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="10"></textarea>
+      </div>
+      <div class="cal-body open" id="cal-10">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Cadzand Wochenmarkt oder Middelburg besuchen. Nachmittag: letzter großer Strandtag vor dem Wochenende planen. Abends essen gehen in Cadzand oder Breskens.</p>
+        <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Cadzand-Bad,Netherlands" target="_blank">📍 Ort anzeigen</a>
+      </div>
+    </div>
+
+    <div class="cal-day">
+      <div class="cal-head event-day" data-cal="11">
+        <div class="cal-date">Fr 07.08</div>
+        <div class="cal-info">
+          <strong>🐟 Breskens Hafenmarkt</strong>
+          <small>9–13 Uhr · 15 Min. entfernt</small>
+        </div>
+        <div class="note-dot"></div><span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-plan">
+        <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="11"></textarea>
+      </div>
+      <div class="cal-body open" id="cal-11">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Letzter Freitagsmarkt Breskens – noch einmal frischen Fisch für das Wochenende kaufen. Nachmittag: Gent Tagesausflug oder Neeltje Jans als letztes großes Highlight.</p>
+        <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Breskens+harbor,Netherlands" target="_blank">📍 Ort anzeigen</a>
+      </div>
+    </div>
+
+    <div class="cal-day">
+      <div class="cal-head" data-cal="12">
+        <div class="cal-date">Sa 08.08</div>
+        <div class="cal-info">
+          <strong>💧 Waterland Neeltje Jans</strong>
+          <small>50 Min. · Ganzer Kindertag</small>
+        </div>
+        <div class="note-dot"></div><span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-plan">
+        <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="12"></textarea>
+      </div>
+      <div class="cal-body open" id="cal-12">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Waterland Neeltje Jans – Deltawerke, Wasserpark, Robben füttern. Ein ganzer Kindertag. Abends zurück und Koffer für die Abreise beginnen. Schöner Abschluss-Höhepunkt für die Kinder.</p>
+        <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Waterland+Neeltje+Jans,Netherlands" target="_blank">📍 Ort anzeigen</a>
+      </div>
+    </div>
+
+    <div class="cal-day">
+      <div class="cal-head" data-cal="13">
+        <div class="cal-date">So 09.08</div>
+        <div class="cal-info">
+          <strong>🌊 Letzter Strandtag</strong>
+          <small>Alles nochmal genießen</small>
+        </div>
+        <div class="note-dot"></div><span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-plan">
+        <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="13"></textarea>
+      </div>
+      <div class="cal-body open" id="cal-13">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Letzter voller Tag: Strand genießen, Abschiedsrunde im Resort, Abendessen an einem Lieblingsplatz. Koffer packen für morgen früh. Die letzten Muscheln und Krabben am Abend genießen.</p>
+        <a class="maps-btn" href="https://www.google.com/maps/search/?api=1&query=Nieuwvliet-Bad+Strand" target="_blank">📍 Ort anzeigen</a>
+      </div>
+    </div>
+
+    <div class="cal-day">
+      <div class="cal-head depart" data-cal="14">
+        <div class="cal-date">Mo 10.08</div>
+        <div class="cal-info">
+          <strong>🚗 Abreise</strong>
+          <small>Check-out bis 10:30 Uhr</small>
+        </div>
+        <div class="note-dot"></div><span class="cal-arrow">▼</span>
+      </div>
+      <div class="cal-plan">
+        <textarea class="plan-note" placeholder="✏️ Euer Plan für heute…" data-day="14"></textarea>
+      </div>
+      <div class="cal-body open" id="cal-14">
+        <span class="polo-tip-head">💡 POLO-TIPP</span><p>Abreise bis spätestens 10:30 Uhr. Schlüssel abgeben, letzte Kontrolle der Unterkunft. Letzten Blick auf die Nordsee genießen. Bis zum nächsten Mal, Zeeland! 🌊</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="recurring">
+    <div class="section-header" style="margin:16px 0 0;padding-top:16px">
+      <h2>🔄 Immer verfügbar</h2>
+    </div>
+    <div class="rec-card">
+      <span class="rec-icon">🦭</span>
+      <div class="rec-info">
+        <strong>Robbensafari Breskens</strong>
+        <small>Täglich Mai–September · Buchung empfohlen</small>
+      </div>
+    </div>
+    <div class="rec-card">
+      <span class="rec-icon">🚗</span>
+      <div class="rec-info">
+        <strong>Groede Spielpark &amp; Driftkarts</strong>
+        <small>Täglich April–September · 10 Min. entfernt</small>
+      </div>
+    </div>
+    <div class="rec-card">
+      <span class="rec-icon">🌿</span>
+      <div class="rec-info">
+        <strong>Zwin Naturpark</strong>
+        <small>Täglich 9–18 Uhr · Bei Knokke</small>
+      </div>
+    </div>
+    <div class="rec-card">
+      <span class="rec-icon">💧</span>
+      <div class="rec-info">
+        <strong>Waterland Neeltje Jans</strong>
+        <small>Täglich · Deltawerke + Wasserpark</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- KINDER -->
+<section class="section" id="kinder">
+  <div class="section-header">
+    <h2>👶 Kinder-Guide</h2>
+    <p>Zeeland ist ein Paradies für Kinder – flacher Strand, ruhige See und Abenteuer überall.</p>
+  </div>
+
+  <div class="cards">
+
+    <div class="card">
+      <div class="card-badge">⭐ Top</div>
+      <span class="card-icon">🦭</span>
+      <h3>Robbensafari</h3>
+      <p>Das Highlight für jedes Kind – echte Seehunde in freier Wildbahn beobachten. Unvergesslich!</p>
+      <span class="age-badge">👶 Alle Altersgruppen</span>
+    </div>
+
+    <div class="card">
+      <span class="card-icon">💧</span>
+      <h3>Waterland Neeltje Jans</h3>
+      <p>Wasserrutschen, Robben füttern und die Deltawerke hautnah erleben – ein voller Kindertag.</p>
+      <span class="age-badge">🧒 Ab 4 Jahren</span>
+    </div>
+
+    <div class="card">
+      <span class="card-icon">🚗</span>
+      <h3>Groede Driftkarts</h3>
+      <p>Driftkarts, Trampolin und Spielplatz direkt in Groede – kurzer Abstecher, großer Spaß.</p>
+      <span class="age-badge">🧒 Ab 5 Jahren</span>
+    </div>
+
+    <div class="card">
+      <span class="card-icon">🐦</span>
+      <h3>Zwin Vogelpark</h3>
+      <p>Naturerlebnis mit seltenen Vögeln in den Salzwiesen – Storch, Löffler und Wattvögel.</p>
+      <span class="age-badge">👶 Alle Altersgruppen</span>
+    </div>
+
+    <div class="card">
+      <span class="card-icon">🎬</span>
+      <h3>Kinepolis Brügge</h3>
+      <p>Regentag-Notfallplan: Kino in Brügge oder Bioscoop Terneuzen für aktuelle Filme.</p>
+      <span class="age-badge">👶 Alle Altersgruppen</span>
+    </div>
+
+    <div class="card">
+      <span class="card-icon">🏖️</span>
+      <h3>Sandburg-Tag</h3>
+      <p>Immer geht's zum Strand – Sandburg bauen, Wellen zählen, Muscheln sammeln, Ebbe erkunden.</p>
+      <span class="age-badge">👶 Alle Altersgruppen</span>
+    </div>
+
+  </div>
+
+  <div class="rain-box">
+    <h3>🌧️ Regentag-Tipps</h3>
+    <ul>
+      <li>🏰 Brügge – Grachten, Museen, Schokoladenläden – ein ganzer Tag drinnen möglich</li>
+      <li>🏛️ Middelburg – Zeeuws Museum, Abtei, überdachter Markt</li>
+      <li>🎬 Kinepolis Brügge oder Bioscoop Terneuzen – aktuelle Filme</li>
+      <li>🎨 Gravensteen Burg in Gent – mittelalterliches Burgmuseum</li>
+      <li>🍫 Schokoladen-Workshop in Brügge (vorher buchen!)</li>
+      <li>🛍️ Einkaufszentrum in Middelburg</li>
+    </ul>
+  </div>
+</section>
+
+<!-- HUND -->
+<section class="section" id="hund">
+  <div class="section-header">
+    <h2>🐶 Mit Hund</h2>
+    <p>Zeeland ist hundefreundlich – mit ein paar Regeln zum Wohlfühlen für alle.</p>
+  </div>
+
+  <div class="dog-rule">
+    <h3>🏖️ Strandregeln Nieuwvliet-Bad</h3>
+    <p>Hauptstrand: Leinenpflicht täglich 10–18 Uhr. Morgens und abends sind Hunde frei. Der offizielle Hundestrand liegt ca. 500 m östlich der Hauptkasse – dort ganztags ohne Leine möglich.</p>
+  </div>
+
+  <div class="cards single" style="padding-top:4px">
+
+    <div class="card">
+      <span class="card-icon">🌊</span>
+      <h3>Cadzand-Bad Strand</h3>
+      <p>Hundestrandabschnitt vorhanden – morgens und abends frei laufen. Gutes Café mit Hundefreundlichkeit direkt am Strand.</p>
+      <div class="card-tags"><span class="tag">🐶 Hund</span><span class="tag">🌊 Strand</span></div>
+    </div>
+
+    <div class="card">
+      <span class="card-icon">🌿</span>
+      <h3>Zwin Naturpark</h3>
+      <p>Hunde an der Leine erlaubt auf den Wanderwegen. Weite Salzwiesen, Meeresluft – Hunde lieben diesen Ausflug besonders.</p>
+      <div class="card-tags"><span class="tag">🐶 Hund</span><span class="tag">🌿 Natur</span></div>
+    </div>
+
+    <div class="card">
+      <span class="card-icon">🚲</span>
+      <h3>Küstenradweg</h3>
+      <p>Perfekte Route für Hunde: flach, Meeresluft, kaum Verkehr. Hund kann neben dem Fahrrad laufen oder im Fahrradanhänger mitfahren.</p>
+      <div class="card-tags"><span class="tag">🐶 Hund</span><span class="tag">🚲 Rad</span></div>
+    </div>
+
+    <div class="card">
+      <span class="card-icon">🐟</span>
+      <h3>Breskens Hafen</h3>
+      <p>Hafenspaziergang mit Hund problemlos möglich – viele andere Hundebesitzer treffen sich hier. Fischgeruch macht Hunde besonders neugierig!</p>
+      <div class="card-tags"><span class="tag">🐶 Hund</span><span class="tag">⛵ Hafen</span></div>
+    </div>
+
+  </div>
+
+  <div class="insider" style="margin:14px 12px 0">Früh morgens ist der Strand für euren Hund das reinste Paradies – kaum Menschen, frische Meeresluft, und euer Hund kann frei laufen und ins Wasser rennen!</div>
+
+  <div class="dog-rule" style="margin-top:14px">
+    <h3>📋 Praktische Hinweise</h3>
+    <p>• Immer frisches Wasser und Napf mitnehmen – Salz-/Meerwasser nicht trinken lassen<br>
+    • Genügend Kotbeutel einpacken (auch für belgische Ausflüge)<br>
+    • EU-Heimtierausweis / Impfpass für Ausflüge nach Belgien kontrollieren<br>
+    • Sonnenschutz für helle Nasen und Ohren – auch Hunde können Sonnenbrand bekommen<br>
+    • Tierarzt-Notruf Niederlande: 0900-1010</p>
+  </div>
+</section>
+
+<!-- KULINARIK -->
+<section class="section" id="kulinarik">
+  <div class="section-header">
+    <h2>🍽️ Kulinarik</h2>
+    <p>Was man in Zeeland und Belgien unbedingt essen muss</p>
+  </div>
+
+  <div class="food-grid">
+    <div class="food-card">
+      <div class="food-icon">🐚</div>
+      <h3>Zeeland-Muscheln</h3>
+      <p>Saison beginnt im Juli! Beste Adresse: Hafenrestaurants in Breskens – frischer geht's nicht.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-icon">🦐</div>
+      <h3>Nordseekrabben</h3>
+      <p>Morgens frisch angelandet – direkt am Kai in Breskens kaufen oder essen.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-icon">🍟</div>
+      <h3>Belgische Pommes</h3>
+      <p>Inoffizielles UNESCO-Weltkulturerbe des Geschmacks – dicker, knuspriger als jede andere.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-icon">🍫</div>
+      <h3>Belgische Schokolade</h3>
+      <p>Brügge hat die beste Auswahl weltweit – Pralinés, Tafeln, Schokoladenfontänen.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-icon">🧀</div>
+      <h3>Käse aus Sluis</h3>
+      <p>Holländischer Edamer und Gouda in Spitzenqualität – direkt vom Käsehändler auf dem Markt.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-icon">🧇</div>
+      <h3>Stroopwafels &amp; Hagelslag</h3>
+      <p>Im Albert Heijn Nieuwvliet (5 Min.) – niederländische Frühstücksklassiker für zu Hause.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-icon">🍺</div>
+      <h3>Belgisches Bier</h3>
+      <p>Trappistenbiere, Gueuze, Tripel – in jedem belgischen Café eine Offenbarung.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-icon">🐟</div>
+      <h3>Haring (Holländisch)</h3>
+      <p>Frischer Salzhering mit Zwiebeln – der ultimative niederländische Streetfood-Klassiker.</p>
+    </div>
+  </div>
+
+  <div class="insider" style="margin:14px 12px 0">Märkte für Frischware: Sluis Mi-Abendmarkt, Cadzand Do 9–13 Uhr, Breskens Fr 9–13 Uhr. Albert Heijn Nieuwvliet für den täglichen Einkauf – nur 5 Min. vom Resort!</div>
+</section>
+
+<!-- INFOS -->
+<section class="section" id="infos">
+  <div class="section-header">
+    <h2>ℹ️ Buchung &amp; Infos</h2>
+    <p>Alles Wichtige auf einen Blick</p>
+  </div>
+
+  <div class="info-block">
+    <h3>🏨 Resort</h3>
+    <div class="info-box">
+      <div class="info-row"><span class="label">Name</span><span class="val">Dormio Strand Resort Nieuwvliet-Bad</span></div>
+      <div class="info-row"><span class="label">Adresse</span><span class="val">Baanstpoldersedijk 4, Nieuwvliet</span></div>
+      <div class="info-row"><span class="label">Reservierung</span><span class="val">Nr. 36801</span></div>
+      <div class="info-row"><span class="label">Telefon</span><span class="val"><a href="tel:+31117370800" style="color:var(--accent)">+31 117 37 08 00</a></span></div>
+      <div class="info-row"><span class="label">Check-in</span><span class="val">Mo 27.07 ab 16:00 Uhr</span></div>
+      <div class="info-row"><span class="label">Check-out</span><span class="val">Mo 10.08 bis 10:30 Uhr</span></div>
+    </div>
+  </div>
+
+  <div class="info-block">
+    <h3>🚗 Entfernungstabelle</h3>
+    <div class="info-box">
+      <div class="info-row"><span class="label">🌿 Groede</span><span class="val">7 km · 10 Min.</span></div>
+      <div class="info-row"><span class="label">🌊 Cadzand-Bad</span><span class="val">8 km · 10 Min.</span></div>
+      <div class="info-row"><span class="label">🐟 Breskens</span><span class="val">12 km · 15 Min.</span></div>
+      <div class="info-row"><span class="label">🏰 Sluis</span><span class="val">15 km · 20 Min.</span></div>
+      <div class="info-row"><span class="label">🌊 Knokke-Heist</span><span class="val">22 km · 30 Min.</span></div>
+      <div class="info-row"><span class="label">🏰 Brügge</span><span class="val">32 km · 40 Min.</span></div>
+      <div class="info-row"><span class="label">⛵ Vlissingen</span><span class="val">35 km · 40 Min.</span></div>
+      <div class="info-row"><span class="label">🏛️ Middelburg</span><span class="val">38 km · 45 Min.</span></div>
+      <div class="info-row"><span class="label">💧 Neeltje Jans</span><span class="val">55 km · 50 Min.</span></div>
+      <div class="info-row"><span class="label">🎨 Gent</span><span class="val">65 km · 60 Min.</span></div>
+    </div>
+  </div>
+
+  <div class="info-block">
+    <h3>🚨 Notfallnummern</h3>
+    <div class="info-box">
+      <div class="info-row"><span class="label">Notruf EU</span><span class="val"><a href="tel:112" style="color:#ef4444">112</a></span></div>
+      <div class="info-row"><span class="label">Hausarzt NL</span><span class="val"><a href="tel:09001010" style="color:var(--accent)">0900-1010</a></span></div>
+      <div class="info-row"><span class="label">Resort</span><span class="val"><a href="tel:+31117370800" style="color:var(--accent)">+31 117 37 08 00</a></span></div>
+    </div>
+  </div>
+
+  <div class="info-block">
+    <h3>🌤️ Wetter &amp; Nützliches</h3>
+    <div class="info-box">
+      <div class="info-row"><span class="label">Wetter NL</span><span class="val"><a href="https://buienradar.nl" target="_blank" style="color:var(--accent)">buienradar.nl</a></span></div>
+      <div class="info-row"><span class="label">Wetter Prognose</span><span class="val"><a href="https://yr.no" target="_blank" style="color:var(--accent)">yr.no</a></span></div>
+      <div class="info-row"><span class="label">Supermarkt</span><span class="val">Albert Heijn Nieuwvliet · 5 Min.</span></div>
+      <div class="info-row"><span class="label">Währung</span><span class="val">Euro (NL + BE)</span></div>
+    </div>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <strong>🌊 Dormio Zeeland 2026</strong><br>
+  Nieuwvliet-Bad · 27. Juli – 10. August<br>
+  <span style="font-size:11px;opacity:.6;margin-top:6px;display:block">Christian Polo Digital Guide · Gute Reise!</span>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  // Filter Orte
+  var filterBtns = document.querySelectorAll('.filter-btn');
+  var orteCards = document.querySelectorAll('#orte-cards .card');
+  filterBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      filterBtns.forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      var filter = btn.getAttribute('data-filter');
+      orteCards.forEach(function (card) {
+        if (filter === 'alle') {
+          card.style.display = '';
+        } else {
+          var tags = card.getAttribute('data-tags') || '';
+          card.style.display = (tags.indexOf(filter) !== -1) ? '' : 'none';
+        }
+      });
+    });
+  });
+
+  // Notiz-Dot Indikator-Helper
+  function updateDot(head, hasContent) {
+    if (!head) return;
+    head.classList.toggle('has-note', !!hasContent);
+  }
+
+  // Notizen laden, speichern und Dot-Indikator
+  document.querySelectorAll('.cal-plan .plan-note').forEach(function(ta) {
+    var d    = ta.getAttribute('data-day');
+    var head = document.querySelector('.cal-head[data-cal="' + d + '"]');
+    var saved = '';
+    try { saved = localStorage.getItem('dormio_note_' + d) || ''; } catch(e) {}
+    ta.value = saved;
+    updateDot(head, saved.trim().length > 0);
+    ta.addEventListener('input', function() {
+      try { localStorage.setItem('dormio_note_' + d, ta.value); } catch(e) {}
+      updateDot(head, ta.value.trim().length > 0);
+    });
+  });
+
+  // Heute-Tag erkennen und hervorheben
+  var TRIP_DATES = [
+    '2026-07-27','2026-07-28','2026-07-29','2026-07-30','2026-07-31',
+    '2026-08-01','2026-08-02','2026-08-03','2026-08-04','2026-08-05',
+    '2026-08-06','2026-08-07','2026-08-08','2026-08-09','2026-08-10'
+  ];
+  try {
+    var now = new Date();
+    var todayISO = now.getFullYear() + '-'
+      + String(now.getMonth() + 1).padStart(2,'0') + '-'
+      + String(now.getDate()).padStart(2,'0');
+    var todayIdx = TRIP_DATES.indexOf(todayISO);
+    if (todayIdx !== -1) {
+      var todayHead = document.querySelector('.cal-head[data-cal="' + todayIdx + '"]');
+      var todayCalDay = todayHead ? todayHead.closest('.cal-day') : null;
+      if (todayCalDay) todayCalDay.classList.add('today');
+      if (todayHead) {
+        var info = todayHead.querySelector('.cal-info strong');
+        if (info && !info.querySelector('.today-pill')) {
+          var pill = document.createElement('span');
+          pill.className = 'today-pill';
+          pill.textContent = 'HEUTE';
+          info.appendChild(pill);
+        }
+      }
+    }
+  } catch(e) {}
+
+}());
+</script>
+</body>
+</html>
