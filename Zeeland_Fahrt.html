@@ -84,12 +84,12 @@ document.addEventListener('keyup',   e => { keys[e.code] = false; });
 // Touch
 canvas.addEventListener('touchstart', e => {
   e.preventDefault();
-  handleTouches(e.touches);
-  requestGyroPermission();
-  // Start/restart on tap (iOS: click doesn't fire after preventDefault)
+  // Start/restart on tap – no gyro dialog here, do that after game starts
   if (state === 'menu' || state === 'over' || state === 'win') {
     startGame();
+    return;
   }
+  handleTouches(e.touches);
 }, { passive: false });
 canvas.addEventListener('touchmove', e => {
   e.preventDefault();
@@ -101,7 +101,6 @@ canvas.addEventListener('touchend', e => {
   handleTouches(e.touches);
 }, { passive: false });
 canvas.addEventListener('click', e => {
-  requestGyroPermission();
   handleClick(e.clientX, e.clientY);
 });
 
@@ -184,8 +183,9 @@ function startGame() {
     spawnObstacle(2000 + i * 800);
   }
   state = 'game';
-  // Announce starting zone
   announceZone(0);
+  // Request gyro permission now (game already started, no dialog blocking menu)
+  requestGyroPermission();
 }
 
 function spawnCloud() {
@@ -424,6 +424,14 @@ function drawMenu(W, H) {
     ctx.font = `bold ${Math.floor(W * 0.042)}px Segoe UI`;
     ctx.fillText(`⭐ Highscore: ${Math.floor(highscore)}`, W / 2, H * 0.77);
   }
+
+  // Pulsing tap hint
+  const pulse = 0.6 + 0.4 * Math.sin(Date.now() / 400);
+  ctx.globalAlpha = pulse;
+  ctx.fillStyle = '#fff';
+  ctx.font = `${Math.floor(W * 0.042)}px Segoe UI`;
+  ctx.fillText('👆 Irgendwo tippen zum Starten', W / 2, H * 0.92);
+  ctx.globalAlpha = 1;
 }
 
 function drawButton(cx, cy, bw, bh, label, col1, col2) {
