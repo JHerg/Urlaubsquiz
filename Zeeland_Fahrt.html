@@ -69,8 +69,9 @@ const OBS_TYPES = [
 // ─── Game State ──────────────────────────────────────────────────────────────
 let state = 'menu'; // menu | game | over | win
 let pos, speed, playerX, lives, score, invincible, currentZone, zoneAnnounce;
-let obstacles, particles, clouds;
+let obstacles, particles, clouds, comets;
 let highscore = 0;
+let cometTimer = 0;
 let gyroAvailable = false;
 let gyroValue = 0;
 let touchLeft = false, touchRight = false;
@@ -178,6 +179,8 @@ function startGame() {
   obstacles = [];
   particles = [];
   clouds = [];
+  comets = [];
+  cometTimer = 0;
   for (let i = 0; i < 6; i++) spawnCloud();
   for (let i = 0; i < 5; i++) {
     spawnObstacle(2000 + i * 800);
@@ -186,6 +189,19 @@ function startGame() {
   announceZone(0);
   // Request gyro permission now (game already started, no dialog blocking menu)
   requestGyroPermission();
+}
+
+function spawnComet() {
+  const fromLeft = Math.random() > 0.5;
+  comets.push({
+    x: fromLeft ? -0.05 : 1.05,
+    y: 0.04 + Math.random() * 0.38,
+    vx: (fromLeft ? 1 : -1) * (0.18 + Math.random() * 0.22),
+    vy: 0.04 + Math.random() * 0.08,
+    tailLen: 0.12 + Math.random() * 0.12,
+    life: 1.0,
+    size: 1.5 + Math.random() * 2,
+  });
 }
 
 function spawnCloud() {
@@ -343,6 +359,21 @@ function update(dt) {
     if (c.x > 1.3) c.x = -0.3;
   });
 
+  // Comets
+  cometTimer -= dt;
+  if (cometTimer <= 0) {
+    spawnComet();
+    cometTimer = 3 + Math.random() * 6; // every 3-9 seconds
+  }
+  comets.forEach(c => {
+    c.x += c.vx * dt;
+    c.y += c.vy * dt;
+    // Fade out near edges
+    if (c.x < -0.2 || c.x > 1.2 || c.y > 0.5) c.life = 0;
+    else c.life -= dt * 0.4;
+  });
+  comets = comets.filter(c => c.life > 0);
+
   // Win condition
   if (pos >= 38000) {
     score += 1000;
@@ -392,6 +423,28 @@ function drawMenu(W, H) {
     }
     ctx.stroke();
   }
+
+  // Kometen im Menü
+  cometTimer -= 0.016;
+  if (cometTimer <= 0) { spawnComet(); cometTimer = 3 + Math.random() * 5; }
+  comets.forEach(c => {
+    c.x += c.vx * 0.016; c.y += c.vy * 0.016;
+    if (c.x < -0.2 || c.x > 1.2 || c.y > 0.65) c.life = 0;
+    else c.life -= 0.016 * 0.4;
+    if (c.life <= 0) return;
+    const x = c.x * W, y = c.y * H * 0.65;
+    const tx = (c.x - c.vx * c.tailLen) * W, ty = (c.y - c.vy * c.tailLen) * H * 0.65;
+    const g = ctx.createLinearGradient(tx, ty, x, y);
+    g.addColorStop(0, 'rgba(255,255,255,0)');
+    g.addColorStop(1, `rgba(255,240,180,${c.life})`);
+    ctx.save(); ctx.lineWidth = c.size; ctx.strokeStyle = g;
+    ctx.shadowColor = 'rgba(180,220,255,0.8)'; ctx.shadowBlur = 8;
+    ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(x, y); ctx.stroke();
+    ctx.fillStyle = `rgba(255,245,200,${c.life})`;
+    ctx.beginPath(); ctx.arc(x, y, c.size * 1.5, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  });
+  comets = comets.filter(c => c.life > 0);
 
   // Title
   ctx.textAlign = 'center';
@@ -484,6 +537,37 @@ function drawGame(W, H, zone) {
   ctx.globalAlpha = 0.6;
   ctx.fillText(zone.emoji, W * 0.15, horizonY * 0.55);
   ctx.globalAlpha = 1;
+
+  // ── Kometen ──────────────────────────────────────────────────────────────
+  comets.forEach(c => {
+    const x  = c.x  * W;
+    const y  = c.y  * horizonY;
+    const tx = (c.x - c.vx * c.tailLen) * W;
+    const ty = (c.y - c.vy * c.tailLen) * horizonY;
+
+    const grad = ctx.createLinearGradient(tx, ty, x, y);
+    grad.addColorStop(0, `rgba(255,255,255,0)`);
+    grad.addColorStop(0.6, `rgba(200,220,255,${c.life * 0.5})`);
+    grad.addColorStop(1, `rgba(255,240,180,${c.life})`);
+
+    ctx.save();
+    ctx.lineWidth = c.size;
+    ctx.strokeStyle = grad;
+    ctx.shadowColor = 'rgba(180,220,255,0.8)';
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    ctx.moveTo(tx, ty);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+
+    // Leuchtender Kopf
+    ctx.shadowBlur = 14;
+    ctx.fillStyle = `rgba(255,245,200,${c.life})`;
+    ctx.beginPath();
+    ctx.arc(x, y, c.size * 1.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  });
 
   // Road strips
   const N = 120;
@@ -802,6 +886,8 @@ function loop(ts) {
 state = 'menu';
 currentZone = 0;
 clouds = [];
+comets = [];
+cometTimer = 2;
 for (let i = 0; i < 6; i++) spawnCloud();
 requestAnimationFrame(loop);
 </script>
