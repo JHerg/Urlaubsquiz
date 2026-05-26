@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
 <title>Fahrt nach Zeeland 🌊</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -24,26 +24,7 @@ canvas {
 <body>
 <canvas id="c"></canvas>
 <script>
-// ─── Canvas Setup ───────────────────────────────────────────────────────────
-const canvas = document.getElementById('c');
-const ctx = canvas.getContext('2d');
-
-function resize() {
-  const isMobile = window.innerWidth <= 520 || window.innerHeight > window.innerWidth;
-  if (isMobile) {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  } else {
-    const h = window.innerHeight;
-    const w = Math.min(480, window.innerWidth);
-    canvas.width = w;
-    canvas.height = h;
-  }
-}
-resize();
-window.addEventListener('resize', resize);
-
-// ─── Zones ──────────────────────────────────────────────────────────────────
+// ─── Constants & Configuration ───────────────────────────────────────────────
 const ZONES = [
   { dist: 0,     name: 'Köln',    skyTop: '#1a1a2e', skyBot: '#c0392b', emoji: '⛪', subtitle: 'Kölner Dom · Rheinbrücke · Abfahrt!', grassA: '#2d5a1b', grassB: '#3a7a24' },
   { dist: 7000,  name: 'Aachen',  skyTop: '#0f3460', skyBot: '#533483', emoji: '🏛️', subtitle: 'Aachener Dom · Grenzstadt', grassA: '#2d5a1b', grassB: '#3a7a24' },
@@ -54,7 +35,6 @@ const ZONES = [
   { dist: 37000, name: 'Zeeland', skyTop: '#0077be', skyBot: '#00b4d8', emoji: '🌊', subtitle: '🎉 Dormio Strand Resort · Ihr habt es geschafft!', grassA: '#e8d5a3', grassB: '#d4c48f' },
 ];
 
-// ─── Obstacle Types ─────────────────────────────────────────────────────────
 const OBS_TYPES = [
   { emoji: '🚗', damage: true,  score: 0,   width: 0.28, speed: 0.0 },
   { emoji: '🚕', damage: true,  score: 0,   width: 0.28, speed: 0.0 },
@@ -65,7 +45,6 @@ const OBS_TYPES = [
   { emoji: '🦆', damage: false, score: 10,  width: 0.20, speed: 0.0 },
 ];
 
-// ─── Landmarks (Sehenswürdigkeiten am Straßenrand) ───────────────────────────
 const ZONE_LANDMARKS = [
   [{ emoji: '⛪', name: 'Kölner Dom', side: 1 }, { emoji: '🌉', name: 'Rheinbrücke', side: -1 }],
   [{ emoji: '🏛️', name: 'Aachener Dom', side: -1 }, { emoji: '🏺', name: 'Rathaus', side: 1 }],
@@ -76,1231 +55,828 @@ const ZONE_LANDMARKS = [
   [{ emoji: '🌊', name: 'Nordsee!', side: -1 }, { emoji: '🏖️', name: 'Dormio Resort', side: 1 }],
 ];
 
-// ─── Game State ──────────────────────────────────────────────────────────────
-let state = 'menu'; // menu | game | over | win
-let pos, speed, playerX, lives, score, invincible, currentZone, zoneAnnounce;
-let obstacles, particles, clouds, comets, landmarks;
-let highscore = 0;
-let cometTimer = 0;
-let gyroAvailable = false;
-let gyroValue = 0;
-let touchLeft = false, touchRight = false;
-let keys = {};
-let lastTime = 0;
-
-// ─── Input ───────────────────────────────────────────────────────────────────
-document.addEventListener('keydown', e => { keys[e.code] = true; });
-document.addEventListener('keyup',   e => { keys[e.code] = false; });
-
-// Touch
-canvas.addEventListener('touchstart', e => {
-  e.preventDefault();
-  // Start/restart on tap – no gyro dialog here, do that after game starts
-  if (state === 'menu' || state === 'over' || state === 'win') {
-    startGame();
-    return;
-  }
-  handleTouches(e.touches);
-}, { passive: false });
-canvas.addEventListener('touchmove', e => {
-  e.preventDefault();
-  handleTouches(e.touches);
-}, { passive: false });
-canvas.addEventListener('touchend', e => {
-  e.preventDefault();
-  touchLeft = false; touchRight = false;
-  handleTouches(e.touches);
-}, { passive: false });
-canvas.addEventListener('click', e => {
-  handleClick(e.clientX, e.clientY);
-});
-
-function handleTouches(touches) {
-  touchLeft = false; touchRight = false;
-  for (let t of touches) {
-    const rect = canvas.getBoundingClientRect();
-    const x = t.clientX - rect.left;
-    if (x < canvas.width / 2) touchLeft = true;
-    else touchRight = true;
-  }
-}
-
-function handleClick(cx, cy) {
-  const rect = canvas.getBoundingClientRect();
-  const x = cx - rect.left;
-  const y = cy - rect.top;
-  const W = canvas.width, H = canvas.height;
-
-  if (state === 'menu') {
-    // Start button roughly center
-    if (y > H * 0.52 && y < H * 0.65 && x > W * 0.2 && x < W * 0.8) {
-      startGame();
-    }
-  } else if (state === 'over' || state === 'win') {
-    if (y > H * 0.65 && y < H * 0.80 && x > W * 0.2 && x < W * 0.8) {
-      startGame();
-    }
-  }
-}
-
-// Gyroscope
-function requestGyroPermission() {
-  if (typeof DeviceOrientationEvent !== 'undefined' &&
-      typeof DeviceOrientationEvent.requestPermission === 'function') {
-    DeviceOrientationEvent.requestPermission().then(p => {
-      if (p === 'granted') setupGyro();
-    }).catch(() => {});
-  } else {
-    setupGyro();
-  }
-}
-
-function setupGyro() {
-  window.addEventListener('deviceorientation', e => {
-    if (e.gamma !== null) {
-      gyroAvailable = true;
-      gyroValue = Math.max(-1, Math.min(1, e.gamma / 30));
-    }
-  });
-}
-
-// Gamepad
-function getGamepadSteering() {
-  const pads = navigator.getGamepads ? navigator.getGamepads() : [];
-  for (let pad of pads) {
-    if (pad && pad.axes && pad.axes.length > 0) {
-      const v = pad.axes[0];
-      if (Math.abs(v) > 0.1) return v;
-    }
-  }
-  return 0;
-}
-
-// ─── Game Init ───────────────────────────────────────────────────────────────
-function startGame() {
-  pos = 0;
-  speed = 3;
-  playerX = 0;
-  lives = 3;
-  score = 0;
-  invincible = 0;
-  currentZone = 0;
-  zoneAnnounce = null;
-  obstacles = [];
-  particles = [];
-  clouds = [];
-  comets = [];
-  landmarks = [];
-  cometTimer = 0;
-  nextWaveZ = 4500; // erste Welle in 4500 Einheiten (sanfter Einstieg)
-  for (let i = 0; i < 6; i++) spawnCloud();
-  // Initiale Bäume entlang der Strecke
-  for (let i = 0; i < 24; i++) {
-    landmarks.push({
-      z: 500 + i * 400 + Math.random() * 200,
-      side: i % 2 === 0 ? -1 : 1,
-      emoji: ['🌳','🌲','🌳'][Math.floor(Math.random()*3)],
-      name: '',
-      kind: 'tree',
-    });
-  }
-  state = 'game';
-  announceZone(0);
-  // Erste Welle: 3-4 Hindernisse weit voraus (Einstieg)
-  for (let i = 0; i < 3; i++) {
-    spawnObstacle(3500 + i * 1200);
-  }
-  // Request gyro permission now (game already started, no dialog blocking menu)
-  requestGyroPermission();
-}
-
-function spawnComet() {
-  const fromLeft = Math.random() > 0.5;
-  comets.push({
-    x: fromLeft ? -0.05 : 1.05,
-    y: 0.04 + Math.random() * 0.38,
-    vx: (fromLeft ? 1 : -1) * (0.18 + Math.random() * 0.22),
-    vy: 0.04 + Math.random() * 0.08,
-    tailLen: 0.12 + Math.random() * 0.12,
-    life: 1.0,
-    size: 1.5 + Math.random() * 2,
-  });
-}
-
-function spawnCloud() {
-  clouds.push({
-    x: Math.random(),
-    y: 0.05 + Math.random() * 0.35,
-    w: 0.15 + Math.random() * 0.20,
-    h: 0.04 + Math.random() * 0.06,
-    speed: 0.00003 + Math.random() * 0.00004,
-  });
-}
-
-// 3-Spuren-System (Best Practice: klare Spuren wie OutRun)
 const LANES = [-0.55, 0, 0.55];
-let nextWaveZ = 0;
 
-function spawnObstacle(zOverride) {
-  // Einzelner Spawn (für initial obstacles): nur in einer Spur
-  const type = OBS_TYPES[Math.floor(Math.random() * OBS_TYPES.length)];
-  const x = LANES[Math.floor(Math.random() * LANES.length)];
-  obstacles.push({
-    z: zOverride !== undefined ? pos + zOverride : pos + 5500 + Math.random() * 800,
-    x: x,
-    type: type,
-    alive: true,
-  });
-}
-
-// Wellen-basiertes Spawning: garantiert mindestens 1 freie Spur
-function spawnWave() {
-  // 60% Wahrscheinlichkeit für 1 Hindernis, 40% für 2 (nie alle 3 Spuren blockiert)
-  const fillCount = Math.random() < 0.6 ? 1 : 2;
-  // Spur-Indizes mischen
-  const indices = [0, 1, 2];
-  for (let i = indices.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [indices[i], indices[j]] = [indices[j], indices[i]];
+// ─── Architecture: Classes & Object Pooling ────────────────────────────────
+class Pool {
+  constructor(size, factory) {
+    this.items = Array.from({ length: size }, factory);
+    this.index = 0;
   }
-  const chosen = indices.slice(0, fillCount);
-  chosen.forEach((idx, waveIdx) => {
-    // Pro Spur eigene Wahrscheinlichkeit für Sammelobjekte vs. Autos
-    const pool = Math.random() < 0.35
-      ? OBS_TYPES.filter(t => !t.damage)      // Sammelobjekte
-      : OBS_TYPES.filter(t => t.damage);       // Fahrzeuge
-    const type = pool[Math.floor(Math.random() * pool.length)];
-    // Hindernisse innerhalb einer Welle um mindestens 1400 Einheiten gestaffelt
-    // → nie zwei Autos auf gleicher Höhe → immer ausweicho-möglich
-    const zBase = pos + 5500 + waveIdx * 1400 + Math.random() * 300;
-    obstacles.push({
-      z: zBase,
-      x: LANES[idx],
-      type: type,
-      alive: true,
-    });
-  });
-  // Nächste Welle erst nach letztem Hindernis + Reaktionszeit
-  nextWaveZ = pos + 5500 + (chosen.length - 1) * 1400 + 1100 + Math.random() * 600;
-}
-
-function announceZone(idx) {
-  zoneAnnounce = { idx, timer: 2.5, alpha: 0 };
-  score += 200;
-  // Sehenswürdigkeiten am Straßenrand spawnen – mehrfach für Vorbeizug-Effekt
-  const lms = ZONE_LANDMARKS[idx] || [];
-  lms.forEach((lm, i) => {
-    landmarks.push({ z: pos + 1500 + i * 1800, side: lm.side, emoji: lm.emoji, name: lm.name, kind: 'sign' });
-  });
-  // Bäume und Schilder zwischen den Sehenswürdigkeiten
-  for (let i = 0; i < 14; i++) {
-    landmarks.push({
-      z: pos + 800 + i * 480 + Math.random() * 200,
-      side: i % 2 === 0 ? -1 : 1,
-      emoji: ['🌳','🌲','🌴','🌳','🌲'][Math.floor(Math.random()*5)],
-      name: '',
-      kind: 'tree',
-    });
+  spawn() {
+    for (let i = 0; i < this.items.length; i++) {
+      let item = this.items[(this.index + i) % this.items.length];
+      if (!item.alive) {
+        this.index = (this.index + i + 1) % this.items.length;
+        item.alive = true;
+        return item;
+      }
+    }
+    return null;
+  }
+  forEach(callback) {
+    for (let i = 0; i < this.items.length; i++) {
+      if (this.items[i].alive) callback(this.items[i]);
+    }
+  }
+  reset() {
+    this.items.forEach(item => item.alive = false);
   }
 }
 
-// ─── Particles ───────────────────────────────────────────────────────────────
-function spawnParticles(x, y, color, count) {
-  for (let i = 0; i < count; i++) {
-    const angle = Math.random() * Math.PI * 2;
-    const spd = 80 + Math.random() * 120;
-    particles.push({
-      x, y,
-      vx: Math.cos(angle) * spd,
-      vy: Math.sin(angle) * spd,
-      life: 0.5 + Math.random() * 0.4,
-      maxLife: 0.9,
-      color,
-      r: 3 + Math.random() * 4,
+class InputManager {
+  constructor(canvas) {
+    this.keys = {};
+    this.touchLeft = false;
+    this.touchRight = false;
+    this.gyroValue = 0;
+    this.gyroAvailable = false;
+
+    document.addEventListener('keydown', e => this.keys[e.code] = true);
+    document.addEventListener('keyup', e => this.keys[e.code] = false);
+
+    this.handleTouches = (touches) => {
+      this.touchLeft = false; this.touchRight = false;
+      const rect = canvas.getBoundingClientRect();
+      for (let t of touches) {
+        const x = t.clientX - rect.left;
+        if (x < canvas.width / 2) this.touchLeft = true;
+        else this.touchRight = true;
+      }
+    };
+  }
+
+  getSteer() {
+    let steer = 0;
+    if (this.keys['ArrowLeft'] || this.keys['KeyA']) steer -= 1;
+    if (this.keys['ArrowRight'] || this.keys['KeyD']) steer += 1;
+    if (this.touchLeft) steer -= 1;
+    if (this.touchRight) steer += 1;
+
+    const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+    for (let pad of pads) {
+      if (pad && pad.axes && pad.axes.length > 0) {
+        const v = pad.axes[0];
+        if (Math.abs(v) > 0.1) steer += v;
+      }
+    }
+    if (this.gyroAvailable && Math.abs(this.gyroValue) > 0.05) steer += this.gyroValue;
+    return Math.max(-1, Math.min(1, steer));
+  }
+
+  setupGyro() {
+    window.addEventListener('deviceorientation', e => {
+      if (e.gamma !== null) {
+        this.gyroAvailable = true;
+        this.gyroValue = Math.max(-1, Math.min(1, e.gamma / 30));
+      }
     });
   }
 }
 
-// ─── Update ───────────────────────────────────────────────────────────────────
-function update(dt) {
-  if (state !== 'game') return;
-  dt = Math.min(dt, 0.05);
+// ─── Main Game Engine ────────────────────────────────────────────────────────
+class Game {
+  constructor(canvas) {
+    this.canvas = canvas;
+    this.ctx = canvas.getContext('2d');
+    this.input = new InputManager(canvas);
 
-  // Speed ramp (langsamer für Best Practice — fair Reaktionszeit)
-  speed = Math.min(9, 2.5 + pos / 6500);
+    this.obstacles = new Pool(60, () => ({ alive: false, z: 0, laneX: 0, type: null }));
+    this.landmarks = new Pool(100, () => ({ alive: false, z: 0, side: 0, emoji: '', name: '', kind: '' }));
+    this.particles = new Pool(150, () => ({ alive: false, x: 0, y: 0, vx: 0, vy: 0, life: 0, maxLife: 1, color: '', r: 0 }));
+    this.clouds = new Pool(20, () => ({ alive: false, x: 0, y: 0, w: 0, h: 0, speed: 0 }));
+    this.comets = new Pool(15, () => ({ alive: false, x: 0, y: 0, vx: 0, vy: 0, tailLen: 0, life: 0, size: 0 }));
 
-  // Steering
-  let steer = 0;
-  if (keys['ArrowLeft'] || keys['KeyA']) steer -= 1;
-  if (keys['ArrowRight'] || keys['KeyD']) steer += 1;
-  if (touchLeft) steer -= 1;
-  if (touchRight) steer += 1;
-  const gpSteer = getGamepadSteering();
-  if (Math.abs(gpSteer) > 0.1) steer += gpSteer;
-  if (gyroAvailable && Math.abs(gyroValue) > 0.05) steer += gyroValue;
-  steer = Math.max(-1, Math.min(1, steer));
+    this.state = 'menu';
+    this.highscore = 0;
+    this.lastTime = performance.now();
+    this.cometTimer = 0;
 
-  // Schnellere Lenkung — von einer Außenspur zur anderen in ~0.55s
-  playerX += steer * 3.6 * dt;
-  // Sanftes Zurückgleiten zur Mitte wenn nicht aktiv gelenkt (Best Practice)
-  if (Math.abs(steer) < 0.05) playerX *= Math.pow(0.85, dt * 60);
-  playerX = Math.max(-0.7, Math.min(0.7, playerX)); // begrenzt auf Straße
+    this.player = { pos: 0, x: 0, speed: 3, lives: 3, score: 0, invincible: 0 };
+    this.gameLogic = { currentZone: 0, zoneAnnounce: null, nextWaveZ: 0, curveStrength: 0, pitch: 0, drawDistance: 4000 };
 
-  // Move forward
-  pos += speed * 60 * dt;
+    this.resize = () => {
+      const isMobile = window.innerWidth <= 520 || window.innerHeight > window.innerWidth;
+      if (isMobile) {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+      } else {
+        this.canvas.height = window.innerHeight;
+        this.canvas.width = Math.min(480, window.innerWidth);
+      }
+    };
+    window.addEventListener('resize', this.resize);
+    this.resize();
 
-  // Zone check
-  for (let i = ZONES.length - 1; i >= 0; i--) {
-    if (pos >= ZONES[i].dist && currentZone < i) {
-      currentZone = i;
-      announceZone(i);
-      break;
+    this.canvas.addEventListener('click', e => this.handleClick(e));
+    this.canvas.addEventListener('touchstart', e => {
+      e.preventDefault();
+      if (this.state !== 'game') this.startGame();
+      this.input.handleTouches(e.touches);
+    }, { passive: false });
+    this.canvas.addEventListener('touchmove', e => { e.preventDefault(); this.input.handleTouches(e.touches); }, { passive: false });
+    this.canvas.addEventListener('touchend', e => {
+      e.preventDefault();
+      this.input.touchLeft = false; this.input.touchRight = false;
+      this.input.handleTouches(e.touches);
+    }, { passive: false });
+
+    this.loop = this.loop.bind(this);
+    requestAnimationFrame(this.loop);
+  }
+
+  handleClick(e) {
+    const rect = this.canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left, y = e.clientY - rect.top;
+    const W = this.canvas.width, H = this.canvas.height;
+    if (this.state === 'menu' && y > H * 0.52 && y < H * 0.65 && x > W * 0.2 && x < W * 0.8) this.startGame();
+    else if ((this.state === 'over' || this.state === 'win') && y > H * 0.65 && y < H * 0.80 && x > W * 0.2 && x < W * 0.8) this.startGame();
+  }
+
+  startGame() {
+    this.obstacles.reset(); this.landmarks.reset(); this.particles.reset();
+    this.clouds.reset(); this.comets.reset();
+
+    this.player = { pos: 0, x: 0, speed: 3, lives: 3, score: 0, invincible: 0 };
+    this.gameLogic.currentZone = 0;
+    this.gameLogic.zoneAnnounce = null;
+    this.gameLogic.nextWaveZ = 4500;
+    this.state = 'game';
+
+    for (let i = 0; i < 6; i++) this.spawnCloud();
+    for (let i = 0; i < 24; i++) {
+      let lm = this.landmarks.spawn();
+      if (lm) {
+        lm.z = 500 + i * 400 + Math.random() * 200;
+        lm.side = i % 2 === 0 ? -1 : 1;
+        lm.emoji = ['🌳','🌲','🌳'][Math.floor(Math.random()*3)];
+        lm.kind = 'tree';
+      }
+    }
+    this.announceZone(0);
+    for (let i = 0; i < 3; i++) this.spawnObstacle(3500 + i * 1200);
+
+    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+      DeviceOrientationEvent.requestPermission().then(p => { if (p === 'granted') this.input.setupGyro(); }).catch(() => {});
+    } else this.input.setupGyro();
+  }
+
+  spawnComet() {
+    let c = this.comets.spawn();
+    if (!c) return;
+    const fromLeft = Math.random() > 0.5;
+    c.x = fromLeft ? -0.05 : 1.05;
+    c.y = 0.04 + Math.random() * 0.38;
+    c.vx = (fromLeft ? 1 : -1) * (0.18 + Math.random() * 0.22);
+    c.vy = 0.04 + Math.random() * 0.08;
+    c.tailLen = 0.12 + Math.random() * 0.12;
+    c.life = 1.0;
+    c.size = 1.5 + Math.random() * 2;
+  }
+
+  spawnCloud() {
+    let c = this.clouds.spawn();
+    if (!c) return;
+    c.x = Math.random(); c.y = 0.05 + Math.random() * 0.35;
+    c.w = 0.15 + Math.random() * 0.20; c.h = 0.04 + Math.random() * 0.06;
+    c.speed = 0.00003 + Math.random() * 0.00004;
+  }
+
+  spawnObstacle(zOverride) {
+    let obs = this.obstacles.spawn();
+    if (!obs) return;
+    obs.type = OBS_TYPES[Math.floor(Math.random() * OBS_TYPES.length)];
+    obs.laneX = LANES[Math.floor(Math.random() * LANES.length)];
+    obs.z = zOverride !== undefined ? this.player.pos + zOverride : this.player.pos + 5500 + Math.random() * 800;
+  }
+
+  spawnWave() {
+    // Best Practice: max 2 von 3 Spuren, immer 1 frei
+    const fillCount = Math.random() < 0.6 ? 1 : 2;
+    const indices = [0, 1, 2].sort(() => Math.random() - 0.5).slice(0, fillCount);
+    // Staffelung: Hindernisse innerhalb einer Welle um min. 1400 Einheiten versetzt
+    // → nie zwei Autos auf gleicher Höhe → immer dodgable
+    indices.forEach((idx, waveIdx) => {
+      let obs = this.obstacles.spawn();
+      if (!obs) return;
+      const pool = Math.random() < 0.35 ? OBS_TYPES.filter(t => !t.damage) : OBS_TYPES.filter(t => t.damage);
+      obs.type = pool[Math.floor(Math.random() * pool.length)];
+      obs.laneX = LANES[idx];
+      obs.z = this.player.pos + 5500 + waveIdx * 1400 + Math.random() * 300;
+    });
+    // Nächste Welle erst nach letztem Hindernis + Reaktionszeit
+    this.gameLogic.nextWaveZ = this.player.pos + 5500 + (indices.length - 1) * 1400 + 1100 + Math.random() * 600;
+  }
+
+  spawnParticles(x, y, color, count) {
+    for (let i = 0; i < count; i++) {
+      let p = this.particles.spawn();
+      if (!p) continue;
+      const angle = Math.random() * Math.PI * 2;
+      const spd = 80 + Math.random() * 120;
+      p.x = x; p.y = y;
+      p.vx = Math.cos(angle) * spd; p.vy = Math.sin(angle) * spd;
+      p.life = 0.5 + Math.random() * 0.4; p.maxLife = 0.9;
+      p.color = color; p.r = 3 + Math.random() * 4;
     }
   }
 
-  // Score from speed
-  score += speed * dt * 10;
-
-  // Invincibility countdown
-  if (invincible > 0) invincible -= dt * 60;
-
-  // Zone announce timer
-  if (zoneAnnounce) {
-    zoneAnnounce.timer -= dt;
-    if (zoneAnnounce.timer > 2.0) zoneAnnounce.alpha = Math.min(1, (2.5 - zoneAnnounce.timer) * 4);
-    else if (zoneAnnounce.timer < 0.5) zoneAnnounce.alpha = Math.max(0, zoneAnnounce.timer * 2);
-    else zoneAnnounce.alpha = 1;
-    if (zoneAnnounce.timer <= 0) zoneAnnounce = null;
+  announceZone(idx) {
+    this.gameLogic.zoneAnnounce = { idx, timer: 2.5, alpha: 0 };
+    this.player.score += 200;
+    const lms = ZONE_LANDMARKS[idx] || [];
+    lms.forEach((lmData, i) => {
+      let lm = this.landmarks.spawn();
+      if (lm) {
+        lm.z = this.player.pos + 1500 + i * 1800; lm.side = lmData.side;
+        lm.emoji = lmData.emoji; lm.name = lmData.name; lm.kind = 'sign';
+      }
+    });
+    for (let i = 0; i < 14; i++) {
+      let lm = this.landmarks.spawn();
+      if (lm) {
+        lm.z = this.player.pos + 800 + i * 480 + Math.random() * 200;
+        lm.side = i % 2 === 0 ? -1 : 1; lm.emoji = ['🌳','🌲','🌴','🌳','🌲'][Math.floor(Math.random()*5)];
+        lm.kind = 'tree';
+      }
+    }
   }
 
-  // Obstacles
-  obstacles.forEach(obs => {
-    // Move obstacle (slower types move toward player slightly)
-    obs.z -= obs.type.speed * speed * 60 * dt;
-  });
+  update(dt) {
+    if (this.state !== 'game') return;
+    dt = Math.min(dt, 0.05);
 
-  // Wellen-Spawning: nächste Welle wenn Spieler nah genug
-  if (pos + 5500 >= nextWaveZ) {
-    spawnWave();
-  }
+    this.player.speed = Math.min(9, 2.5 + this.player.pos / 6500);
 
-  // Collision detection (Best Practice: nur wenn nah genug + fairer Hitbox)
-  if (invincible <= 0) {
-    obstacles.forEach(obs => {
-      if (!obs.alive) return;
-      const dz = obs.z - pos;
-      if (dz < -150 || dz > 400) return; // schmaler z-Bereich genau am Auto
-      // Spurbasiert: nur kollidieren wenn wirklich in derselben Spur
-      const dx = Math.abs(playerX - obs.x);
-      const hitRadius = obs.type.width * 0.7; // bisschen kleiner = fairer
-      if (dx < hitRadius) {
-        obs.alive = false;
-        const W = canvas.width, H = canvas.height;
-        const carY = H * 0.78;
-        if (obs.type.damage) {
-          lives--;
-          invincible = 120;
-          spawnParticles(W / 2, carY, '#ff4444', 18);
-          if (lives <= 0) {
-            if (score > highscore) highscore = Math.floor(score);
-            state = 'over';
+    // Pseudo-3D Kurven & Hügel (Pitch)
+    this.gameLogic.curveStrength = Math.sin(this.player.pos / 3000) * 1.5 + Math.sin(this.player.pos / 5000) * 1.0;
+    this.gameLogic.pitch = Math.cos(this.player.pos / 2500) * 50;
+
+    // Fliehkraft (Centrifugal Force): Drückt das Auto in der Kurve nach außen
+    let centrifugalForce = this.gameLogic.curveStrength * (this.player.speed / 9) * 2.2 * dt;
+
+    let steer = this.input.getSteer();
+    this.player.x += steer * 3.6 * dt;
+    this.player.x -= centrifugalForce;
+
+    if (Math.abs(steer) < 0.05) this.player.x *= Math.pow(0.85, dt * 60);
+    this.player.x = Math.max(-0.75, Math.min(0.75, this.player.x));
+
+    this.player.pos += this.player.speed * 60 * dt;
+    this.player.score += this.player.speed * dt * 10;
+
+    for (let i = ZONES.length - 1; i >= 0; i--) {
+      if (this.player.pos >= ZONES[i].dist && this.gameLogic.currentZone < i) {
+        this.gameLogic.currentZone = i;
+        this.announceZone(i);
+        break;
+      }
+    }
+
+    if (this.player.invincible > 0) this.player.invincible -= dt * 60;
+
+    if (this.gameLogic.zoneAnnounce) {
+      let za = this.gameLogic.zoneAnnounce;
+      za.timer -= dt;
+      if (za.timer > 2.0) za.alpha = Math.min(1, (2.5 - za.timer) * 4);
+      else if (za.timer < 0.5) za.alpha = Math.max(0, za.timer * 2);
+      else za.alpha = 1;
+      if (za.timer <= 0) this.gameLogic.zoneAnnounce = null;
+    }
+
+    this.obstacles.forEach(obs => {
+      obs.z -= obs.type.speed * this.player.speed * 60 * dt;
+      if (obs.z < this.player.pos - 200) obs.alive = false;
+    });
+
+    if (this.player.pos + 5500 >= this.gameLogic.nextWaveZ) this.spawnWave();
+
+    if (this.player.invincible <= 0) {
+      this.obstacles.forEach(obs => {
+        const dz = obs.z - this.player.pos;
+        if (dz > -150 && dz < 400) {
+          const dx = Math.abs(this.player.x - obs.laneX);
+          const hitRadius = obs.type.width * 0.6;
+          if (dx < hitRadius) {
+            obs.alive = false;
+            const carY = this.canvas.height * 0.78;
+            if (obs.type.damage) {
+              this.player.lives--;
+              this.player.invincible = 120;
+              this.spawnParticles(this.canvas.width / 2, carY, '#ff4444', 18);
+              if (this.player.lives <= 0) {
+                if (this.player.score > this.highscore) this.highscore = Math.floor(this.player.score);
+                this.state = 'over';
+              }
+            } else {
+              this.player.score += obs.type.score;
+              this.spawnParticles(this.canvas.width / 2, carY, '#ffd700', 12);
+            }
           }
-        } else {
-          score += obs.type.score;
-          spawnParticles(W / 2, carY, '#ffd700', 12);
+        }
+      });
+    }
+
+    this.landmarks.forEach(lm => { if (lm.z < this.player.pos - 800) lm.alive = false; });
+    let treesAhead = 0, lastZ = this.player.pos + 2000;
+    this.landmarks.forEach(lm => {
+      if (lm.kind === 'tree' && lm.z > this.player.pos + 2000) {
+        treesAhead++;
+        if (lm.z > lastZ) lastZ = lm.z;
+      }
+    });
+    if (treesAhead < 8) {
+      for (let i = 0; i < 6; i++) {
+        let lm = this.landmarks.spawn();
+        if (lm) {
+          lm.z = lastZ + 400 + i * 400 + Math.random() * 200;
+          lm.side = Math.random() > 0.5 ? -1 : 1;
+          lm.emoji = ['🌳','🌲','🌳','🌲'][Math.floor(Math.random()*4)];
+          lm.kind = 'tree';
         }
       }
+    }
+
+    this.particles.forEach(p => {
+      p.x += p.vx * dt; p.y += p.vy * dt;
+      p.vy += 150 * dt; p.life -= dt;
+      if (p.life <= 0) p.alive = false;
     });
-  }
+    this.clouds.forEach(c => {
+      c.x += c.speed * this.player.speed * 60 * dt;
+      if (c.x > 1.3) c.x = -0.3;
+    });
+    this.cometTimer -= dt;
+    if (this.cometTimer <= 0) {
+      this.spawnComet();
+      this.cometTimer = 3 + Math.random() * 6;
+    }
+    this.comets.forEach(c => {
+      c.x += c.vx * dt; c.y += c.vy * dt;
+      if (c.x < -0.2 || c.x > 1.2 || c.y > 0.5) c.alive = false;
+      else c.life -= dt * 0.4;
+      if (c.life <= 0) c.alive = false;
+    });
 
-  // Remove dead/passed obstacles & landmarks
-  obstacles = obstacles.filter(o => o.alive && o.z > pos - 200);
-  landmarks = landmarks.filter(lm => lm.z > pos - 800);
-  // Kontinuierlich Bäume nachschieben damit immer welche am Rand stehen
-  const treesAhead = landmarks.filter(lm => lm.kind === 'tree' && lm.z > pos + 2000).length;
-  if (treesAhead < 8) {
-    const lastZ = Math.max(pos + 2000, ...landmarks.filter(lm => lm.kind === 'tree').map(lm => lm.z));
-    for (let i = 0; i < 6; i++) {
-      landmarks.push({
-        z: lastZ + 400 + i * 400 + Math.random() * 200,
-        side: Math.random() > 0.5 ? -1 : 1,
-        emoji: ['🌳','🌲','🌳','🌲'][Math.floor(Math.random()*4)],
-        name: '',
-        kind: 'tree',
-      });
+    if (this.player.pos >= 38000) {
+      this.player.score += 1000;
+      if (this.player.score > this.highscore) this.highscore = Math.floor(this.player.score);
+      this.state = 'win';
     }
   }
 
-  // Particles
-  particles.forEach(p => {
-    p.x += p.vx * dt;
-    p.y += p.vy * dt;
-    p.vy += 150 * dt; // gravity
-    p.life -= dt;
-  });
-  particles = particles.filter(p => p.life > 0);
+  getProjection(dz, playerX, curveStrength, W, horizonY, roadBottom) {
+    const z = dz / 1000 + 0.5;
+    const scale = 1 / z;
+    const dx = curveStrength * (dz * dz) * 0.00015;
+    const perspectiveX = (dx - playerX * 400) * scale;
+    const camHeight = (roadBottom - horizonY) * 0.5;
+    const y = horizonY + camHeight * scale;
+    const roadW = W * 0.8 * scale;
 
-  // Clouds
-  clouds.forEach(c => {
-    c.x += c.speed * speed * 60 * dt;
-    if (c.x > 1.3) c.x = -0.3;
-  });
-
-  // Comets
-  cometTimer -= dt;
-  if (cometTimer <= 0) {
-    spawnComet();
-    cometTimer = 3 + Math.random() * 6; // every 3-9 seconds
-  }
-  comets.forEach(c => {
-    c.x += c.vx * dt;
-    c.y += c.vy * dt;
-    // Fade out near edges
-    if (c.x < -0.2 || c.x > 1.2 || c.y > 0.5) c.life = 0;
-    else c.life -= dt * 0.4;
-  });
-  comets = comets.filter(c => c.life > 0);
-
-  // Win condition
-  if (pos >= 38000) {
-    score += 1000;
-    if (score > highscore) highscore = Math.floor(score);
-    state = 'win';
-  }
-}
-
-// ─── Draw ─────────────────────────────────────────────────────────────────────
-function draw() {
-  const W = canvas.width, H = canvas.height;
-  const zone = ZONES[currentZone];
-
-  if (state === 'menu') {
-    drawMenu(W, H);
-  } else if (state === 'game' || state === 'over' || state === 'win') {
-    drawGame(W, H, zone);
-    if (state === 'over') drawGameOver(W, H);
-    else if (state === 'win') drawWin(W, H);
-  }
-}
-
-function drawMenu(W, H) {
-  // Sky gradient
-  const sky = ctx.createLinearGradient(0, 0, 0, H * 0.7);
-  sky.addColorStop(0, '#001a40');
-  sky.addColorStop(1, '#0077be');
-  ctx.fillStyle = sky;
-  ctx.fillRect(0, 0, W, H);
-
-  // Ocean at bottom
-  const ocean = ctx.createLinearGradient(0, H * 0.65, 0, H);
-  ocean.addColorStop(0, '#0077be');
-  ocean.addColorStop(1, '#003d6e');
-  ctx.fillStyle = ocean;
-  ctx.fillRect(0, H * 0.65, W, H * 0.35);
-
-  // Waves
-  ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-  ctx.lineWidth = 2;
-  for (let i = 0; i < 5; i++) {
-    const wy = H * (0.68 + i * 0.06);
-    ctx.beginPath();
-    for (let x = 0; x < W; x += 4) {
-      const y = wy + Math.sin(x * 0.04 + i) * 4;
-      if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
+    return {
+      x: W/2 + perspectiveX * (W/1000),
+      y: y,
+      w: roadW,
+      scale: scale
+    };
   }
 
-  // Kometen im Menü
-  cometTimer -= 0.016;
-  if (cometTimer <= 0) { spawnComet(); cometTimer = 3 + Math.random() * 5; }
-  comets.forEach(c => {
-    c.x += c.vx * 0.016; c.y += c.vy * 0.016;
-    if (c.x < -0.2 || c.x > 1.2 || c.y > 0.65) c.life = 0;
-    else c.life -= 0.016 * 0.4;
-    if (c.life <= 0) return;
-    const x = c.x * W, y = c.y * H * 0.65;
-    const tx = (c.x - c.vx * c.tailLen) * W, ty = (c.y - c.vy * c.tailLen) * H * 0.65;
-    const g = ctx.createLinearGradient(tx, ty, x, y);
-    g.addColorStop(0, 'rgba(255,255,255,0)');
-    g.addColorStop(1, `rgba(255,240,180,${c.life})`);
-    ctx.save(); ctx.lineWidth = c.size; ctx.strokeStyle = g;
-    ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(x, y); ctx.stroke();
-    ctx.fillStyle = `rgba(255,245,200,${c.life})`;
-    ctx.beginPath(); ctx.arc(x, y, c.size * 1.5, 0, Math.PI * 2); ctx.fill();
-    ctx.restore();
-  });
-  comets = comets.filter(c => c.life > 0);
-
-  // Title
-  ctx.textAlign = 'center';
-  ctx.fillStyle = '#fff';
-  ctx.font = `bold ${Math.floor(W * 0.1)}px Segoe UI`;
-  ctx.shadowColor = '#000';
-  ctx.shadowBlur = 8;
-  ctx.fillText('🌊 Fahrt nach', W / 2, H * 0.22);
-  ctx.font = `bold ${Math.floor(W * 0.14)}px Segoe UI`;
-  ctx.fillStyle = '#ffd700';
-  ctx.fillText('Zeeland!', W / 2, H * 0.34);
-  ctx.shadowBlur = 0;
-
-  // Route info
-  ctx.fillStyle = 'rgba(255,255,255,0.85)';
-  ctx.font = `${Math.floor(W * 0.045)}px Segoe UI`;
-  ctx.fillText('Köln → Aachen → Belgien → Brüssel', W / 2, H * 0.41);
-  ctx.fillText('→ Gent → Brügge → Zeeland 🏖️', W / 2, H * 0.46);
-
-  // Start button
-  drawButton(W / 2, H * 0.575, W * 0.55, H * 0.09, '🚙 Losfahren!', '#27ae60', '#2ecc71');
-
-  // Controls
-  ctx.fillStyle = 'rgba(255,255,255,0.7)';
-  ctx.font = `${Math.floor(W * 0.036)}px Segoe UI`;
-  ctx.fillText('← → Tasten  |  Touch  |  Gamepad  |  Gyroskop', W / 2, H * 0.70);
-
-  if (highscore > 0) {
-    ctx.fillStyle = '#ffd700';
-    ctx.font = `bold ${Math.floor(W * 0.042)}px Segoe UI`;
-    ctx.fillText(`⭐ Highscore: ${Math.floor(highscore)}`, W / 2, H * 0.77);
-  }
-
-  // Pulsing tap hint
-  const pulse = 0.6 + 0.4 * Math.sin(Date.now() / 400);
-  ctx.globalAlpha = pulse;
-  ctx.fillStyle = '#fff';
-  ctx.font = `${Math.floor(W * 0.042)}px Segoe UI`;
-  ctx.fillText('👆 Irgendwo tippen zum Starten', W / 2, H * 0.92);
-  ctx.globalAlpha = 1;
-}
-
-function drawButton(cx, cy, bw, bh, label, col1, col2) {
-  const x = cx - bw / 2, y = cy - bh / 2;
-  const grad = ctx.createLinearGradient(x, y, x, y + bh);
-  grad.addColorStop(0, col2);
-  grad.addColorStop(1, col1);
-  ctx.fillStyle = grad;
-  ctx.beginPath();
-  ctx.roundRect(x, y, bw, bh, bh * 0.3);
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-  ctx.fillStyle = '#fff';
-  ctx.font = `bold ${Math.floor(bh * 0.45)}px Segoe UI`;
-  ctx.textAlign = 'center';
-  ctx.fillText(label, cx, cy + bh * 0.15);
-}
-
-function drawGame(W, H, zone) {
-  const horizonY = H * 0.43;
-  const roadBottom = H * 0.79; // road ends at player car
-
-  // Sky
-  const sky = ctx.createLinearGradient(0, 0, 0, horizonY);
-  sky.addColorStop(0, zone.skyTop);
-  sky.addColorStop(1, zone.skyBot);
-  ctx.fillStyle = sky;
-  ctx.fillRect(0, 0, W, horizonY);
-
-  // Clouds
-  clouds.forEach(c => {
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.beginPath();
-    const cx = c.x * W, cy = c.y * horizonY;
-    const cw = c.w * W, ch = c.h * horizonY;
-    ctx.ellipse(cx, cy, cw, ch, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(cx - cw * 0.3, cy + ch * 0.1, cw * 0.6, ch * 0.8, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(cx + cw * 0.3, cy + ch * 0.15, cw * 0.5, ch * 0.75, 0, 0, Math.PI * 2);
-    ctx.fill();
-  });
-
-  // Zone landmark emoji in sky
-  ctx.font = `${Math.floor(H * 0.08)}px serif`;
-  ctx.textAlign = 'center';
-  ctx.globalAlpha = 0.5;
-  ctx.fillText(zone.emoji, W * 0.15, horizonY * 0.55);
-  ctx.globalAlpha = 1;
-
-  // ── Gebäudesilhouetten am Horizont ───────────────────────────────────────
-  ctx.save();
-  ctx.fillStyle = 'rgba(0,0,0,0.30)';
-  const silData = [
-    [[0.33,0.30,0.025],[0.36,0.22,0.07],[0.41,0.32,0.025],[0.54,0.20,0.09],[0.64,0.16,0.06]],
-    [[0.28,0.22,0.12],[0.48,0.28,0.08],[0.64,0.17,0.10]],
-    [[0.22,0.14,0.16],[0.44,0.12,0.20],[0.68,0.16,0.13]],
-    [[0.28,0.17,0.08],[0.40,0.24,0.06],[0.48,0.32,0.04],[0.54,0.24,0.06],[0.62,0.17,0.08]],
-    [[0.30,0.22,0.10],[0.46,0.30,0.06],[0.60,0.18,0.12]],
-    [[0.26,0.10,0.06],[0.36,0.28,0.05],[0.54,0.12,0.06],[0.66,0.24,0.05]],
-    [],
-  ];
-  (silData[currentZone] || []).forEach(([rx,rh,rw]) =>
-    ctx.fillRect(rx*W, horizonY - rh*H*0.5, rw*W, rh*H*0.5));
-  if (currentZone === 6) {
-    const sg = ctx.createLinearGradient(0,horizonY-H*0.05,0,horizonY);
-    sg.addColorStop(0,'rgba(0,140,210,0)'); sg.addColorStop(1,'rgba(0,180,255,0.45)');
-    ctx.fillStyle=sg; ctx.fillRect(0,horizonY-H*0.05,W,H*0.05);
-  }
-  ctx.restore();
-
-  // ── Kometen ──────────────────────────────────────────────────────────────
-  comets.forEach(c => {
-    const x  = c.x  * W;
-    const y  = c.y  * horizonY;
-    const tx = (c.x - c.vx * c.tailLen) * W;
-    const ty = (c.y - c.vy * c.tailLen) * horizonY;
-
-    const grad = ctx.createLinearGradient(tx, ty, x, y);
-    grad.addColorStop(0, `rgba(255,255,255,0)`);
-    grad.addColorStop(0.6, `rgba(200,220,255,${c.life * 0.5})`);
-    grad.addColorStop(1, `rgba(255,240,180,${c.life})`);
-
-    ctx.save();
-    ctx.lineWidth = c.size;
-    ctx.strokeStyle = grad;
-    ctx.beginPath();
-    ctx.moveTo(tx, ty);
-    ctx.lineTo(x, y);
-    ctx.stroke();
-    ctx.fillStyle = `rgba(255,245,200,${c.life})`;
-    ctx.beginPath();
-    ctx.arc(x, y, c.size * 1.5, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-  });
-
-  // Road strips
-  const N = 120;
-  for (let i = 0; i < N; i++) {
-    const t1 = i / N;
-    const t2 = (i + 1) / N;
-    const y1 = horizonY + t1 * (roadBottom - horizonY);
-    const y2 = horizonY + t2 * (roadBottom - horizonY);
-    const depth1 = 0.02 + t1 * 0.98;
-    const depth2 = 0.02 + t2 * 0.98;
-
-    // Road center offset from player steering
-    const roadCX1 = W / 2 - playerX * W * 0.35 * depth1;
-    const roadCX2 = W / 2 - playerX * W * 0.35 * depth2;
-    const roadW1 = W * 0.88 * depth1;
-    const roadW2 = W * 0.88 * depth2;
-
-    // Grass
-    const alt = Math.floor(t1 * 6) % 2;
-    ctx.fillStyle = alt ? zone.grassA : zone.grassB;
-    ctx.fillRect(0, y1, W, y2 - y1);
-
-    // Road surface
-    const altRoad = Math.floor(t1 * 8) % 2;
-    ctx.fillStyle = altRoad ? '#555' : '#4a4a4a';
-    ctx.beginPath();
-    ctx.moveTo(roadCX1 - roadW1 / 2, y1);
-    ctx.lineTo(roadCX1 + roadW1 / 2, y1);
-    ctx.lineTo(roadCX2 + roadW2 / 2, y2);
-    ctx.lineTo(roadCX2 - roadW2 / 2, y2);
-    ctx.closePath();
-    ctx.fill();
-
-    // Rumble strips (alternating red/white)
-    const rumbleAlt = Math.floor(t1 * 5) % 2;
-    const rumbleW1 = roadW1 * 0.06;
-    const rumbleW2 = roadW2 * 0.06;
-    ctx.fillStyle = rumbleAlt ? '#cc0000' : '#ffffff';
-    // Left rumble
-    ctx.beginPath();
-    ctx.moveTo(roadCX1 - roadW1 / 2, y1);
-    ctx.lineTo(roadCX1 - roadW1 / 2 + rumbleW1, y1);
-    ctx.lineTo(roadCX2 - roadW2 / 2 + rumbleW2, y2);
-    ctx.lineTo(roadCX2 - roadW2 / 2, y2);
-    ctx.closePath();
-    ctx.fill();
-    // Right rumble
-    ctx.beginPath();
-    ctx.moveTo(roadCX1 + roadW1 / 2 - rumbleW1, y1);
-    ctx.lineTo(roadCX1 + roadW1 / 2, y1);
-    ctx.lineTo(roadCX2 + roadW2 / 2, y2);
-    ctx.lineTo(roadCX2 + roadW2 / 2 - rumbleW2, y2);
-    ctx.closePath();
-    ctx.fill();
-
-    // 2 Spurmarkierungen (3 Spuren-Trennung) – gestrichelt weiß
-    if (altRoad === 0) {
-      const dashW1 = roadW1 * 0.020;
-      const dashW2 = roadW2 * 0.020;
-      ctx.fillStyle = '#fff';
-      // Linke Spurtrennung (zwischen linker und mittlerer Spur)
-      // Spuren bei x ∈ {-0.55, 0, 0.55} → Trennlinien bei ±0.275
-      [-0.275, 0.275].forEach(rel => {
-        const lx1 = roadCX1 + roadW1 * rel;
-        const lx2 = roadCX2 + roadW2 * rel;
-        ctx.beginPath();
-        ctx.moveTo(lx1 - dashW1, y1);
-        ctx.lineTo(lx1 + dashW1, y1);
-        ctx.lineTo(lx2 + dashW2, y2);
-        ctx.lineTo(lx2 - dashW2, y2);
-        ctx.closePath();
-        ctx.fill();
-      });
-    }
-  }
-
-  // Fog near horizon
-  const fog = ctx.createLinearGradient(0, horizonY, 0, horizonY + (roadBottom - horizonY) * 0.25);
-  fog.addColorStop(0, 'rgba(200,220,255,0.5)');
-  fog.addColorStop(1, 'rgba(200,220,255,0)');
-  ctx.fillStyle = fog;
-  ctx.fillRect(0, horizonY, W, (roadBottom - horizonY) * 0.25);
-
-  // ── Obstacles ────────────────────────────────────────────────────────────
-  // ── Landmarks am Straßenrand ──────────────────────────────────────────────
-  const visLM = landmarks.filter(lm => {
-    const dz = lm.z - pos;
-    return dz > -1500 && dz < 5000;
-  }).sort((a, b) => (b.z - pos) - (a.z - pos));
-
-  visLM.forEach(lm => {
-    const dz = lm.z - pos;
-    const t = Math.max(0, Math.min(1, 1 - dz / 5000));
-    const depth = 0.02 + t * 0.98;
-    const roadW = W * 0.88 * depth;
-    const roadCX = W / 2 - playerX * W * 0.35 * depth;
-    const screenY = horizonY + t * (roadBottom - horizonY);
-    // Side position: trees closer to road, signs farther
-    const sideOffset = lm.kind === 'tree' ? 0.62 : 0.70;
-    const sideX = roadCX + lm.side * (roadW * sideOffset);
-    const fade = dz < 0 ? Math.max(0, 1 + dz / 800) : Math.min(1, t * 5);
-    if (fade <= 0) return;
-
-    ctx.save();
-    ctx.globalAlpha = fade;
-
-    if (lm.kind === 'tree') {
-      // Bäume — einfach groß und proportional zur Distanz
-      const treeSize = Math.max(8, t * H * 0.20);
-      ctx.font = `${treeSize}px serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'bottom';
-      ctx.fillText(lm.emoji, sideX, screenY + treeSize * 0.05);
+  draw() {
+    const W = this.canvas.width, H = this.canvas.height;
+    if (this.state === 'menu') {
+      this.drawMenu(W, H);
     } else {
-      // Sehenswürdigkeit-Schild (Straßenschild mit Pfahl)
-      const signH = Math.max(18, t * H * 0.16);
-      const signW = signH * 2.4;
-      const signColor = lm.side > 0 ? '#1565c0' : '#2e7d32';
+      this.drawGameScene(W, H);
+      if (this.state === 'over') this.drawGameOver(W, H);
+      else if (this.state === 'win') this.drawWin(W, H);
+    }
+  }
 
-      // Sign post (zwei Pfähle)
-      ctx.fillStyle = '#666';
-      const postW = Math.max(2, t * 4);
-      ctx.fillRect(sideX - signW * 0.28, screenY - signH * 1.4, postW, signH * 1.4);
-      ctx.fillRect(sideX + signW * 0.28, screenY - signH * 1.4, postW, signH * 1.4);
+  drawGameScene(W, H) {
+    const zone = ZONES[this.gameLogic.currentZone];
 
-      // Sign shadow
-      ctx.fillStyle = 'rgba(0,0,0,0.3)';
-      ctx.beginPath();
-      ctx.roundRect(sideX - signW/2 + 2, screenY - signH * 2.5 + 2, signW, signH, 4);
-      ctx.fill();
+    const baseHorizonY = H * 0.45;
+    const horizonY = baseHorizonY - this.gameLogic.pitch * (H / 800);
+    const roadBottom = H;
 
-      // Sign background
-      ctx.fillStyle = signColor;
-      ctx.beginPath();
-      ctx.roundRect(sideX - signW/2, screenY - signH * 2.5, signW, signH, 4);
-      ctx.fill();
+    // 1. Sky & Background
+    const sky = this.ctx.createLinearGradient(0, 0, 0, Math.max(0, horizonY));
+    sky.addColorStop(0, zone.skyTop); sky.addColorStop(1, zone.skyBot);
+    this.ctx.fillStyle = sky;
+    this.ctx.fillRect(0, 0, W, horizonY);
 
-      // White border
-      ctx.strokeStyle = '#fff';
-      ctx.lineWidth = Math.max(1.5, signH * 0.06);
-      ctx.stroke();
+    this.ctx.fillStyle = '#fff';
+    this.clouds.forEach(c => {
+      this.ctx.globalAlpha = 0.6;
+      const cx = c.x * W, cy = c.y * baseHorizonY, cw = c.w * W, ch = c.h * baseHorizonY;
+      this.ctx.beginPath(); this.ctx.ellipse(cx, cy, cw, ch, 0, 0, Math.PI * 2); this.ctx.fill();
+      this.ctx.beginPath(); this.ctx.ellipse(cx - cw*0.3, cy + ch*0.1, cw*0.6, ch*0.8, 0, 0, Math.PI * 2); this.ctx.fill();
+      this.ctx.beginPath(); this.ctx.ellipse(cx + cw*0.3, cy + ch*0.15, cw*0.5, ch*0.75, 0, 0, Math.PI * 2); this.ctx.fill();
+      this.ctx.globalAlpha = 1;
+    });
 
-      // Emoji links auf dem Schild
-      ctx.font = `${signH * 0.62}px serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillStyle = '#fff';
-      ctx.fillText(lm.emoji, sideX - signW * 0.32, screenY - signH * 2.0);
+    this.ctx.font = `${Math.floor(H * 0.08)}px serif`;
+    this.ctx.textAlign = 'center';
+    this.ctx.globalAlpha = 0.5;
+    this.ctx.fillText(zone.emoji, W * 0.15, horizonY * 0.55);
+    this.ctx.globalAlpha = 1;
 
-      // Name text rechts daneben
-      if (t > 0.25) {
-        ctx.font = `bold ${Math.max(7, signH * 0.26)}px -apple-system, sans-serif`;
-        ctx.textAlign = 'left';
-        ctx.fillStyle = '#fff';
-        ctx.fillText(lm.name, sideX - signW * 0.10, screenY - signH * 2.0);
+    const horizonShift = this.gameLogic.curveStrength * W * 0.1;
+    this.ctx.fillStyle = 'rgba(0,0,0,0.30)';
+    const silOffset = (-this.player.pos * 0.05 - horizonShift) % W;
+    this.ctx.save();
+    this.ctx.translate(silOffset, 0);
+    for(let i=0; i<2; i++) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(i*W, horizonY);
+      this.ctx.lineTo(i*W + W*0.1, horizonY - H*0.08);
+      this.ctx.lineTo(i*W + W*0.3, horizonY - H*0.03);
+      this.ctx.lineTo(i*W + W*0.5, horizonY - H*0.1);
+      this.ctx.lineTo(i*W + W*0.8, horizonY - H*0.04);
+      this.ctx.lineTo(i*W + W, horizonY);
+      this.ctx.fill();
+    }
+    this.ctx.restore();
+
+    // 2. 3D Curved Road
+    const segmentsToDraw = 45;
+    const zMax = this.gameLogic.drawDistance;
+
+    for (let i = segmentsToDraw - 1; i >= 0; i--) {
+      let dz2 = ((i + 1) / segmentsToDraw) * zMax;
+      let dz1 = (i / segmentsToDraw) * zMax;
+
+      let p2 = this.getProjection(dz2, this.player.x, this.gameLogic.curveStrength, W, horizonY, roadBottom);
+      let p1 = this.getProjection(dz1, this.player.x, this.gameLogic.curveStrength, W, horizonY, roadBottom);
+
+      let globalZ = this.player.pos + dz1;
+      let isDark = Math.floor(globalZ / 200) % 2 === 0;
+
+      this.ctx.fillStyle = isDark ? zone.grassA : zone.grassB;
+      this.ctx.fillRect(0, p2.y - 1, W, p1.y - p2.y + 2);
+
+      this.ctx.fillStyle = isDark ? '#555' : '#4a4a4a';
+      this.ctx.beginPath();
+      this.ctx.moveTo(p1.x - p1.w/2, p1.y); this.ctx.lineTo(p1.x + p1.w/2, p1.y);
+      this.ctx.lineTo(p2.x + p2.w/2, p2.y); this.ctx.lineTo(p2.x - p2.w/2, p2.y);
+      this.ctx.fill();
+
+      let rW1 = p1.w * 0.08, rW2 = p2.w * 0.08;
+      this.ctx.fillStyle = isDark ? '#cc0000' : '#ffffff';
+      this.ctx.beginPath();
+      this.ctx.moveTo(p1.x - p1.w/2, p1.y); this.ctx.lineTo(p1.x - p1.w/2 + rW1, p1.y);
+      this.ctx.lineTo(p2.x - p2.w/2 + rW2, p2.y); this.ctx.lineTo(p2.x - p2.w/2, p2.y);
+      this.ctx.fill();
+      this.ctx.beginPath();
+      this.ctx.moveTo(p1.x + p1.w/2 - rW1, p1.y); this.ctx.lineTo(p1.x + p1.w/2, p1.y);
+      this.ctx.lineTo(p2.x + p2.w/2, p2.y); this.ctx.lineTo(p2.x + p2.w/2 - rW2, p2.y);
+      this.ctx.fill();
+
+      if (!isDark) {
+        this.ctx.fillStyle = '#fff';
+        let laneW1 = p1.w * 0.02, laneW2 = p2.w * 0.02;
+        let lx1 = p1.x - p1.w/6, lx2 = p2.x - p2.w/6;
+        this.ctx.beginPath();
+        this.ctx.moveTo(lx1 - laneW1/2, p1.y); this.ctx.lineTo(lx1 + laneW1/2, p1.y);
+        this.ctx.lineTo(lx2 + laneW2/2, p2.y); this.ctx.lineTo(lx2 - laneW2/2, p2.y);
+        this.ctx.fill();
+        let rx1 = p1.x + p1.w/6, rx2 = p2.x + p2.w/6;
+        this.ctx.beginPath();
+        this.ctx.moveTo(rx1 - laneW1/2, p1.y); this.ctx.lineTo(rx1 + laneW1/2, p1.y);
+        this.ctx.lineTo(rx2 + laneW2/2, p2.y); this.ctx.lineTo(rx2 - laneW2/2, p2.y);
+        this.ctx.fill();
       }
     }
 
-    ctx.restore();
-    ctx.textBaseline = 'alphabetic';
-  });
-
-  // ── Hindernisse ───────────────────────────────────────────────────────────
-  // Sort far to near for proper layering
-  const visObs = obstacles.filter(o => {
-    const dz = o.z - pos;
-    return dz > -300 && dz < 4000;
-  }).sort((a, b) => (b.z - pos) - (a.z - pos));
-
-  visObs.forEach(obs => {
-    const dz = obs.z - pos;
-    const t = Math.max(0, Math.min(1, 1 - dz / 4000));
-    if (t <= 0) return;
-    const depth = 0.02 + t * 0.98;
-    const screenY = horizonY + t * (roadBottom - horizonY);
-    const roadW = W * 0.88 * depth;
-    const roadCX = W / 2 - playerX * W * 0.35 * depth;
-    const screenX = roadCX + obs.x * roadW / 2;
-    // Größe: nicht-linear, damit Fahrzeuge weit weg schon erkennbar sind
-    const baseSize = Math.max(18, Math.pow(t, 0.65) * H * 0.17);
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'bottom';
-
-    // ── Farbige Hintergrund-Pille für klare Sichtbarkeit ──────────────────
-    const bgAlpha = Math.min(0.82, t * 1.3);
-    const pad = baseSize * 0.18;
-    const boxW = baseSize * 1.15 + pad * 2;
-    const boxH = baseSize + pad * 1.8;
-    ctx.save();
-    // Farbiger Hintergrund: Schaden=rot/orange, Collect=gold/grün
-    if (obs.type.damage) {
-      ctx.fillStyle = `rgba(180,40,0,${bgAlpha * 0.75})`;
-    } else if (obs.type.score >= 100) {
-      ctx.fillStyle = `rgba(180,140,0,${bgAlpha * 0.75})`;
-    } else {
-      ctx.fillStyle = `rgba(0,140,80,${bgAlpha * 0.65})`;
-    }
-    ctx.beginPath();
-    ctx.roundRect(screenX - boxW / 2, screenY - baseSize - pad, boxW, boxH, boxH * 0.28);
-    ctx.fill();
-    // Leuchtendes Outline
-    ctx.strokeStyle = obs.type.damage
-      ? `rgba(255,110,20,${bgAlpha})`
-      : obs.type.score >= 100
-        ? `rgba(255,220,0,${bgAlpha})`
-        : `rgba(0,220,120,${bgAlpha})`;
-    ctx.lineWidth = Math.max(1.5, baseSize * 0.055);
-    ctx.stroke();
-    ctx.restore();
-
-    // Schatten unter dem Hindernis (Tiefenwahrnehmung)
-    ctx.save();
-    ctx.globalAlpha = 0.3 * t;
-    ctx.fillStyle = '#000';
-    ctx.beginPath();
-    ctx.ellipse(screenX, screenY + 2, baseSize * 0.38, baseSize * 0.09, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-
-    // Emoji
-    ctx.font = `${baseSize}px serif`;
-    ctx.fillText(obs.type.emoji, screenX, screenY);
-    ctx.textBaseline = 'alphabetic';
-  });
-
-  // ── Spielerposition-Pfeil auf der Straße ──────────────────────────────────
-  // Zeigt dem Fahrer genau, wo sein Auto ist — bewegt sich mit playerX
-  {
-    const arT = 0.91;
-    const arDepth = 0.02 + arT * 0.98;
-    const arRoadW = W * 0.88 * arDepth;
-    const arRoadCX = W / 2 - playerX * W * 0.35 * arDepth;
-    const arScreenX = arRoadCX + playerX * arRoadW / 2;
-    const arScreenY = horizonY + arT * (roadBottom - horizonY);
-    const arH = arRoadW * 0.09;
-    const arW = arH * 0.75;
-    const flash = invincible > 0 ? (Math.floor(invincible / 6) % 2 === 0) : false;
-    ctx.save();
-    ctx.globalAlpha = flash ? 0.25 : 0.82;
-    ctx.fillStyle = invincible > 0 ? '#ff4444' : '#44ffaa';
-    ctx.strokeStyle = '#fff';
-    ctx.lineWidth = Math.max(1.5, arH * 0.08);
-    ctx.beginPath();
-    ctx.moveTo(arScreenX,            arScreenY);
-    ctx.lineTo(arScreenX - arW / 2,  arScreenY - arH);
-    ctx.lineTo(arScreenX - arW * 0.15, arScreenY - arH * 0.65);
-    ctx.lineTo(arScreenX - arW * 0.15, arScreenY - arH * 1.55);
-    ctx.lineTo(arScreenX + arW * 0.15, arScreenY - arH * 1.55);
-    ctx.lineTo(arScreenX + arW * 0.15, arScreenY - arH * 0.65);
-    ctx.lineTo(arScreenX + arW / 2,  arScreenY - arH);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-    ctx.restore();
-  }
-
-  // ── Cockpit / Dashboard ────────────────────────────────────────────────────
-  const hoodTop = roadBottom - H * 0.002;
-
-  // Motorhaube (dunkles Auto-Blau statt reinem Schwarz)
-  const hoodGrad = ctx.createLinearGradient(0, hoodTop, 0, H);
-  hoodGrad.addColorStop(0,    '#0d1520');
-  hoodGrad.addColorStop(0.12, '#172233');
-  hoodGrad.addColorStop(0.45, '#0f1a28');
-  hoodGrad.addColorStop(1,    '#070d14');
-  ctx.fillStyle = hoodGrad;
-  ctx.beginPath();
-  ctx.moveTo(0, H);
-  ctx.lineTo(W, H);
-  ctx.lineTo(W * 0.90, hoodTop);
-  ctx.lineTo(W * 0.10, hoodTop);
-  ctx.closePath();
-  ctx.fill();
-
-  // Glossy Mittelstreifen (Haube-Falz)
-  {
-    const fg = ctx.createLinearGradient(W * 0.44, 0, W * 0.56, 0);
-    fg.addColorStop(0,   'rgba(255,255,255,0)');
-    fg.addColorStop(0.5, 'rgba(255,255,255,0.055)');
-    fg.addColorStop(1,   'rgba(255,255,255,0)');
-    ctx.fillStyle = fg;
-    ctx.beginPath();
-    ctx.moveTo(W * 0.44, H);
-    ctx.lineTo(W * 0.56, H);
-    ctx.lineTo(W * 0.52, hoodTop);
-    ctx.lineTo(W * 0.48, hoodTop);
-    ctx.closePath();
-    ctx.fill();
-  }
-
-  // Außenspiegel
-  const mirrorY  = hoodTop + H * 0.018;
-  const mW = W * 0.065, mH = H * 0.036;
-  ctx.fillStyle = '#111e2e';
-  ctx.strokeStyle = 'rgba(100,160,255,0.18)';
-  ctx.lineWidth = 1.5;
-  [W * 0.075 - mW, W * 0.925].forEach(mx => {
-    ctx.beginPath();
-    ctx.roundRect(mx, mirrorY, mW, mH, 3);
-    ctx.fill();
-    ctx.stroke();
-    // kleiner Spiegelreflex
-    ctx.fillStyle = 'rgba(255,255,255,0.04)';
-    ctx.beginPath();
-    ctx.roundRect(mx + mW * 0.2, mirrorY + mH * 0.15, mW * 0.55, mH * 0.35, 2);
-    ctx.fill();
-    ctx.fillStyle = '#111e2e';
-  });
-
-  // Armaturenbrett-Leiste
-  const dashY = H - H * 0.145;
-  const dashGrad = ctx.createLinearGradient(0, dashY, 0, H);
-  dashGrad.addColorStop(0, 'rgba(6,12,22,0.97)');
-  dashGrad.addColorStop(1, 'rgba(2,6,12,1)');
-  ctx.fillStyle = dashGrad;
-  ctx.fillRect(0, dashY, W, H - dashY);
-  // Oberkante leuchtet leicht blau
-  ctx.strokeStyle = 'rgba(50,120,240,0.35)';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.moveTo(0, dashY);
-  ctx.lineTo(W, dashY);
-  ctx.stroke();
-
-  // Tacho (rechts)
-  {
-    const sx = W * 0.80, sy = H - H * 0.055, sr = W * 0.075;
-    // Hintergrundbogen
-    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-    ctx.lineWidth = sr * 0.28;
-    ctx.lineCap = 'round';
-    ctx.beginPath();
-    ctx.arc(sx, sy, sr, Math.PI * 0.75, Math.PI * 2.25);
-    ctx.stroke();
-    // Farbiger Füllbogen
-    const frac = speed / 9;
-    ctx.strokeStyle = frac > 0.8 ? '#ff3333' : frac > 0.55 ? '#ffaa00' : '#00dd88';
-    ctx.beginPath();
-    ctx.arc(sx, sy, sr, Math.PI * 0.75, Math.PI * 0.75 + frac * Math.PI * 1.5);
-    ctx.stroke();
-    ctx.lineCap = 'butt';
-    // Wert
-    ctx.fillStyle = '#fff';
-    ctx.font = `bold ${Math.floor(W * 0.030)}px Segoe UI`;
-    ctx.textAlign = 'center';
-    ctx.fillText(`${Math.floor(speed * 20)}`, sx, sy + W * 0.010);
-    ctx.fillStyle = 'rgba(255,255,255,0.5)';
-    ctx.font = `${Math.floor(W * 0.018)}px Segoe UI`;
-    ctx.fillText('km/h', sx, sy + W * 0.033);
-  }
-
-  // Spuranzeige (Mitte) — 3 Punkte, aktiver Punkt leuchtet
-  {
-    const nearestLane = LANES.reduce((best, lx, i) =>
-      Math.abs(playerX - lx) < Math.abs(playerX - LANES[best]) ? i : best, 0);
-    const liY = H - H * 0.068;
-    ctx.font = `${Math.floor(W * 0.020)}px Segoe UI`;
-    ctx.textAlign = 'center';
-    ctx.fillStyle = 'rgba(255,255,255,0.35)';
-    ctx.fillText('SPUR', W * 0.5, liY - W * 0.025);
-    [-1, 0, 1].forEach((off, i) => {
-      const dx = W * 0.5 + off * W * 0.065;
-      const active = (i === nearestLane);
-      const dotR = W * 0.019;
-      // Glow wenn aktiv
-      if (active) {
-        ctx.save();
-        ctx.globalAlpha = 0.3;
-        ctx.fillStyle = invincible > 0 ? '#ff4444' : '#00ff99';
-        ctx.beginPath();
-        ctx.arc(dx, liY, dotR * 2.0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-      }
-      ctx.fillStyle = active
-        ? (invincible > 0 ? '#ff5555' : '#00ff99')
-        : 'rgba(255,255,255,0.14)';
-      ctx.beginPath();
-      ctx.arc(dx, liY, dotR, 0, Math.PI * 2);
-      ctx.fill();
+    // 3. Draw Objects (sortiert nach Tiefe)
+    let drawList = [];
+    this.obstacles.forEach(obs => {
+      let dz = obs.z - this.player.pos;
+      if (dz > 0 && dz < zMax) drawList.push({ type: 'obs', item: obs, dz: dz });
     });
-  }
+    this.landmarks.forEach(lm => {
+      let dz = lm.z - this.player.pos;
+      if (dz > 0 && dz < zMax) drawList.push({ type: 'lm', item: lm, dz: dz });
+    });
 
-  // Lenkrad
-  const wheelR = W * 0.155;
-  const wheelX = W * 0.5;
-  const wheelY = H + wheelR * 0.40;
-  // Äußerer Ring
-  ctx.strokeStyle = '#1a2535';
-  ctx.lineWidth = W * 0.022;
-  ctx.lineCap = 'round';
-  ctx.beginPath();
-  ctx.arc(wheelX, wheelY, wheelR, Math.PI * 1.08, Math.PI * 1.92);
-  ctx.stroke();
-  // Lenkrad-Speichen
-  ctx.strokeStyle = '#222f40';
-  ctx.lineWidth = W * 0.010;
-  [-0.42, 0, 0.42].forEach(ang => {
-    ctx.beginPath();
-    ctx.moveTo(wheelX + Math.cos(Math.PI * 1.5 + ang) * wheelR * 0.35,
-               wheelY + Math.sin(Math.PI * 1.5 + ang) * wheelR * 0.35);
-    ctx.lineTo(wheelX + Math.cos(Math.PI * 1.5 + ang) * wheelR * 0.92,
-               wheelY + Math.sin(Math.PI * 1.5 + ang) * wheelR * 0.92);
-    ctx.stroke();
-  });
-  ctx.lineCap = 'butt';
-  // Lenkrad-Nabe (Mitte)
-  ctx.fillStyle = '#1a2535';
-  ctx.beginPath();
-  ctx.arc(wheelX, wheelY, wheelR * 0.25, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(100,160,255,0.2)';
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
+    drawList.sort((a, b) => b.dz - a.dz);
 
-  // Lenkrad-Zeigedot (rot, zeigt Lenkrichtung)
-  let steerVis = 0;
-  if (keys['ArrowLeft'] || keys['KeyA'] || touchLeft) steerVis = -1;
-  if (keys['ArrowRight'] || keys['KeyD'] || touchRight) steerVis = 1;
-  const gpS = getGamepadSteering();
-  if (Math.abs(gpS) > 0.1) steerVis = gpS;
-  if (gyroAvailable) steerVis = gyroValue;
-  const wheelAng = Math.PI * 1.5 + steerVis * 0.4;
-  const dotX = wheelX + Math.cos(wheelAng) * wheelR;
-  const dotY = wheelY + Math.sin(wheelAng) * wheelR;
-  ctx.fillStyle = steerVis !== 0 ? '#ff4444' : '#ff6666';
-  ctx.beginPath();
-  ctx.arc(dotX, dotY, W * 0.014, 0, Math.PI * 2);
-  ctx.fill();
+    drawList.forEach(obj => {
+      let p = this.getProjection(obj.dz, this.player.x, this.gameLogic.curveStrength, W, horizonY, roadBottom);
+      if (obj.type === 'obs') {
+        let o = obj.item;
+        let screenX = p.x + o.laneX * (p.w / 2);
+        let baseSize = Math.max(12, 120 * (p.scale / 2) * (H/600));
 
-  // Invincibility flash overlay
-  if (invincible > 0 && Math.floor(invincible / 6) % 2 === 0) {
-    ctx.fillStyle = 'rgba(255,0,0,0.18)';
-    ctx.fillRect(0, 0, W, H);
-  }
+        // ── Farbige Hintergrund-Pille für klare Sichtbarkeit ────────────
+        // Rot = Schaden, Gold = Stern, Grün = Sammelobjekt
+        const bgAlpha = Math.min(0.78, p.scale * 1.4);
+        const pad = baseSize * 0.16;
+        const boxW = baseSize * 1.12 + pad * 2;
+        const boxH = baseSize + pad * 1.7;
+        if (o.type.damage) {
+          this.ctx.fillStyle = `rgba(180,40,0,${bgAlpha * 0.72})`;
+          this.ctx.strokeStyle = `rgba(255,110,20,${bgAlpha})`;
+        } else if (o.type.score >= 100) {
+          this.ctx.fillStyle = `rgba(180,140,0,${bgAlpha * 0.72})`;
+          this.ctx.strokeStyle = `rgba(255,220,0,${bgAlpha})`;
+        } else {
+          this.ctx.fillStyle = `rgba(0,140,80,${bgAlpha * 0.65})`;
+          this.ctx.strokeStyle = `rgba(0,220,120,${bgAlpha})`;
+        }
+        this.ctx.beginPath();
+        this.ctx.roundRect(screenX - boxW/2, p.y - baseSize - pad, boxW, boxH, boxH * 0.26);
+        this.ctx.fill();
+        this.ctx.lineWidth = Math.max(1.2, baseSize * 0.05);
+        this.ctx.stroke();
 
-  // ── Particles ─────────────────────────────────────────────────────────────
-  particles.forEach(p => {
-    const alpha = p.life / p.maxLife;
-    ctx.globalAlpha = alpha;
-    ctx.fillStyle = p.color;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.r * alpha, 0, Math.PI * 2);
-    ctx.fill();
-  });
-  ctx.globalAlpha = 1;
+        // Schatten + Emoji
+        this.ctx.font = `${baseSize}px serif`;
+        this.ctx.textAlign = 'center'; this.ctx.textBaseline = 'bottom';
+        this.ctx.fillStyle = 'rgba(0,0,0,0.3)';
+        this.ctx.beginPath(); this.ctx.ellipse(screenX, p.y + 2, baseSize * 0.38, baseSize * 0.09, 0, 0, Math.PI*2); this.ctx.fill();
+        this.ctx.fillStyle = '#000';
+        this.ctx.fillText(o.type.emoji, screenX, p.y);
+      } else {
+        let lm = obj.item;
+        let sideOffset = lm.kind === 'tree' ? 0.75 : 0.85;
+        let screenX = p.x + lm.side * (p.w * sideOffset);
+        this.ctx.globalAlpha = obj.dz > zMax - 500 ? (zMax - obj.dz)/500 : 1;
 
-  // ── HUD ───────────────────────────────────────────────────────────────────
-  // Top bar background
-  ctx.fillStyle = 'rgba(0,0,0,0.5)';
-  ctx.fillRect(0, 0, W, H * 0.08);
+        if (lm.kind === 'tree') {
+          let treeSize = Math.max(16, 280 * p.scale * (H/800));
+          this.ctx.font = `${treeSize}px serif`;
+          this.ctx.textAlign = 'center'; this.ctx.textBaseline = 'bottom';
+          this.ctx.fillText(lm.emoji, screenX, p.y + treeSize * 0.05);
+        } else {
+          let signH = Math.max(15, 180 * p.scale * (H/800));
+          let signW = signH * 2.4;
+          let signColor = lm.side > 0 ? '#1565c0' : '#2e7d32';
+          this.ctx.fillStyle = '#666';
+          let postW = Math.max(2, p.scale * 6);
+          this.ctx.fillRect(screenX - signW*0.28, p.y - signH*1.4, postW, signH*1.4);
+          this.ctx.fillRect(screenX + signW*0.28, p.y - signH*1.4, postW, signH*1.4);
+          this.ctx.fillStyle = 'rgba(0,0,0,0.3)';
+          this.ctx.beginPath(); this.ctx.roundRect(screenX - signW/2 + 2, p.y - signH*2.5 + 2, signW, signH, 4); this.ctx.fill();
+          this.ctx.fillStyle = signColor;
+          this.ctx.beginPath(); this.ctx.roundRect(screenX - signW/2, p.y - signH*2.5, signW, signH, 4); this.ctx.fill();
+          this.ctx.strokeStyle = '#fff'; this.ctx.lineWidth = Math.max(1, p.scale * 3); this.ctx.stroke();
 
-  // Lives
-  ctx.font = `${Math.floor(H * 0.045)}px serif`;
-  ctx.textAlign = 'left';
-  let livesStr = '';
-  for (let i = 0; i < lives; i++) livesStr += '❤️';
-  ctx.fillText(livesStr, 8, H * 0.062);
+          let fSize = signH * 0.4;
+          if (fSize > 4) {
+            this.ctx.fillStyle = '#fff';
+            this.ctx.font = `bold ${fSize}px Segoe UI`;
+            this.ctx.textAlign = 'center'; this.ctx.textBaseline = 'middle';
+            this.ctx.fillText(lm.name, screenX, p.y - signH * 2.0);
+          }
+        }
+        this.ctx.globalAlpha = 1;
+      }
+    });
+    this.ctx.textBaseline = 'alphabetic';
 
-  // Score
-  ctx.fillStyle = '#ffd700';
-  ctx.font = `bold ${Math.floor(H * 0.042)}px Segoe UI`;
-  ctx.textAlign = 'center';
-  ctx.fillText(Math.floor(score).toLocaleString('de-DE'), W / 2, H * 0.062);
-
-  // Zone name (right)
-  ctx.font = `${Math.floor(H * 0.038)}px serif`;
-  ctx.textAlign = 'right';
-  ctx.fillStyle = '#fff';
-  ctx.fillText(zone.emoji + ' ' + zone.name, W - 8, H * 0.062);
-
-  // Progress bar (bottom)
-  const progress = Math.min(1, pos / 38000);
-  ctx.fillStyle = 'rgba(0,0,0,0.5)';
-  ctx.fillRect(0, H - 6, W, 6);
-  ctx.fillStyle = '#0099ff';
-  ctx.fillRect(0, H - 6, W * progress, 6);
-
-  // Touch hints (if no gyro and touch device)
-  const isTouch = ('ontouchstart' in window);
-  if (isTouch && !gyroAvailable) {
-    ctx.fillStyle = 'rgba(255,255,255,0.25)';
-    ctx.font = `bold ${Math.floor(H * 0.06)}px Segoe UI`;
-    ctx.textAlign = 'left';
-    ctx.fillText('◀', 8, roadBottom - H * 0.04);
-    ctx.textAlign = 'right';
-    ctx.fillText('▶', W - 8, roadBottom - H * 0.04);
-  }
-
-  // Zone announce overlay
-  if (zoneAnnounce) {
-    const za = ZONES[zoneAnnounce.idx];
-    ctx.globalAlpha = zoneAnnounce.alpha;
-    ctx.fillStyle = 'rgba(0,0,0,0.75)';
-    ctx.fillRect(0, H * 0.3, W, H * 0.38);
-    ctx.textAlign = 'center';
-    ctx.font = `${Math.floor(H * 0.10)}px serif`;
-    ctx.fillStyle = '#fff';
-    ctx.fillText(za.emoji, W / 2, H * 0.435);
-    ctx.font = `bold ${Math.floor(H * 0.058)}px Segoe UI`;
-    ctx.fillStyle = '#ffd700';
-    ctx.fillText(za.name, W / 2, H * 0.52);
-    ctx.font = `${Math.floor(H * 0.030)}px Segoe UI`;
-    ctx.fillStyle = '#ddd';
-    // Wrap subtitle
-    wrapText(za.subtitle, W / 2, H * 0.57, W * 0.85, H * 0.034);
-    ctx.globalAlpha = 1;
-  }
-}
-
-function wrapText(text, cx, y, maxW, lineH) {
-  const words = text.split(' ');
-  let line = '';
-  let lines = [];
-  for (let w of words) {
-    const test = line + (line ? ' ' : '') + w;
-    if (ctx.measureText(test).width > maxW && line) {
-      lines.push(line);
-      line = w;
-    } else line = test;
-  }
-  if (line) lines.push(line);
-  lines.forEach((l, i) => ctx.fillText(l, cx, y + i * lineH));
-}
-
-function drawGameOver(W, H) {
-  ctx.fillStyle = 'rgba(0,0,0,0.75)';
-  ctx.fillRect(0, 0, W, H);
-
-  ctx.textAlign = 'center';
-  ctx.font = `${Math.floor(H * 0.10)}px serif`;
-  ctx.fillText('💥', W / 2, H * 0.28);
-
-  ctx.font = `bold ${Math.floor(H * 0.07)}px Segoe UI`;
-  ctx.fillStyle = '#ff4444';
-  ctx.fillText('Crash!', W / 2, H * 0.37);
-
-  ctx.font = `bold ${Math.floor(H * 0.05)}px Segoe UI`;
-  ctx.fillStyle = '#ffd700';
-  ctx.fillText(`Punkte: ${Math.floor(score).toLocaleString('de-DE')}`, W / 2, H * 0.45);
-
-  if (score >= highscore && highscore > 0) {
-    ctx.fillStyle = '#ffd700';
-    ctx.font = `bold ${Math.floor(H * 0.042)}px Segoe UI`;
-    ctx.fillText('🏆 Neuer Highscore!', W / 2, H * 0.52);
-  } else if (highscore > 0) {
-    ctx.fillStyle = '#aaa';
-    ctx.font = `${Math.floor(H * 0.036)}px Segoe UI`;
-    ctx.fillText(`Highscore: ${Math.floor(highscore).toLocaleString('de-DE')}`, W / 2, H * 0.52);
-  }
-
-  ctx.fillStyle = '#fff';
-  ctx.font = `${Math.floor(H * 0.038)}px Segoe UI`;
-  ctx.fillText(`Zone erreicht: ${ZONES[currentZone].emoji} ${ZONES[currentZone].name}`, W / 2, H * 0.58);
-
-  drawButton(W / 2, H * 0.71, W * 0.55, H * 0.09, '🔄 Nochmal!', '#c0392b', '#e74c3c');
-}
-
-function drawWin(W, H) {
-  const bg = ctx.createLinearGradient(0, 0, 0, H);
-  bg.addColorStop(0, '#0077be');
-  bg.addColorStop(0.5, '#00b4d8');
-  bg.addColorStop(1, '#003d6e');
-  ctx.fillStyle = bg;
-  ctx.fillRect(0, 0, W, H);
-
-  // Waves
-  ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-  ctx.lineWidth = 3;
-  for (let i = 0; i < 6; i++) {
-    const wy = H * (0.55 + i * 0.07);
-    ctx.beginPath();
-    for (let x = 0; x < W; x += 4) {
-      const y = wy + Math.sin(x * 0.04 + i + Date.now() * 0.001) * 5;
-      if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    // ── Spielerposition-Pfeil auf der Straße ────────────────────────────────
+    // Bewegt sich mit playerX. Zeigt dir GENAU, wo dein Auto auf der Straße ist.
+    {
+      // Projiziere die Position direkt vor dem Auto (dz=200)
+      const arP = this.getProjection(200, this.player.x, this.gameLogic.curveStrength, W, horizonY, roadBottom);
+      const arScreenX = arP.x + this.player.x * (arP.w / 2);
+      const arH = arP.w * 0.10;
+      const arW = arH * 0.75;
+      const flash = this.player.invincible > 0 ? (Math.floor(this.player.invincible / 6) % 2 === 0) : false;
+      this.ctx.save();
+      this.ctx.globalAlpha = flash ? 0.25 : 0.85;
+      this.ctx.fillStyle = this.player.invincible > 0 ? '#ff4444' : '#44ffaa';
+      this.ctx.strokeStyle = '#fff';
+      this.ctx.lineWidth = Math.max(1.5, arH * 0.08);
+      this.ctx.beginPath();
+      this.ctx.moveTo(arScreenX,            arP.y);
+      this.ctx.lineTo(arScreenX - arW / 2,  arP.y - arH);
+      this.ctx.lineTo(arScreenX - arW*0.15, arP.y - arH * 0.65);
+      this.ctx.lineTo(arScreenX - arW*0.15, arP.y - arH * 1.55);
+      this.ctx.lineTo(arScreenX + arW*0.15, arP.y - arH * 1.55);
+      this.ctx.lineTo(arScreenX + arW*0.15, arP.y - arH * 0.65);
+      this.ctx.lineTo(arScreenX + arW / 2,  arP.y - arH);
+      this.ctx.closePath();
+      this.ctx.fill();
+      this.ctx.stroke();
+      this.ctx.restore();
     }
-    ctx.stroke();
+
+    // 4. Player Car HUD / Hood (deine geschwungene Motorhaube)
+    const hoodTop = roadBottom - H * 0.005;
+    const hoodGrad = this.ctx.createLinearGradient(0, hoodTop, 0, H);
+    hoodGrad.addColorStop(0, '#0d0d0d'); hoodGrad.addColorStop(0.5, '#2a2a2a'); hoodGrad.addColorStop(1, '#0a0a0a');
+    this.ctx.fillStyle = hoodGrad;
+    this.ctx.beginPath(); this.ctx.moveTo(0, H); this.ctx.lineTo(0, hoodTop);
+    this.ctx.quadraticCurveTo(W/2, roadBottom - H*0.06, W, hoodTop);
+    this.ctx.lineTo(W, H); this.ctx.fill();
+
+    const wheelY = roadBottom - H * 0.02;
+    const wheelR = W * 0.18;
+    this.ctx.fillStyle = '#111';
+    this.ctx.beginPath(); this.ctx.arc(W/2, wheelY, wheelR, Math.PI, 0); this.ctx.fill();
+    this.ctx.strokeStyle = '#333'; this.ctx.lineWidth = W * 0.04; this.ctx.stroke();
+    let steer = this.input.getSteer();
+    const wheelAng = -Math.PI/2 + steer * 1.5;
+    const dotX = W/2 + Math.cos(wheelAng)*wheelR, dotY = wheelY + Math.sin(wheelAng)*wheelR;
+    this.ctx.fillStyle = '#ff4444';
+    this.ctx.beginPath(); this.ctx.arc(dotX, dotY, W * 0.012, 0, Math.PI*2); this.ctx.fill();
+
+    // ── Dashboard-Overlay auf der Motorhaube ─────────────────────────────────
+    // Spuranzeige (3 Punkte) + Mini-Tacho — eingelegt in die Motorhaube
+    {
+      // Aktuelle Spur ermitteln
+      const nearestLane = LANES.reduce((best, lx, i) =>
+        Math.abs(this.player.x - lx) < Math.abs(this.player.x - LANES[best]) ? i : best, 0);
+
+      // Spuranzeige links auf der Motorhaube
+      const liY = H - H * 0.085;
+      const liCX = W * 0.18;
+      this.ctx.fillStyle = 'rgba(255,255,255,0.55)';
+      this.ctx.font = `bold ${Math.floor(W * 0.022)}px Segoe UI`;
+      this.ctx.textAlign = 'center';
+      this.ctx.fillText('SPUR', liCX, liY - W * 0.028);
+      [-1, 0, 1].forEach((off, i) => {
+        const dx = liCX + off * W * 0.045;
+        const active = (i === nearestLane);
+        const dotR = W * 0.015;
+        if (active) {
+          this.ctx.save();
+          this.ctx.globalAlpha = 0.35;
+          this.ctx.fillStyle = this.player.invincible > 0 ? '#ff4444' : '#00ff99';
+          this.ctx.beginPath();
+          this.ctx.arc(dx, liY, dotR * 2.0, 0, Math.PI * 2);
+          this.ctx.fill();
+          this.ctx.restore();
+        }
+        this.ctx.fillStyle = active
+          ? (this.player.invincible > 0 ? '#ff5555' : '#00ff99')
+          : 'rgba(255,255,255,0.18)';
+        this.ctx.beginPath();
+        this.ctx.arc(dx, liY, dotR, 0, Math.PI * 2);
+        this.ctx.fill();
+      });
+
+      // Mini-Tacho rechts auf der Motorhaube
+      const sx = W * 0.82, sy = H - H * 0.07, sr = W * 0.06;
+      this.ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+      this.ctx.lineWidth = sr * 0.30;
+      this.ctx.lineCap = 'round';
+      this.ctx.beginPath();
+      this.ctx.arc(sx, sy, sr, Math.PI * 0.75, Math.PI * 2.25);
+      this.ctx.stroke();
+      const frac = this.player.speed / 9;
+      this.ctx.strokeStyle = frac > 0.8 ? '#ff3333' : frac > 0.55 ? '#ffaa00' : '#00dd88';
+      this.ctx.beginPath();
+      this.ctx.arc(sx, sy, sr, Math.PI * 0.75, Math.PI * 0.75 + frac * Math.PI * 1.5);
+      this.ctx.stroke();
+      this.ctx.lineCap = 'butt';
+      this.ctx.fillStyle = '#fff';
+      this.ctx.font = `bold ${Math.floor(W * 0.028)}px Segoe UI`;
+      this.ctx.textAlign = 'center';
+      this.ctx.fillText(`${Math.floor(this.player.speed * 20)}`, sx, sy + W * 0.010);
+      this.ctx.fillStyle = 'rgba(255,255,255,0.55)';
+      this.ctx.font = `${Math.floor(W * 0.016)}px Segoe UI`;
+      this.ctx.fillText('km/h', sx, sy + W * 0.030);
+    }
+
+    if (this.player.invincible > 0 && Math.floor(this.player.invincible / 6) % 2 === 0) {
+      this.ctx.fillStyle = 'rgba(255,0,0,0.18)'; this.ctx.fillRect(0, 0, W, H);
+    }
+
+    // 5. Particles
+    this.particles.forEach(p => {
+      this.ctx.globalAlpha = p.life / p.maxLife;
+      this.ctx.fillStyle = p.color;
+      this.ctx.beginPath(); this.ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); this.ctx.fill();
+    });
+    this.ctx.globalAlpha = 1;
+
+    // 6. UI overlays
+    this.ctx.fillStyle = 'rgba(0,0,0,0.5)'; this.ctx.fillRect(0, 0, W, H * 0.08);
+    this.ctx.font = `${Math.floor(H * 0.045)}px serif`; this.ctx.textAlign = 'left';
+    let livesStr = ''; for(let i=0; i<this.player.lives; i++) livesStr += '❤️';
+    this.ctx.fillText(livesStr, 8, H * 0.062);
+    this.ctx.fillStyle = '#ffd700'; this.ctx.font = `bold ${Math.floor(H * 0.042)}px Segoe UI`; this.ctx.textAlign = 'center';
+    this.ctx.fillText(Math.floor(this.player.score).toLocaleString('de-DE'), W/2, H * 0.062);
+    this.ctx.font = `${Math.floor(H * 0.038)}px serif`; this.ctx.textAlign = 'right'; this.ctx.fillStyle = '#fff';
+    this.ctx.fillText(zone.emoji + ' ' + zone.name, W - 8, H * 0.062);
+
+    const progress = Math.min(1, this.player.pos / 38000);
+    this.ctx.fillStyle = 'rgba(255,255,255,0.3)'; this.ctx.fillRect(0, H - 6, W, 6);
+    this.ctx.fillStyle = '#27ae60'; this.ctx.fillRect(0, H - 6, W * progress, 6);
+
+    if (this.gameLogic.zoneAnnounce) {
+      let za = this.gameLogic.zoneAnnounce;
+      this.ctx.globalAlpha = za.alpha;
+      this.ctx.fillStyle = 'rgba(0,0,0,0.6)';
+      this.ctx.fillRect(0, H*0.35, W, H*0.25);
+      this.ctx.textAlign = 'center';
+      this.ctx.font = `${Math.floor(H * 0.08)}px serif`; this.ctx.fillText(zone.emoji, W/2, H*0.44);
+      this.ctx.font = `bold ${Math.floor(H * 0.055)}px Segoe UI`; this.ctx.fillStyle = '#fff'; this.ctx.fillText(zone.name, W/2, H*0.52);
+      this.ctx.font = `${Math.floor(H * 0.030)}px Segoe UI`; this.ctx.fillStyle = '#ddd';
+      this.ctx.fillText(zone.subtitle, W/2, H*0.57);
+      this.ctx.globalAlpha = 1;
+    }
   }
 
-  ctx.textAlign = 'center';
-  ctx.font = `${Math.floor(H * 0.12)}px serif`;
-  ctx.fillText('🎉', W / 2, H * 0.18);
+  drawMenu(W, H) {
+    const sky = this.ctx.createLinearGradient(0, 0, 0, H * 0.7);
+    sky.addColorStop(0, '#001a40'); sky.addColorStop(1, '#0077be');
+    this.ctx.fillStyle = sky; this.ctx.fillRect(0, 0, W, H);
 
-  ctx.font = `bold ${Math.floor(H * 0.09)}px Segoe UI`;
-  ctx.fillStyle = '#ffd700';
-  ctx.shadowColor = '#000';
-  ctx.shadowBlur = 10;
-  ctx.fillText('Zeeland!', W / 2, H * 0.30);
-  ctx.shadowBlur = 0;
+    const ocean = this.ctx.createLinearGradient(0, H * 0.65, 0, H);
+    ocean.addColorStop(0, '#0077be'); ocean.addColorStop(1, '#003d6e');
+    this.ctx.fillStyle = ocean; this.ctx.fillRect(0, H * 0.65, W, H * 0.35);
 
-  ctx.font = `${Math.floor(H * 0.048)}px Segoe UI`;
-  ctx.fillStyle = '#fff';
-  ctx.fillText('Dormio Strand Resort 🏖️', W / 2, H * 0.39);
+    this.ctx.strokeStyle = 'rgba(255,255,255,0.3)'; this.ctx.lineWidth = 2;
+    for (let i = 0; i < 5; i++) {
+      const wy = H * (0.68 + i * 0.06);
+      this.ctx.beginPath();
+      for (let x = 0; x < W; x += 4) {
+        const y = wy + Math.sin(x * 0.04 + i) * 4;
+        if (x === 0) this.ctx.moveTo(x, y); else this.ctx.lineTo(x, y);
+      }
+      this.ctx.stroke();
+    }
 
-  ctx.font = `bold ${Math.floor(H * 0.055)}px Segoe UI`;
-  ctx.fillStyle = '#ffd700';
-  ctx.fillText(`⭐ ${Math.floor(score).toLocaleString('de-DE')} Punkte`, W / 2, H * 0.48);
+    this.ctx.textAlign = 'center'; this.ctx.fillStyle = '#fff';
+    this.ctx.font = `bold ${Math.floor(W * 0.1)}px Segoe UI`;
+    this.ctx.shadowColor = '#000'; this.ctx.shadowBlur = 8;
+    this.ctx.fillText('🌊 Fahrt nach', W / 2, H * 0.22);
+    this.ctx.font = `bold ${Math.floor(W * 0.14)}px Segoe UI`; this.ctx.fillStyle = '#ffd700';
+    this.ctx.fillText('Zeeland!', W / 2, H * 0.34);
+    this.ctx.shadowBlur = 0;
 
-  if (score >= highscore) {
-    ctx.font = `bold ${Math.floor(H * 0.042)}px Segoe UI`;
-    ctx.fillStyle = '#ffd700';
-    ctx.fillText('🏆 Highscore!', W / 2, H * 0.55);
+    this.ctx.fillStyle = 'rgba(255,255,255,0.85)'; this.ctx.font = `${Math.floor(W * 0.045)}px Segoe UI`;
+    this.ctx.fillText('Köln → Aachen → Belgien → Brüssel', W / 2, H * 0.41);
+    this.ctx.fillText('→ Gent → Brügge → Zeeland 🏖️', W / 2, H * 0.46);
+
+    const bw = W*0.55, bh = H*0.09, bx = W/2 - bw/2, by = H*0.575 - bh/2;
+    const grad = this.ctx.createLinearGradient(bx, by, bx, by + bh);
+    grad.addColorStop(0, '#2ecc71'); grad.addColorStop(1, '#27ae60');
+    this.ctx.fillStyle = grad; this.ctx.beginPath(); this.ctx.roundRect(bx, by, bw, bh, bh*0.3); this.ctx.fill();
+    this.ctx.strokeStyle = 'rgba(255,255,255,0.4)'; this.ctx.lineWidth = 2; this.ctx.stroke();
+    this.ctx.fillStyle = '#fff'; this.ctx.font = `bold ${Math.floor(bh * 0.45)}px Segoe UI`;
+    this.ctx.fillText('🚙 Losfahren!', W/2, H*0.575 + bh*0.15);
+
+    this.ctx.fillStyle = 'rgba(255,255,255,0.7)'; this.ctx.font = `${Math.floor(W * 0.036)}px Segoe UI`;
+    this.ctx.fillText('← → Tasten  |  Touch  |  Gamepad  |  Gyroskop', W / 2, H * 0.70);
+    if (this.highscore > 0) {
+      this.ctx.fillStyle = '#ffd700'; this.ctx.font = `bold ${Math.floor(W * 0.042)}px Segoe UI`;
+      this.ctx.fillText(`⭐ Highscore: ${Math.floor(this.highscore)}`, W / 2, H * 0.77);
+    }
   }
 
-  ctx.font = `${Math.floor(H * 0.035)}px Segoe UI`;
-  ctx.fillStyle = 'rgba(255,255,255,0.8)';
-  ctx.fillText('Köln → Aachen → Belgien → Brüssel', W / 2, H * 0.62);
-  ctx.fillText('→ Gent → Brügge → Zeeland ✓', W / 2, H * 0.67);
+  drawGameOver(W, H) {
+    this.ctx.fillStyle = 'rgba(0,0,0,0.75)'; this.ctx.fillRect(0, 0, W, H);
+    this.ctx.textAlign = 'center'; this.ctx.font = `${Math.floor(H * 0.10)}px serif`;
+    this.ctx.fillText('💥', W / 2, H * 0.28);
+    this.ctx.font = `bold ${Math.floor(H * 0.07)}px Segoe UI`; this.ctx.fillStyle = '#ff4444';
+    this.ctx.fillText('Crash!', W / 2, H * 0.37);
+    this.ctx.font = `bold ${Math.floor(H * 0.05)}px Segoe UI`; this.ctx.fillStyle = '#ffd700';
+    this.ctx.fillText(`⭐ ${Math.floor(this.player.score)} Punkte`, W / 2, H * 0.47);
 
-  drawButton(W / 2, H * 0.77, W * 0.55, H * 0.09, '🔄 Nochmal!', '#27ae60', '#2ecc71');
+    const bw = W*0.55, bh = H*0.09, bx = W/2 - bw/2, by = H*0.725 - bh/2;
+    this.ctx.fillStyle = '#444'; this.ctx.beginPath(); this.ctx.roundRect(bx, by, bw, bh, bh*0.3); this.ctx.fill();
+    this.ctx.strokeStyle = '#fff'; this.ctx.lineWidth = 2; this.ctx.stroke();
+    this.ctx.fillStyle = '#fff'; this.ctx.font = `bold ${Math.floor(bh * 0.45)}px Segoe UI`;
+    this.ctx.fillText('🔄 Noch mal!', W/2, H*0.725 + bh*0.15);
+  }
+
+  drawWin(W, H) {
+    this.ctx.fillStyle = 'rgba(0,0,0,0.8)'; this.ctx.fillRect(0, 0, W, H);
+    this.ctx.textAlign = 'center'; this.ctx.font = `${Math.floor(H * 0.12)}px serif`;
+    this.ctx.fillText('🎉', W / 2, H * 0.18);
+    this.ctx.font = `bold ${Math.floor(H * 0.09)}px Segoe UI`; this.ctx.fillStyle = '#ffd700';
+    this.ctx.shadowColor = '#000'; this.ctx.shadowBlur = 10;
+    this.ctx.fillText('Zeeland!', W / 2, H * 0.30);
+    this.ctx.shadowBlur = 0;
+    this.ctx.font = `${Math.floor(H * 0.048)}px Segoe UI`; this.ctx.fillStyle = '#fff';
+    this.ctx.fillText('Dormio Strand Resort 🏖️', W / 2, H * 0.39);
+    this.ctx.font = `bold ${Math.floor(H * 0.055)}px Segoe UI`; this.ctx.fillStyle = '#ffd700';
+    this.ctx.fillText(`⭐ ${Math.floor(this.player.score).toLocaleString('de-DE')} Punkte`, W / 2, H * 0.48);
+
+    const bw = W*0.55, bh = H*0.09, bx = W/2 - bw/2, by = H*0.725 - bh/2;
+    this.ctx.fillStyle = '#444'; this.ctx.beginPath(); this.ctx.roundRect(bx, by, bw, bh, bh*0.3); this.ctx.fill();
+    this.ctx.strokeStyle = '#fff'; this.ctx.lineWidth = 2; this.ctx.stroke();
+    this.ctx.fillStyle = '#fff'; this.ctx.font = `bold ${Math.floor(bh * 0.45)}px Segoe UI`;
+    this.ctx.fillText('🔄 Erneut fahren!', W/2, H*0.725 + bh*0.15);
+  }
+
+  loop(timestamp) {
+    const dt = (timestamp - this.lastTime) / 1000;
+    this.lastTime = timestamp;
+    this.update(dt);
+    this.draw();
+    requestAnimationFrame(this.loop);
+  }
 }
 
-// ─── Game Loop ────────────────────────────────────────────────────────────────
-function loop(ts) {
-  const dt = lastTime ? Math.min((ts - lastTime) / 1000, 0.05) : 0.016;
-  lastTime = ts;
-  update(dt);
-  draw();
-  requestAnimationFrame(loop);
-}
-
-// Start
-state = 'menu';
-currentZone = 0;
-clouds = [];
-comets = [];
-landmarks = [];
-cometTimer = 2;
-for (let i = 0; i < 6; i++) spawnCloud();
-requestAnimationFrame(loop);
+// Boot
+const game = new Game(document.getElementById('c'));
 </script>
 </body>
 </html>
