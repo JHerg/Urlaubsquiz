@@ -264,21 +264,24 @@ function spawnWave() {
     [indices[i], indices[j]] = [indices[j], indices[i]];
   }
   const chosen = indices.slice(0, fillCount);
-  chosen.forEach(idx => {
+  chosen.forEach((idx, waveIdx) => {
     // Pro Spur eigene Wahrscheinlichkeit für Sammelobjekte vs. Autos
     const pool = Math.random() < 0.35
       ? OBS_TYPES.filter(t => !t.damage)      // Sammelobjekte
       : OBS_TYPES.filter(t => t.damage);       // Fahrzeuge
     const type = pool[Math.floor(Math.random() * pool.length)];
+    // Hindernisse innerhalb einer Welle um mindestens 1400 Einheiten gestaffelt
+    // → nie zwei Autos auf gleicher Höhe → immer ausweicho-möglich
+    const zBase = pos + 5500 + waveIdx * 1400 + Math.random() * 300;
     obstacles.push({
-      z: pos + 5500 + Math.random() * 400,
+      z: zBase,
       x: LANES[idx],
       type: type,
       alive: true,
     });
   });
-  // Nächste Welle in 900-1500 Einheiten (genug Reaktionszeit)
-  nextWaveZ = pos + 5500 + 900 + Math.random() * 600;
+  // Nächste Welle erst nach letztem Hindernis + Reaktionszeit
+  nextWaveZ = pos + 5500 + (chosen.length - 1) * 1400 + 1100 + Math.random() * 600;
 }
 
 function announceZone(idx) {
@@ -846,77 +849,256 @@ function drawGame(W, H, zone) {
     const roadW = W * 0.88 * depth;
     const roadCX = W / 2 - playerX * W * 0.35 * depth;
     const screenX = roadCX + obs.x * roadW / 2;
-    // Boost: weit entfernte Hindernisse trotzdem gut sichtbar
-    const baseSize = Math.max(16, Math.pow(t, 0.7) * H * 0.15);
-    ctx.font = `${baseSize}px serif`;
+    // Größe: nicht-linear, damit Fahrzeuge weit weg schon erkennbar sind
+    const baseSize = Math.max(18, Math.pow(t, 0.65) * H * 0.17);
     ctx.textAlign = 'center';
     ctx.textBaseline = 'bottom';
 
-    // Schatten unter dem Hindernis (verbessert Tiefenwahrnehmung)
-    if (t > 0.3) {
-      ctx.save();
-      ctx.globalAlpha = 0.25 * t;
-      ctx.fillStyle = '#000';
-      ctx.beginPath();
-      ctx.ellipse(screenX, screenY + 2, baseSize * 0.35, baseSize * 0.08, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
+    // ── Farbige Hintergrund-Pille für klare Sichtbarkeit ──────────────────
+    const bgAlpha = Math.min(0.82, t * 1.3);
+    const pad = baseSize * 0.18;
+    const boxW = baseSize * 1.15 + pad * 2;
+    const boxH = baseSize + pad * 1.8;
+    ctx.save();
+    // Farbiger Hintergrund: Schaden=rot/orange, Collect=gold/grün
+    if (obs.type.damage) {
+      ctx.fillStyle = `rgba(180,40,0,${bgAlpha * 0.75})`;
+    } else if (obs.type.score >= 100) {
+      ctx.fillStyle = `rgba(180,140,0,${bgAlpha * 0.75})`;
+    } else {
+      ctx.fillStyle = `rgba(0,140,80,${bgAlpha * 0.65})`;
     }
+    ctx.beginPath();
+    ctx.roundRect(screenX - boxW / 2, screenY - baseSize - pad, boxW, boxH, boxH * 0.28);
+    ctx.fill();
+    // Leuchtendes Outline
+    ctx.strokeStyle = obs.type.damage
+      ? `rgba(255,110,20,${bgAlpha})`
+      : obs.type.score >= 100
+        ? `rgba(255,220,0,${bgAlpha})`
+        : `rgba(0,220,120,${bgAlpha})`;
+    ctx.lineWidth = Math.max(1.5, baseSize * 0.055);
+    ctx.stroke();
+    ctx.restore();
+
+    // Schatten unter dem Hindernis (Tiefenwahrnehmung)
+    ctx.save();
+    ctx.globalAlpha = 0.3 * t;
+    ctx.fillStyle = '#000';
+    ctx.beginPath();
+    ctx.ellipse(screenX, screenY + 2, baseSize * 0.38, baseSize * 0.09, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // Emoji
+    ctx.font = `${baseSize}px serif`;
     ctx.fillText(obs.type.emoji, screenX, screenY);
     ctx.textBaseline = 'alphabetic';
   });
 
-  // ── Player Car: Cockpit-Ansicht (nur Andeutung am unteren Rand) ──────────
-  // Das Spiel ist First-Person aus dem Auto. Die Motorhaube unten IST dein Auto.
-  // Kein großes Emoji mehr, das die Hindernisse verdeckt.
-  const carY = roadBottom;
+  // ── Spielerposition-Pfeil auf der Straße ──────────────────────────────────
+  // Zeigt dem Fahrer genau, wo sein Auto ist — bewegt sich mit playerX
+  {
+    const arT = 0.91;
+    const arDepth = 0.02 + arT * 0.98;
+    const arRoadW = W * 0.88 * arDepth;
+    const arRoadCX = W / 2 - playerX * W * 0.35 * arDepth;
+    const arScreenX = arRoadCX + playerX * arRoadW / 2;
+    const arScreenY = horizonY + arT * (roadBottom - horizonY);
+    const arH = arRoadW * 0.09;
+    const arW = arH * 0.75;
+    const flash = invincible > 0 ? (Math.floor(invincible / 6) % 2 === 0) : false;
+    ctx.save();
+    ctx.globalAlpha = flash ? 0.25 : 0.82;
+    ctx.fillStyle = invincible > 0 ? '#ff4444' : '#44ffaa';
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = Math.max(1.5, arH * 0.08);
+    ctx.beginPath();
+    ctx.moveTo(arScreenX,            arScreenY);
+    ctx.lineTo(arScreenX - arW / 2,  arScreenY - arH);
+    ctx.lineTo(arScreenX - arW * 0.15, arScreenY - arH * 0.65);
+    ctx.lineTo(arScreenX - arW * 0.15, arScreenY - arH * 1.55);
+    ctx.lineTo(arScreenX + arW * 0.15, arScreenY - arH * 1.55);
+    ctx.lineTo(arScreenX + arW * 0.15, arScreenY - arH * 0.65);
+    ctx.lineTo(arScreenX + arW / 2,  arScreenY - arH);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+  }
 
-  // Car hood (first-person immersion)
-  const hoodTop = roadBottom - H * 0.005;
+  // ── Cockpit / Dashboard ────────────────────────────────────────────────────
+  const hoodTop = roadBottom - H * 0.002;
+
+  // Motorhaube (dunkles Auto-Blau statt reinem Schwarz)
   const hoodGrad = ctx.createLinearGradient(0, hoodTop, 0, H);
-  hoodGrad.addColorStop(0, '#0d0d0d');
-  hoodGrad.addColorStop(0.15, '#1f1f1f');
-  hoodGrad.addColorStop(0.5, '#2a2a2a');
-  hoodGrad.addColorStop(1, '#0a0a0a');
+  hoodGrad.addColorStop(0,    '#0d1520');
+  hoodGrad.addColorStop(0.12, '#172233');
+  hoodGrad.addColorStop(0.45, '#0f1a28');
+  hoodGrad.addColorStop(1,    '#070d14');
   ctx.fillStyle = hoodGrad;
   ctx.beginPath();
   ctx.moveTo(0, H);
   ctx.lineTo(W, H);
-  ctx.lineTo(W * 0.88, hoodTop);
-  ctx.lineTo(W * 0.12, hoodTop);
+  ctx.lineTo(W * 0.90, hoodTop);
+  ctx.lineTo(W * 0.10, hoodTop);
   ctx.closePath();
   ctx.fill();
 
-  // Hood center crease (Audi/BMW style)
-  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
-  ctx.lineWidth = 1;
+  // Glossy Mittelstreifen (Haube-Falz)
+  {
+    const fg = ctx.createLinearGradient(W * 0.44, 0, W * 0.56, 0);
+    fg.addColorStop(0,   'rgba(255,255,255,0)');
+    fg.addColorStop(0.5, 'rgba(255,255,255,0.055)');
+    fg.addColorStop(1,   'rgba(255,255,255,0)');
+    ctx.fillStyle = fg;
+    ctx.beginPath();
+    ctx.moveTo(W * 0.44, H);
+    ctx.lineTo(W * 0.56, H);
+    ctx.lineTo(W * 0.52, hoodTop);
+    ctx.lineTo(W * 0.48, hoodTop);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // Außenspiegel
+  const mirrorY  = hoodTop + H * 0.018;
+  const mW = W * 0.065, mH = H * 0.036;
+  ctx.fillStyle = '#111e2e';
+  ctx.strokeStyle = 'rgba(100,160,255,0.18)';
+  ctx.lineWidth = 1.5;
+  [W * 0.075 - mW, W * 0.925].forEach(mx => {
+    ctx.beginPath();
+    ctx.roundRect(mx, mirrorY, mW, mH, 3);
+    ctx.fill();
+    ctx.stroke();
+    // kleiner Spiegelreflex
+    ctx.fillStyle = 'rgba(255,255,255,0.04)';
+    ctx.beginPath();
+    ctx.roundRect(mx + mW * 0.2, mirrorY + mH * 0.15, mW * 0.55, mH * 0.35, 2);
+    ctx.fill();
+    ctx.fillStyle = '#111e2e';
+  });
+
+  // Armaturenbrett-Leiste
+  const dashY = H - H * 0.145;
+  const dashGrad = ctx.createLinearGradient(0, dashY, 0, H);
+  dashGrad.addColorStop(0, 'rgba(6,12,22,0.97)');
+  dashGrad.addColorStop(1, 'rgba(2,6,12,1)');
+  ctx.fillStyle = dashGrad;
+  ctx.fillRect(0, dashY, W, H - dashY);
+  // Oberkante leuchtet leicht blau
+  ctx.strokeStyle = 'rgba(50,120,240,0.35)';
+  ctx.lineWidth = 1.5;
   ctx.beginPath();
-  ctx.moveTo(W * 0.5, hoodTop);
-  ctx.lineTo(W * 0.5, H);
+  ctx.moveTo(0, dashY);
+  ctx.lineTo(W, dashY);
   ctx.stroke();
 
-  // Steering wheel hint at bottom
-  const wheelR = W * 0.18;
-  const wheelY = H + wheelR * 0.55;
-  ctx.strokeStyle = 'rgba(40,40,40,0.95)';
-  ctx.lineWidth = W * 0.012;
+  // Tacho (rechts)
+  {
+    const sx = W * 0.80, sy = H - H * 0.055, sr = W * 0.075;
+    // Hintergrundbogen
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = sr * 0.28;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.arc(sx, sy, sr, Math.PI * 0.75, Math.PI * 2.25);
+    ctx.stroke();
+    // Farbiger Füllbogen
+    const frac = speed / 9;
+    ctx.strokeStyle = frac > 0.8 ? '#ff3333' : frac > 0.55 ? '#ffaa00' : '#00dd88';
+    ctx.beginPath();
+    ctx.arc(sx, sy, sr, Math.PI * 0.75, Math.PI * 0.75 + frac * Math.PI * 1.5);
+    ctx.stroke();
+    ctx.lineCap = 'butt';
+    // Wert
+    ctx.fillStyle = '#fff';
+    ctx.font = `bold ${Math.floor(W * 0.030)}px Segoe UI`;
+    ctx.textAlign = 'center';
+    ctx.fillText(`${Math.floor(speed * 20)}`, sx, sy + W * 0.010);
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.font = `${Math.floor(W * 0.018)}px Segoe UI`;
+    ctx.fillText('km/h', sx, sy + W * 0.033);
+  }
+
+  // Spuranzeige (Mitte) — 3 Punkte, aktiver Punkt leuchtet
+  {
+    const nearestLane = LANES.reduce((best, lx, i) =>
+      Math.abs(playerX - lx) < Math.abs(playerX - LANES[best]) ? i : best, 0);
+    const liY = H - H * 0.068;
+    ctx.font = `${Math.floor(W * 0.020)}px Segoe UI`;
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.fillText('SPUR', W * 0.5, liY - W * 0.025);
+    [-1, 0, 1].forEach((off, i) => {
+      const dx = W * 0.5 + off * W * 0.065;
+      const active = (i === nearestLane);
+      const dotR = W * 0.019;
+      // Glow wenn aktiv
+      if (active) {
+        ctx.save();
+        ctx.globalAlpha = 0.3;
+        ctx.fillStyle = invincible > 0 ? '#ff4444' : '#00ff99';
+        ctx.beginPath();
+        ctx.arc(dx, liY, dotR * 2.0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+      ctx.fillStyle = active
+        ? (invincible > 0 ? '#ff5555' : '#00ff99')
+        : 'rgba(255,255,255,0.14)';
+      ctx.beginPath();
+      ctx.arc(dx, liY, dotR, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  }
+
+  // Lenkrad
+  const wheelR = W * 0.155;
+  const wheelX = W * 0.5;
+  const wheelY = H + wheelR * 0.40;
+  // Äußerer Ring
+  ctx.strokeStyle = '#1a2535';
+  ctx.lineWidth = W * 0.022;
+  ctx.lineCap = 'round';
   ctx.beginPath();
-  ctx.arc(W / 2, wheelY, wheelR, Math.PI * 1.15, Math.PI * 1.85);
+  ctx.arc(wheelX, wheelY, wheelR, Math.PI * 1.08, Math.PI * 1.92);
+  ctx.stroke();
+  // Lenkrad-Speichen
+  ctx.strokeStyle = '#222f40';
+  ctx.lineWidth = W * 0.010;
+  [-0.42, 0, 0.42].forEach(ang => {
+    ctx.beginPath();
+    ctx.moveTo(wheelX + Math.cos(Math.PI * 1.5 + ang) * wheelR * 0.35,
+               wheelY + Math.sin(Math.PI * 1.5 + ang) * wheelR * 0.35);
+    ctx.lineTo(wheelX + Math.cos(Math.PI * 1.5 + ang) * wheelR * 0.92,
+               wheelY + Math.sin(Math.PI * 1.5 + ang) * wheelR * 0.92);
+    ctx.stroke();
+  });
+  ctx.lineCap = 'butt';
+  // Lenkrad-Nabe (Mitte)
+  ctx.fillStyle = '#1a2535';
+  ctx.beginPath();
+  ctx.arc(wheelX, wheelY, wheelR * 0.25, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(100,160,255,0.2)';
+  ctx.lineWidth = 1.5;
   ctx.stroke();
 
-  // Steering tilt indicator (small dot on wheel that moves with steering)
+  // Lenkrad-Zeigedot (rot, zeigt Lenkrichtung)
   let steerVis = 0;
   if (keys['ArrowLeft'] || keys['KeyA'] || touchLeft) steerVis = -1;
   if (keys['ArrowRight'] || keys['KeyD'] || touchRight) steerVis = 1;
   const gpS = getGamepadSteering();
   if (Math.abs(gpS) > 0.1) steerVis = gpS;
   if (gyroAvailable) steerVis = gyroValue;
-  const wheelAng = Math.PI * 1.5 + steerVis * 0.35;
-  const dotX = W / 2 + Math.cos(wheelAng) * wheelR;
+  const wheelAng = Math.PI * 1.5 + steerVis * 0.4;
+  const dotX = wheelX + Math.cos(wheelAng) * wheelR;
   const dotY = wheelY + Math.sin(wheelAng) * wheelR;
-  ctx.fillStyle = '#ff4444';
+  ctx.fillStyle = steerVis !== 0 ? '#ff4444' : '#ff6666';
   ctx.beginPath();
-  ctx.arc(dotX, dotY, W * 0.012, 0, Math.PI * 2);
+  ctx.arc(dotX, dotY, W * 0.014, 0, Math.PI * 2);
   ctx.fill();
 
   // Invincibility flash overlay
@@ -966,13 +1148,6 @@ function drawGame(W, H, zone) {
   ctx.fillRect(0, H - 6, W, 6);
   ctx.fillStyle = '#0099ff';
   ctx.fillRect(0, H - 6, W * progress, 6);
-
-  // Speed indicator
-  ctx.fillStyle = 'rgba(0,0,0,0.5)';
-  ctx.textAlign = 'right';
-  ctx.fillStyle = '#adf';
-  ctx.font = `${Math.floor(H * 0.032)}px Segoe UI`;
-  ctx.fillText(`${Math.floor(speed * 20)} km/h`, W - 8, H - 12);
 
   // Touch hints (if no gyro and touch device)
   const isTouch = ('ontouchstart' in window);
