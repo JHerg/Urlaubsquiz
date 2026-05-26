@@ -18,7 +18,6 @@ body {
 canvas {
   display: block;
   touch-action: none;
-  image-rendering: pixelated;
 }
 </style>
 </head>
@@ -438,7 +437,6 @@ function drawMenu(W, H) {
     g.addColorStop(0, 'rgba(255,255,255,0)');
     g.addColorStop(1, `rgba(255,240,180,${c.life})`);
     ctx.save(); ctx.lineWidth = c.size; ctx.strokeStyle = g;
-    ctx.shadowColor = 'rgba(180,220,255,0.8)'; ctx.shadowBlur = 8;
     ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(x, y); ctx.stroke();
     ctx.fillStyle = `rgba(255,245,200,${c.life})`;
     ctx.beginPath(); ctx.arc(x, y, c.size * 1.5, 0, Math.PI * 2); ctx.fill();
@@ -553,15 +551,10 @@ function drawGame(W, H, zone) {
     ctx.save();
     ctx.lineWidth = c.size;
     ctx.strokeStyle = grad;
-    ctx.shadowColor = 'rgba(180,220,255,0.8)';
-    ctx.shadowBlur = 8;
     ctx.beginPath();
     ctx.moveTo(tx, ty);
     ctx.lineTo(x, y);
     ctx.stroke();
-
-    // Leuchtender Kopf
-    ctx.shadowBlur = 14;
     ctx.fillStyle = `rgba(255,245,200,${c.life})`;
     ctx.beginPath();
     ctx.arc(x, y, c.size * 1.5, 0, Math.PI * 2);
