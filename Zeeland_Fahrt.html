@@ -18,7 +18,6 @@ body {
 canvas {
   display: block;
   touch-action: none;
-  image-rendering: pixelated;
 }
 </style>
 </head>
@@ -438,7 +437,6 @@ function drawMenu(W, H) {
     g.addColorStop(0, 'rgba(255,255,255,0)');
     g.addColorStop(1, `rgba(255,240,180,${c.life})`);
     ctx.save(); ctx.lineWidth = c.size; ctx.strokeStyle = g;
-    ctx.shadowColor = 'rgba(180,220,255,0.8)'; ctx.shadowBlur = 8;
     ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(x, y); ctx.stroke();
     ctx.fillStyle = `rgba(255,245,200,${c.life})`;
     ctx.beginPath(); ctx.arc(x, y, c.size * 1.5, 0, Math.PI * 2); ctx.fill();
@@ -450,13 +448,10 @@ function drawMenu(W, H) {
   ctx.textAlign = 'center';
   ctx.fillStyle = '#fff';
   ctx.font = `bold ${Math.floor(W * 0.1)}px Segoe UI`;
-  ctx.shadowColor = '#000';
-  ctx.shadowBlur = 8;
   ctx.fillText('🌊 Fahrt nach', W / 2, H * 0.22);
   ctx.font = `bold ${Math.floor(W * 0.14)}px Segoe UI`;
   ctx.fillStyle = '#ffd700';
   ctx.fillText('Zeeland!', W / 2, H * 0.34);
-  ctx.shadowBlur = 0;
 
   // Route info
   ctx.fillStyle = 'rgba(255,255,255,0.85)';
@@ -553,15 +548,10 @@ function drawGame(W, H, zone) {
     ctx.save();
     ctx.lineWidth = c.size;
     ctx.strokeStyle = grad;
-    ctx.shadowColor = 'rgba(180,220,255,0.8)';
-    ctx.shadowBlur = 8;
     ctx.beginPath();
     ctx.moveTo(tx, ty);
     ctx.lineTo(x, y);
     ctx.stroke();
-
-    // Leuchtender Kopf
-    ctx.shadowBlur = 14;
     ctx.fillStyle = `rgba(255,245,200,${c.life})`;
     ctx.beginPath();
     ctx.arc(x, y, c.size * 1.5, 0, Math.PI * 2);
@@ -846,10 +836,7 @@ function drawWin(W, H) {
 
   ctx.font = `bold ${Math.floor(H * 0.09)}px Segoe UI`;
   ctx.fillStyle = '#ffd700';
-  ctx.shadowColor = '#000';
-  ctx.shadowBlur = 10;
   ctx.fillText('Zeeland!', W / 2, H * 0.30);
-  ctx.shadowBlur = 0;
 
   ctx.font = `${Math.floor(H * 0.048)}px Segoe UI`;
   ctx.fillStyle = '#fff';
