@@ -193,6 +193,16 @@ function startGame() {
   landmarks = [];
   cometTimer = 0;
   for (let i = 0; i < 6; i++) spawnCloud();
+  // Initiale Bäume entlang der Strecke
+  for (let i = 0; i < 24; i++) {
+    landmarks.push({
+      z: 500 + i * 400 + Math.random() * 200,
+      side: i % 2 === 0 ? -1 : 1,
+      emoji: ['🌳','🌲','🌳'][Math.floor(Math.random()*3)],
+      name: '',
+      kind: 'tree',
+    });
+  }
   for (let i = 0; i < 5; i++) {
     spawnObstacle(2000 + i * 800);
   }
@@ -240,11 +250,21 @@ function spawnObstacle(zOverride) {
 function announceZone(idx) {
   zoneAnnounce = { idx, timer: 2.5, alpha: 0 };
   score += 200;
-  // Sehenswürdigkeiten am Straßenrand spawnen
+  // Sehenswürdigkeiten am Straßenrand spawnen – mehrfach für Vorbeizug-Effekt
   const lms = ZONE_LANDMARKS[idx] || [];
   lms.forEach((lm, i) => {
-    landmarks.push({ z: pos + 1200 + i * 2500, side: lm.side, emoji: lm.emoji, name: lm.name });
+    landmarks.push({ z: pos + 1500 + i * 1800, side: lm.side, emoji: lm.emoji, name: lm.name, kind: 'sign' });
   });
+  // Bäume und Schilder zwischen den Sehenswürdigkeiten
+  for (let i = 0; i < 14; i++) {
+    landmarks.push({
+      z: pos + 800 + i * 480 + Math.random() * 200,
+      side: i % 2 === 0 ? -1 : 1,
+      emoji: ['🌳','🌲','🌴','🌳','🌲'][Math.floor(Math.random()*5)],
+      name: '',
+      kind: 'tree',
+    });
+  }
 }
 
 // ─── Particles ───────────────────────────────────────────────────────────────
@@ -359,7 +379,21 @@ function update(dt) {
 
   // Remove dead/passed obstacles & landmarks
   obstacles = obstacles.filter(o => o.alive && o.z > pos - 200);
-  landmarks = landmarks.filter(lm => lm.z > pos - 2000);
+  landmarks = landmarks.filter(lm => lm.z > pos - 800);
+  // Kontinuierlich Bäume nachschieben damit immer welche am Rand stehen
+  const treesAhead = landmarks.filter(lm => lm.kind === 'tree' && lm.z > pos + 2000).length;
+  if (treesAhead < 8) {
+    const lastZ = Math.max(pos + 2000, ...landmarks.filter(lm => lm.kind === 'tree').map(lm => lm.z));
+    for (let i = 0; i < 6; i++) {
+      landmarks.push({
+        z: lastZ + 400 + i * 400 + Math.random() * 200,
+        side: Math.random() > 0.5 ? -1 : 1,
+        emoji: ['🌳','🌲','🌳','🌲'][Math.floor(Math.random()*4)],
+        name: '',
+        kind: 'tree',
+      });
+    }
+  }
 
   // Particles
   particles.forEach(p => {
@@ -692,45 +726,69 @@ function drawGame(W, H, zone) {
     const roadW = W * 0.88 * depth;
     const roadCX = W / 2 - playerX * W * 0.35 * depth;
     const screenY = horizonY + t * (roadBottom - horizonY);
-    const sideX = roadCX + lm.side * (roadW * 0.56 + roadW * 0.10);
-    const fade = dz < 0 ? Math.max(0, 1 + dz / 1500) : Math.min(1, t * 4);
+    // Side position: trees closer to road, signs farther
+    const sideOffset = lm.kind === 'tree' ? 0.62 : 0.70;
+    const sideX = roadCX + lm.side * (roadW * sideOffset);
+    const fade = dz < 0 ? Math.max(0, 1 + dz / 800) : Math.min(1, t * 5);
     if (fade <= 0) return;
-
-    const signH = Math.max(14, t * H * 0.13);
-    const signW = signH * 2.2;
-    const signColor = lm.side > 0 ? '#1565c0' : '#2e7d32';
 
     ctx.save();
     ctx.globalAlpha = fade;
 
-    // Sign post
-    ctx.fillStyle = '#888';
-    ctx.fillRect(sideX - 2, screenY - signH * 2.2, 4, signH * 1.5);
+    if (lm.kind === 'tree') {
+      // Bäume — einfach groß und proportional zur Distanz
+      const treeSize = Math.max(8, t * H * 0.20);
+      ctx.font = `${treeSize}px serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      ctx.fillText(lm.emoji, sideX, screenY + treeSize * 0.05);
+    } else {
+      // Sehenswürdigkeit-Schild (Straßenschild mit Pfahl)
+      const signH = Math.max(18, t * H * 0.16);
+      const signW = signH * 2.4;
+      const signColor = lm.side > 0 ? '#1565c0' : '#2e7d32';
 
-    // Sign background
-    ctx.fillStyle = signColor;
-    ctx.beginPath();
-    ctx.roundRect(sideX - signW/2, screenY - signH * 2.2, signW, signH, 3);
-    ctx.fill();
+      // Sign post (zwei Pfähle)
+      ctx.fillStyle = '#666';
+      const postW = Math.max(2, t * 4);
+      ctx.fillRect(sideX - signW * 0.28, screenY - signH * 1.4, postW, signH * 1.4);
+      ctx.fillRect(sideX + signW * 0.28, screenY - signH * 1.4, postW, signH * 1.4);
 
-    // White border
-    ctx.strokeStyle = '#fff';
-    ctx.lineWidth = Math.max(1, signH * 0.08);
-    ctx.stroke();
+      // Sign shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.3)';
+      ctx.beginPath();
+      ctx.roundRect(sideX - signW/2 + 2, screenY - signH * 2.5 + 2, signW, signH, 4);
+      ctx.fill();
 
-    // Emoji
-    ctx.font = `${signH * 0.55}px serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillStyle = '#fff';
-    ctx.fillText(lm.emoji, sideX - signW * 0.18, screenY - signH * 1.72);
+      // Sign background
+      ctx.fillStyle = signColor;
+      ctx.beginPath();
+      ctx.roundRect(sideX - signW/2, screenY - signH * 2.5, signW, signH, 4);
+      ctx.fill();
 
-    // Name text
-    ctx.font = `bold ${Math.max(6, signH * 0.30)}px -apple-system, sans-serif`;
-    ctx.fillStyle = '#fff';
-    ctx.fillText(lm.name, sideX + signW * 0.08, screenY - signH * 1.72);
+      // White border
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = Math.max(1.5, signH * 0.06);
+      ctx.stroke();
+
+      // Emoji links auf dem Schild
+      ctx.font = `${signH * 0.62}px serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#fff';
+      ctx.fillText(lm.emoji, sideX - signW * 0.32, screenY - signH * 2.0);
+
+      // Name text rechts daneben
+      if (t > 0.25) {
+        ctx.font = `bold ${Math.max(7, signH * 0.26)}px -apple-system, sans-serif`;
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#fff';
+        ctx.fillText(lm.name, sideX - signW * 0.10, screenY - signH * 2.0);
+      }
+    }
 
     ctx.restore();
+    ctx.textBaseline = 'alphabetic';
   });
 
   // ── Hindernisse ───────────────────────────────────────────────────────────
@@ -757,52 +815,64 @@ function drawGame(W, H, zone) {
     ctx.textBaseline = 'alphabetic';
   });
 
-  // ── Player Car ────────────────────────────────────────────────────────────
+  // ── Player Car: Cockpit-Ansicht (nur Andeutung am unteren Rand) ──────────
+  // Das Spiel ist First-Person aus dem Auto. Die Motorhaube unten IST dein Auto.
+  // Kein großes Emoji mehr, das die Hindernisse verdeckt.
   const carY = roadBottom;
-  const carSize = Math.floor(W * 0.16);
-  const flash = invincible > 0 && Math.floor(invincible / 6) % 2 === 0;
-  if (!flash) {
-    ctx.save();
-    ctx.translate(W / 2, carY);
-    // Steer tilt based on key input
-    let steerTilt = 0;
-    if (keys['ArrowLeft'] || keys['KeyA'] || touchLeft) steerTilt = -0.12;
-    if (keys['ArrowRight'] || keys['KeyD'] || touchRight) steerTilt = 0.12;
-    const gpS = getGamepadSteering();
-    if (Math.abs(gpS) > 0.1) steerTilt = gpS * 0.12;
-    if (gyroAvailable) steerTilt = gyroValue * 0.12;
-    ctx.rotate(steerTilt);
-    ctx.font = `${carSize}px serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('🚙', 0, 0);
-    ctx.restore();
-    ctx.textBaseline = 'alphabetic';
-  }
 
   // Car hood (first-person immersion)
-  const hoodTop = roadBottom + H * 0.02;
+  const hoodTop = roadBottom - H * 0.005;
   const hoodGrad = ctx.createLinearGradient(0, hoodTop, 0, H);
-  hoodGrad.addColorStop(0, '#1a1a1a');
-  hoodGrad.addColorStop(0.3, '#2d2d2d');
-  hoodGrad.addColorStop(1, '#111');
+  hoodGrad.addColorStop(0, '#0d0d0d');
+  hoodGrad.addColorStop(0.15, '#1f1f1f');
+  hoodGrad.addColorStop(0.5, '#2a2a2a');
+  hoodGrad.addColorStop(1, '#0a0a0a');
   ctx.fillStyle = hoodGrad;
   ctx.beginPath();
   ctx.moveTo(0, H);
   ctx.lineTo(W, H);
-  ctx.lineTo(W * 0.85, hoodTop);
-  ctx.lineTo(W * 0.15, hoodTop);
+  ctx.lineTo(W * 0.88, hoodTop);
+  ctx.lineTo(W * 0.12, hoodTop);
   ctx.closePath();
   ctx.fill();
-  // Hood highlight stripe
-  ctx.fillStyle = 'rgba(255,255,255,0.04)';
+
+  // Hood center crease (Audi/BMW style)
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.moveTo(W * 0.45, hoodTop);
-  ctx.lineTo(W * 0.55, hoodTop);
-  ctx.lineTo(W * 0.52, H);
-  ctx.lineTo(W * 0.48, H);
-  ctx.closePath();
+  ctx.moveTo(W * 0.5, hoodTop);
+  ctx.lineTo(W * 0.5, H);
+  ctx.stroke();
+
+  // Steering wheel hint at bottom
+  const wheelR = W * 0.18;
+  const wheelY = H + wheelR * 0.55;
+  ctx.strokeStyle = 'rgba(40,40,40,0.95)';
+  ctx.lineWidth = W * 0.012;
+  ctx.beginPath();
+  ctx.arc(W / 2, wheelY, wheelR, Math.PI * 1.15, Math.PI * 1.85);
+  ctx.stroke();
+
+  // Steering tilt indicator (small dot on wheel that moves with steering)
+  let steerVis = 0;
+  if (keys['ArrowLeft'] || keys['KeyA'] || touchLeft) steerVis = -1;
+  if (keys['ArrowRight'] || keys['KeyD'] || touchRight) steerVis = 1;
+  const gpS = getGamepadSteering();
+  if (Math.abs(gpS) > 0.1) steerVis = gpS;
+  if (gyroAvailable) steerVis = gyroValue;
+  const wheelAng = Math.PI * 1.5 + steerVis * 0.35;
+  const dotX = W / 2 + Math.cos(wheelAng) * wheelR;
+  const dotY = wheelY + Math.sin(wheelAng) * wheelR;
+  ctx.fillStyle = '#ff4444';
+  ctx.beginPath();
+  ctx.arc(dotX, dotY, W * 0.012, 0, Math.PI * 2);
   ctx.fill();
+
+  // Invincibility flash overlay
+  if (invincible > 0 && Math.floor(invincible / 6) % 2 === 0) {
+    ctx.fillStyle = 'rgba(255,0,0,0.18)';
+    ctx.fillRect(0, 0, W, H);
+  }
 
   // ── Particles ─────────────────────────────────────────────────────────────
   particles.forEach(p => {
