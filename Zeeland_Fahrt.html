@@ -65,10 +65,21 @@ const OBS_TYPES = [
   { emoji: '🦆', damage: false, score: 10,  width: 0.20, speed: 0   },
 ];
 
+// ─── Landmarks (Sehenswürdigkeiten am Straßenrand) ───────────────────────────
+const ZONE_LANDMARKS = [
+  [{ emoji: '⛪', name: 'Kölner Dom', side: 1 }, { emoji: '🌉', name: 'Rheinbrücke', side: -1 }],
+  [{ emoji: '🏛️', name: 'Aachener Dom', side: -1 }, { emoji: '🏺', name: 'Rathaus', side: 1 }],
+  [{ emoji: '🇧🇪', name: 'Belgien!', side: 1 }],
+  [{ emoji: '⚛️', name: 'Atomium', side: -1 }, { emoji: '🏛️', name: 'Grand Place', side: 1 }],
+  [{ emoji: '🏰', name: 'Gravensteen', side: 1 }, { emoji: '🔔', name: 'Belfort Gent', side: -1 }],
+  [{ emoji: '🔔', name: 'Belfort Brügge', side: -1 }, { emoji: '🌬️', name: 'Windmühle', side: 1 }],
+  [{ emoji: '🌊', name: 'Nordsee!', side: -1 }, { emoji: '🏖️', name: 'Dormio Resort', side: 1 }],
+];
+
 // ─── Game State ──────────────────────────────────────────────────────────────
 let state = 'menu'; // menu | game | over | win
 let pos, speed, playerX, lives, score, invincible, currentZone, zoneAnnounce;
-let obstacles, particles, clouds, comets;
+let obstacles, particles, clouds, comets, landmarks;
 let highscore = 0;
 let cometTimer = 0;
 let gyroAvailable = false;
@@ -179,6 +190,7 @@ function startGame() {
   particles = [];
   clouds = [];
   comets = [];
+  landmarks = [];
   cometTimer = 0;
   for (let i = 0; i < 6; i++) spawnCloud();
   for (let i = 0; i < 5; i++) {
@@ -228,6 +240,11 @@ function spawnObstacle(zOverride) {
 function announceZone(idx) {
   zoneAnnounce = { idx, timer: 2.5, alpha: 0 };
   score += 200;
+  // Sehenswürdigkeiten am Straßenrand spawnen
+  const lms = ZONE_LANDMARKS[idx] || [];
+  lms.forEach((lm, i) => {
+    landmarks.push({ z: pos + 1200 + i * 2500, side: lm.side, emoji: lm.emoji, name: lm.name });
+  });
 }
 
 // ─── Particles ───────────────────────────────────────────────────────────────
@@ -340,8 +357,9 @@ function update(dt) {
     });
   }
 
-  // Remove dead/passed obstacles
+  // Remove dead/passed obstacles & landmarks
   obstacles = obstacles.filter(o => o.alive && o.z > pos - 200);
+  landmarks = landmarks.filter(lm => lm.z > pos - 2000);
 
   // Particles
   particles.forEach(p => {
@@ -575,8 +593,8 @@ function drawGame(W, H, zone) {
     // Road center offset from player steering
     const roadCX1 = W / 2 - playerX * W * 0.35 * depth1;
     const roadCX2 = W / 2 - playerX * W * 0.35 * depth2;
-    const roadW1 = W * 0.65 * depth1;
-    const roadW2 = W * 0.65 * depth2;
+    const roadW1 = W * 0.88 * depth1;
+    const roadW2 = W * 0.88 * depth2;
 
     // Grass
     const alt = Math.floor(t1 * 6) % 2;
@@ -639,25 +657,63 @@ function drawGame(W, H, zone) {
   ctx.fillRect(0, horizonY, W, H * 0.15);
 
   // ── Obstacles ────────────────────────────────────────────────────────────
+  // ── Landmarks am Straßenrand ──────────────────────────────────────────────
+  const visLM = landmarks.filter(lm => {
+    const dz = lm.z - pos;
+    return dz > -1500 && dz < 5000;
+  }).sort((a, b) => (b.z - pos) - (a.z - pos));
+
+  visLM.forEach(lm => {
+    const dz = lm.z - pos;
+    const t = Math.max(0, Math.min(1, 1 - dz / 5000));
+    const depth = 0.02 + t * 0.98;
+    const roadW = W * 0.88 * depth;
+    const roadCX = W / 2 - playerX * W * 0.35 * depth;
+    const screenY = horizonY + t * (H - horizonY);
+    // Außerhalb der Fahrbahn
+    const sideX = roadCX + lm.side * (roadW * 0.55 + roadW * 0.12);
+    const size = Math.max(10, t * H * 0.20);
+    const fade = dz < 0 ? Math.max(0, 1 + dz / 1500) : 1;
+    ctx.save();
+    ctx.globalAlpha = fade;
+    ctx.font = `${size}px serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText(lm.emoji, sideX, screenY);
+    if (t > 0.35 && t < 0.92) {
+      ctx.font = `bold ${Math.max(9, t * H * 0.028)}px -apple-system, sans-serif`;
+      ctx.fillStyle = '#fff';
+      ctx.strokeStyle = 'rgba(0,0,0,0.7)';
+      ctx.lineWidth = 3;
+      ctx.textBaseline = 'top';
+      ctx.strokeText(lm.name, sideX, screenY + 2);
+      ctx.fillText(lm.name, sideX, screenY + 2);
+    }
+    ctx.restore();
+  });
+
+  // ── Hindernisse ───────────────────────────────────────────────────────────
   // Sort far to near for proper layering
   const visObs = obstacles.filter(o => {
     const dz = o.z - pos;
-    return dz > 0 && dz < 4000;
+    return dz > -300 && dz < 4000;
   }).sort((a, b) => (b.z - pos) - (a.z - pos));
 
   visObs.forEach(obs => {
     const dz = obs.z - pos;
-    const t = 1 - dz / 4000;
-    if (t < 0 || t > 1) return;
+    const t = Math.max(0, Math.min(1, 1 - dz / 4000));
+    if (t <= 0) return;
     const depth = 0.02 + t * 0.98;
     const screenY = horizonY + t * (H - horizonY);
-    const roadW = W * 0.65 * depth;
+    const roadW = W * 0.88 * depth;
     const roadCX = W / 2 - playerX * W * 0.35 * depth;
     const screenX = roadCX + obs.x * roadW / 2;
-    const fontSize = Math.max(10, t * H * 0.12);
+    const fontSize = Math.max(10, t * H * 0.13);
     ctx.font = `${fontSize}px serif`;
     ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
     ctx.fillText(obs.type.emoji, screenX, screenY);
+    ctx.textBaseline = 'alphabetic';
   });
 
   // ── Player Car ────────────────────────────────────────────────────────────
@@ -880,6 +936,7 @@ state = 'menu';
 currentZone = 0;
 clouds = [];
 comets = [];
+landmarks = [];
 cometTimer = 2;
 for (let i = 0; i < 6; i++) spawnCloud();
 requestAnimationFrame(loop);
