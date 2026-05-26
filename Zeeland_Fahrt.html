@@ -522,7 +522,8 @@ function drawButton(cx, cy, bw, bh, label, col1, col2) {
 }
 
 function drawGame(W, H, zone) {
-  const horizonY = H * 0.48;
+  const horizonY = H * 0.43;
+  const roadBottom = H * 0.79; // road ends at player car
 
   // Sky
   const sky = ctx.createLinearGradient(0, 0, 0, horizonY);
@@ -550,9 +551,30 @@ function drawGame(W, H, zone) {
   // Zone landmark emoji in sky
   ctx.font = `${Math.floor(H * 0.08)}px serif`;
   ctx.textAlign = 'center';
-  ctx.globalAlpha = 0.6;
+  ctx.globalAlpha = 0.5;
   ctx.fillText(zone.emoji, W * 0.15, horizonY * 0.55);
   ctx.globalAlpha = 1;
+
+  // ── Gebäudesilhouetten am Horizont ───────────────────────────────────────
+  ctx.save();
+  ctx.fillStyle = 'rgba(0,0,0,0.30)';
+  const silData = [
+    [[0.33,0.30,0.025],[0.36,0.22,0.07],[0.41,0.32,0.025],[0.54,0.20,0.09],[0.64,0.16,0.06]],
+    [[0.28,0.22,0.12],[0.48,0.28,0.08],[0.64,0.17,0.10]],
+    [[0.22,0.14,0.16],[0.44,0.12,0.20],[0.68,0.16,0.13]],
+    [[0.28,0.17,0.08],[0.40,0.24,0.06],[0.48,0.32,0.04],[0.54,0.24,0.06],[0.62,0.17,0.08]],
+    [[0.30,0.22,0.10],[0.46,0.30,0.06],[0.60,0.18,0.12]],
+    [[0.26,0.10,0.06],[0.36,0.28,0.05],[0.54,0.12,0.06],[0.66,0.24,0.05]],
+    [],
+  ];
+  (silData[currentZone] || []).forEach(([rx,rh,rw]) =>
+    ctx.fillRect(rx*W, horizonY - rh*H*0.5, rw*W, rh*H*0.5));
+  if (currentZone === 6) {
+    const sg = ctx.createLinearGradient(0,horizonY-H*0.05,0,horizonY);
+    sg.addColorStop(0,'rgba(0,140,210,0)'); sg.addColorStop(1,'rgba(0,180,255,0.45)');
+    ctx.fillStyle=sg; ctx.fillRect(0,horizonY-H*0.05,W,H*0.05);
+  }
+  ctx.restore();
 
   // ── Kometen ──────────────────────────────────────────────────────────────
   comets.forEach(c => {
@@ -580,13 +602,40 @@ function drawGame(W, H, zone) {
     ctx.restore();
   });
 
+  // Building silhouettes on horizon (zone-specific skyline)
+  ctx.save();
+  const silhouettes = [
+    // [relX, relH, width] — relative to W, H
+    ...(currentZone === 0 ? [[0.35,0.28,0.03],[0.38,0.22,0.07],[0.42,0.30,0.03],[0.55,0.18,0.09],[0.65,0.14,0.06]] : []),  // Köln: Dom towers
+    ...(currentZone === 1 ? [[0.30,0.20,0.12],[0.50,0.25,0.08],[0.65,0.15,0.10]] : []),  // Aachen
+    ...(currentZone === 2 ? [[0.25,0.12,0.15],[0.45,0.10,0.20],[0.70,0.14,0.12]] : []),  // Belgien
+    ...(currentZone === 3 ? [[0.30,0.15,0.08],[0.42,0.22,0.06],[0.50,0.30,0.04],[0.56,0.22,0.06],[0.62,0.15,0.08]] : []),  // Brüssel: Atomium style
+    ...(currentZone === 4 ? [[0.32,0.20,0.10],[0.48,0.28,0.06],[0.60,0.16,0.12]] : []),  // Gent
+    ...(currentZone === 5 ? [[0.28,0.08,0.06],[0.38,0.26,0.05],[0.55,0.10,0.06],[0.68,0.22,0.05]] : []),  // Brügge: windmills + tower
+    ...(currentZone === 6 ? [] : []),  // Zeeland: flat horizon (sea)
+  ];
+  ctx.fillStyle = 'rgba(0,0,0,0.35)';
+  silhouettes.forEach(([rx, rh, rw]) => {
+    ctx.fillRect(rx * W, horizonY - rh * H * 0.5, rw * W, rh * H * 0.5);
+  });
+  ctx.restore();
+
+  // Zeeland: sea shimmer on horizon
+  if (currentZone === 6) {
+    const seaGrad = ctx.createLinearGradient(0, horizonY - H*0.04, 0, horizonY);
+    seaGrad.addColorStop(0, 'rgba(0,150,220,0.0)');
+    seaGrad.addColorStop(1, 'rgba(0,180,255,0.5)');
+    ctx.fillStyle = seaGrad;
+    ctx.fillRect(0, horizonY - H*0.04, W, H*0.04);
+  }
+
   // Road strips
   const N = 120;
   for (let i = 0; i < N; i++) {
     const t1 = i / N;
     const t2 = (i + 1) / N;
-    const y1 = horizonY + t1 * (H - horizonY);
-    const y2 = horizonY + t2 * (H - horizonY);
+    const y1 = horizonY + t1 * (roadBottom - horizonY);
+    const y2 = horizonY + t2 * (roadBottom - horizonY);
     const depth1 = 0.02 + t1 * 0.98;
     const depth2 = 0.02 + t2 * 0.98;
 
@@ -650,11 +699,11 @@ function drawGame(W, H, zone) {
   }
 
   // Fog near horizon
-  const fog = ctx.createLinearGradient(0, horizonY, 0, horizonY + H * 0.15);
+  const fog = ctx.createLinearGradient(0, horizonY, 0, horizonY + (roadBottom - horizonY) * 0.25);
   fog.addColorStop(0, 'rgba(200,220,255,0.5)');
   fog.addColorStop(1, 'rgba(200,220,255,0)');
   ctx.fillStyle = fog;
-  ctx.fillRect(0, horizonY, W, H * 0.15);
+  ctx.fillRect(0, horizonY, W, (roadBottom - horizonY) * 0.25);
 
   // ── Obstacles ────────────────────────────────────────────────────────────
   // ── Landmarks am Straßenrand ──────────────────────────────────────────────
@@ -669,26 +718,45 @@ function drawGame(W, H, zone) {
     const depth = 0.02 + t * 0.98;
     const roadW = W * 0.88 * depth;
     const roadCX = W / 2 - playerX * W * 0.35 * depth;
-    const screenY = horizonY + t * (H - horizonY);
-    // Außerhalb der Fahrbahn
-    const sideX = roadCX + lm.side * (roadW * 0.55 + roadW * 0.12);
-    const size = Math.max(10, t * H * 0.20);
-    const fade = dz < 0 ? Math.max(0, 1 + dz / 1500) : 1;
+    const screenY = horizonY + t * (roadBottom - horizonY);
+    const sideX = roadCX + lm.side * (roadW * 0.56 + roadW * 0.10);
+    const fade = dz < 0 ? Math.max(0, 1 + dz / 1500) : Math.min(1, t * 4);
+    if (fade <= 0) return;
+
+    const signH = Math.max(14, t * H * 0.13);
+    const signW = signH * 2.2;
+    const signColor = lm.side > 0 ? '#1565c0' : '#2e7d32';
+
     ctx.save();
     ctx.globalAlpha = fade;
-    ctx.font = `${size}px serif`;
+
+    // Sign post
+    ctx.fillStyle = '#888';
+    ctx.fillRect(sideX - 2, screenY - signH * 2.2, 4, signH * 1.5);
+
+    // Sign background
+    ctx.fillStyle = signColor;
+    ctx.beginPath();
+    ctx.roundRect(sideX - signW/2, screenY - signH * 2.2, signW, signH, 3);
+    ctx.fill();
+
+    // White border
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = Math.max(1, signH * 0.08);
+    ctx.stroke();
+
+    // Emoji
+    ctx.font = `${signH * 0.55}px serif`;
     ctx.textAlign = 'center';
-    ctx.textBaseline = 'bottom';
-    ctx.fillText(lm.emoji, sideX, screenY);
-    if (t > 0.35 && t < 0.92) {
-      ctx.font = `bold ${Math.max(9, t * H * 0.028)}px -apple-system, sans-serif`;
-      ctx.fillStyle = '#fff';
-      ctx.strokeStyle = 'rgba(0,0,0,0.7)';
-      ctx.lineWidth = 3;
-      ctx.textBaseline = 'top';
-      ctx.strokeText(lm.name, sideX, screenY + 2);
-      ctx.fillText(lm.name, sideX, screenY + 2);
-    }
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#fff';
+    ctx.fillText(lm.emoji, sideX - signW * 0.18, screenY - signH * 1.72);
+
+    // Name text
+    ctx.font = `bold ${Math.max(6, signH * 0.30)}px -apple-system, sans-serif`;
+    ctx.fillStyle = '#fff';
+    ctx.fillText(lm.name, sideX + signW * 0.08, screenY - signH * 1.72);
+
     ctx.restore();
   });
 
@@ -704,7 +772,7 @@ function drawGame(W, H, zone) {
     const t = Math.max(0, Math.min(1, 1 - dz / 4000));
     if (t <= 0) return;
     const depth = 0.02 + t * 0.98;
-    const screenY = horizonY + t * (H - horizonY);
+    const screenY = horizonY + t * (roadBottom - horizonY);
     const roadW = W * 0.88 * depth;
     const roadCX = W / 2 - playerX * W * 0.35 * depth;
     const screenX = roadCX + obs.x * roadW / 2;
@@ -717,7 +785,7 @@ function drawGame(W, H, zone) {
   });
 
   // ── Player Car ────────────────────────────────────────────────────────────
-  const carY = H * 0.78;
+  const carY = roadBottom;
   const carSize = Math.floor(W * 0.16);
   const flash = invincible > 0 && Math.floor(invincible / 6) % 2 === 0;
   if (!flash) {
@@ -738,6 +806,30 @@ function drawGame(W, H, zone) {
     ctx.restore();
     ctx.textBaseline = 'alphabetic';
   }
+
+  // Car hood (first-person immersion)
+  const hoodTop = roadBottom + H * 0.02;
+  const hoodGrad = ctx.createLinearGradient(0, hoodTop, 0, H);
+  hoodGrad.addColorStop(0, '#1a1a1a');
+  hoodGrad.addColorStop(0.3, '#2d2d2d');
+  hoodGrad.addColorStop(1, '#111');
+  ctx.fillStyle = hoodGrad;
+  ctx.beginPath();
+  ctx.moveTo(0, H);
+  ctx.lineTo(W, H);
+  ctx.lineTo(W * 0.85, hoodTop);
+  ctx.lineTo(W * 0.15, hoodTop);
+  ctx.closePath();
+  ctx.fill();
+  // Hood highlight stripe
+  ctx.fillStyle = 'rgba(255,255,255,0.04)';
+  ctx.beginPath();
+  ctx.moveTo(W * 0.45, hoodTop);
+  ctx.lineTo(W * 0.55, hoodTop);
+  ctx.lineTo(W * 0.52, H);
+  ctx.lineTo(W * 0.48, H);
+  ctx.closePath();
+  ctx.fill();
 
   // ── Particles ─────────────────────────────────────────────────────────────
   particles.forEach(p => {
@@ -794,9 +886,9 @@ function drawGame(W, H, zone) {
     ctx.fillStyle = 'rgba(255,255,255,0.25)';
     ctx.font = `bold ${Math.floor(H * 0.06)}px Segoe UI`;
     ctx.textAlign = 'left';
-    ctx.fillText('◀', 8, H * 0.88);
+    ctx.fillText('◀', 8, roadBottom - H * 0.04);
     ctx.textAlign = 'right';
-    ctx.fillText('▶', W - 8, H * 0.88);
+    ctx.fillText('▶', W - 8, roadBottom - H * 0.04);
   }
 
   // Zone announce overlay
