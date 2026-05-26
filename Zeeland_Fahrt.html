@@ -56,13 +56,13 @@ const ZONES = [
 
 // ─── Obstacle Types ─────────────────────────────────────────────────────────
 const OBS_TYPES = [
-  { emoji: '🚗', damage: true,  score: 0,   width: 0.28, speed: 0.3 },
-  { emoji: '🚕', damage: true,  score: 0,   width: 0.28, speed: 0.6 },
-  { emoji: '🚛', damage: true,  score: 0,   width: 0.45, speed: 0.1 },
-  { emoji: '♻️', damage: false, score: 50,  width: 0.22, speed: 0   },
-  { emoji: '🗑️', damage: true,  score: 0,   width: 0.22, speed: 0   },
-  { emoji: '⭐', damage: false, score: 100, width: 0.20, speed: 0   },
-  { emoji: '🦆', damage: false, score: 10,  width: 0.20, speed: 0   },
+  { emoji: '🚗', damage: true,  score: 0,   width: 0.28, speed: 0.0 },
+  { emoji: '🚕', damage: true,  score: 0,   width: 0.28, speed: 0.0 },
+  { emoji: '🚛', damage: true,  score: 0,   width: 0.45, speed: 0.0 },
+  { emoji: '♻️', damage: false, score: 50,  width: 0.22, speed: 0.0 },
+  { emoji: '🗑️', damage: true,  score: 0,   width: 0.22, speed: 0.0 },
+  { emoji: '⭐', damage: false, score: 100, width: 0.20, speed: 0.0 },
+  { emoji: '🦆', damage: false, score: 10,  width: 0.20, speed: 0.0 },
 ];
 
 // ─── Landmarks (Sehenswürdigkeiten am Straßenrand) ───────────────────────────
@@ -192,6 +192,7 @@ function startGame() {
   comets = [];
   landmarks = [];
   cometTimer = 0;
+  nextWaveZ = 4500; // erste Welle in 4500 Einheiten (sanfter Einstieg)
   for (let i = 0; i < 6; i++) spawnCloud();
   // Initiale Bäume entlang der Strecke
   for (let i = 0; i < 24; i++) {
@@ -203,11 +204,12 @@ function startGame() {
       kind: 'tree',
     });
   }
-  for (let i = 0; i < 5; i++) {
-    spawnObstacle(2000 + i * 800);
-  }
   state = 'game';
   announceZone(0);
+  // Erste Welle: 3-4 Hindernisse weit voraus (Einstieg)
+  for (let i = 0; i < 3; i++) {
+    spawnObstacle(3500 + i * 1200);
+  }
   // Request gyro permission now (game already started, no dialog blocking menu)
   requestGyroPermission();
 }
@@ -235,16 +237,48 @@ function spawnCloud() {
   });
 }
 
+// 3-Spuren-System (Best Practice: klare Spuren wie OutRun)
+const LANES = [-0.55, 0, 0.55];
+let nextWaveZ = 0;
+
 function spawnObstacle(zOverride) {
+  // Einzelner Spawn (für initial obstacles): nur in einer Spur
   const type = OBS_TYPES[Math.floor(Math.random() * OBS_TYPES.length)];
-  const lanes = [-0.6, -0.3, 0, 0.3, 0.6];
-  const x = lanes[Math.floor(Math.random() * lanes.length)];
+  const x = LANES[Math.floor(Math.random() * LANES.length)];
   obstacles.push({
-    z: zOverride !== undefined ? pos + zOverride : pos + 4000 + Math.random() * 1000,
+    z: zOverride !== undefined ? pos + zOverride : pos + 5500 + Math.random() * 800,
     x: x,
     type: type,
     alive: true,
   });
+}
+
+// Wellen-basiertes Spawning: garantiert mindestens 1 freie Spur
+function spawnWave() {
+  // 60% Wahrscheinlichkeit für 1 Hindernis, 40% für 2 (nie alle 3 Spuren blockiert)
+  const fillCount = Math.random() < 0.6 ? 1 : 2;
+  // Spur-Indizes mischen
+  const indices = [0, 1, 2];
+  for (let i = indices.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [indices[i], indices[j]] = [indices[j], indices[i]];
+  }
+  const chosen = indices.slice(0, fillCount);
+  chosen.forEach(idx => {
+    // Pro Spur eigene Wahrscheinlichkeit für Sammelobjekte vs. Autos
+    const pool = Math.random() < 0.35
+      ? OBS_TYPES.filter(t => !t.damage)      // Sammelobjekte
+      : OBS_TYPES.filter(t => t.damage);       // Fahrzeuge
+    const type = pool[Math.floor(Math.random() * pool.length)];
+    obstacles.push({
+      z: pos + 5500 + Math.random() * 400,
+      x: LANES[idx],
+      type: type,
+      alive: true,
+    });
+  });
+  // Nächste Welle in 900-1500 Einheiten (genug Reaktionszeit)
+  nextWaveZ = pos + 5500 + 900 + Math.random() * 600;
 }
 
 function announceZone(idx) {
@@ -289,8 +323,8 @@ function update(dt) {
   if (state !== 'game') return;
   dt = Math.min(dt, 0.05);
 
-  // Speed ramp
-  speed = Math.min(12, 3 + pos / 4000);
+  // Speed ramp (langsamer für Best Practice — fair Reaktionszeit)
+  speed = Math.min(9, 2.5 + pos / 6500);
 
   // Steering
   let steer = 0;
@@ -303,8 +337,11 @@ function update(dt) {
   if (gyroAvailable && Math.abs(gyroValue) > 0.05) steer += gyroValue;
   steer = Math.max(-1, Math.min(1, steer));
 
-  playerX += steer * 2.5 * dt;
-  playerX = Math.max(-1, Math.min(1, playerX));
+  // Schnellere Lenkung — von einer Außenspur zur anderen in ~0.55s
+  playerX += steer * 3.6 * dt;
+  // Sanftes Zurückgleiten zur Mitte wenn nicht aktiv gelenkt (Best Practice)
+  if (Math.abs(steer) < 0.05) playerX *= Math.pow(0.85, dt * 60);
+  playerX = Math.max(-0.7, Math.min(0.7, playerX)); // begrenzt auf Straße
 
   // Move forward
   pos += speed * 60 * dt;
@@ -339,24 +376,20 @@ function update(dt) {
     obs.z -= obs.type.speed * speed * 60 * dt;
   });
 
-  // Spawn new obstacles
-  const maxObs = 8;
-  if (obstacles.filter(o => o.alive).length < maxObs) {
-    spawnObstacle();
+  // Wellen-Spawning: nächste Welle wenn Spieler nah genug
+  if (pos + 5500 >= nextWaveZ) {
+    spawnWave();
   }
 
-  // Collision detection
+  // Collision detection (Best Practice: nur wenn nah genug + fairer Hitbox)
   if (invincible <= 0) {
     obstacles.forEach(obs => {
       if (!obs.alive) return;
       const dz = obs.z - pos;
-      if (dz < 0 || dz > 4000) return;
-      const t = 1 - dz / 4000;
-      if (t < 0.75) return; // only check near obstacles
-
-      // Simple collision: check playerX vs obs.x
+      if (dz < -150 || dz > 400) return; // schmaler z-Bereich genau am Auto
+      // Spurbasiert: nur kollidieren wenn wirklich in derselben Spur
       const dx = Math.abs(playerX - obs.x);
-      const hitRadius = obs.type.width * 0.8;
+      const hitRadius = obs.type.width * 0.7; // bisschen kleiner = fairer
       if (dx < hitRadius) {
         obs.alive = false;
         const W = canvas.width, H = canvas.height;
@@ -690,18 +723,24 @@ function drawGame(W, H, zone) {
     ctx.closePath();
     ctx.fill();
 
-    // Lane dashes (center line)
+    // 2 Spurmarkierungen (3 Spuren-Trennung) – gestrichelt weiß
     if (altRoad === 0) {
-      const dashW1 = roadW1 * 0.025;
-      const dashW2 = roadW2 * 0.025;
-      ctx.fillStyle = '#ffff00';
-      ctx.beginPath();
-      ctx.moveTo(roadCX1 - dashW1 / 2, y1);
-      ctx.lineTo(roadCX1 + dashW1 / 2, y1);
-      ctx.lineTo(roadCX2 + dashW2 / 2, y2);
-      ctx.lineTo(roadCX2 - dashW2 / 2, y2);
-      ctx.closePath();
-      ctx.fill();
+      const dashW1 = roadW1 * 0.020;
+      const dashW2 = roadW2 * 0.020;
+      ctx.fillStyle = '#fff';
+      // Linke Spurtrennung (zwischen linker und mittlerer Spur)
+      // Spuren bei x ∈ {-0.55, 0, 0.55} → Trennlinien bei ±0.275
+      [-0.275, 0.275].forEach(rel => {
+        const lx1 = roadCX1 + roadW1 * rel;
+        const lx2 = roadCX2 + roadW2 * rel;
+        ctx.beginPath();
+        ctx.moveTo(lx1 - dashW1, y1);
+        ctx.lineTo(lx1 + dashW1, y1);
+        ctx.lineTo(lx2 + dashW2, y2);
+        ctx.lineTo(lx2 - dashW2, y2);
+        ctx.closePath();
+        ctx.fill();
+      });
     }
   }
 
@@ -807,10 +846,22 @@ function drawGame(W, H, zone) {
     const roadW = W * 0.88 * depth;
     const roadCX = W / 2 - playerX * W * 0.35 * depth;
     const screenX = roadCX + obs.x * roadW / 2;
-    const fontSize = Math.max(10, t * H * 0.13);
-    ctx.font = `${fontSize}px serif`;
+    // Boost: weit entfernte Hindernisse trotzdem gut sichtbar
+    const baseSize = Math.max(16, Math.pow(t, 0.7) * H * 0.15);
+    ctx.font = `${baseSize}px serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'bottom';
+
+    // Schatten unter dem Hindernis (verbessert Tiefenwahrnehmung)
+    if (t > 0.3) {
+      ctx.save();
+      ctx.globalAlpha = 0.25 * t;
+      ctx.fillStyle = '#000';
+      ctx.beginPath();
+      ctx.ellipse(screenX, screenY + 2, baseSize * 0.35, baseSize * 0.08, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
     ctx.fillText(obs.type.emoji, screenX, screenY);
     ctx.textBaseline = 'alphabetic';
   });
