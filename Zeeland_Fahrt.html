@@ -602,33 +602,6 @@ function drawGame(W, H, zone) {
     ctx.restore();
   });
 
-  // Building silhouettes on horizon (zone-specific skyline)
-  ctx.save();
-  const silhouettes = [
-    // [relX, relH, width] — relative to W, H
-    ...(currentZone === 0 ? [[0.35,0.28,0.03],[0.38,0.22,0.07],[0.42,0.30,0.03],[0.55,0.18,0.09],[0.65,0.14,0.06]] : []),  // Köln: Dom towers
-    ...(currentZone === 1 ? [[0.30,0.20,0.12],[0.50,0.25,0.08],[0.65,0.15,0.10]] : []),  // Aachen
-    ...(currentZone === 2 ? [[0.25,0.12,0.15],[0.45,0.10,0.20],[0.70,0.14,0.12]] : []),  // Belgien
-    ...(currentZone === 3 ? [[0.30,0.15,0.08],[0.42,0.22,0.06],[0.50,0.30,0.04],[0.56,0.22,0.06],[0.62,0.15,0.08]] : []),  // Brüssel: Atomium style
-    ...(currentZone === 4 ? [[0.32,0.20,0.10],[0.48,0.28,0.06],[0.60,0.16,0.12]] : []),  // Gent
-    ...(currentZone === 5 ? [[0.28,0.08,0.06],[0.38,0.26,0.05],[0.55,0.10,0.06],[0.68,0.22,0.05]] : []),  // Brügge: windmills + tower
-    ...(currentZone === 6 ? [] : []),  // Zeeland: flat horizon (sea)
-  ];
-  ctx.fillStyle = 'rgba(0,0,0,0.35)';
-  silhouettes.forEach(([rx, rh, rw]) => {
-    ctx.fillRect(rx * W, horizonY - rh * H * 0.5, rw * W, rh * H * 0.5);
-  });
-  ctx.restore();
-
-  // Zeeland: sea shimmer on horizon
-  if (currentZone === 6) {
-    const seaGrad = ctx.createLinearGradient(0, horizonY - H*0.04, 0, horizonY);
-    seaGrad.addColorStop(0, 'rgba(0,150,220,0.0)');
-    seaGrad.addColorStop(1, 'rgba(0,180,255,0.5)');
-    ctx.fillStyle = seaGrad;
-    ctx.fillRect(0, horizonY - H*0.04, W, H*0.04);
-  }
-
   // Road strips
   const N = 120;
   for (let i = 0; i < N; i++) {
