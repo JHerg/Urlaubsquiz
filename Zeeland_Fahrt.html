@@ -522,7 +522,8 @@ function drawButton(cx, cy, bw, bh, label, col1, col2) {
 }
 
 function drawGame(W, H, zone) {
-  const horizonY = H * 0.48;
+  const horizonY = H * 0.43;
+  const roadBottom = H * 0.79; // road ends at player car
 
   // Sky
   const sky = ctx.createLinearGradient(0, 0, 0, horizonY);
@@ -585,8 +586,8 @@ function drawGame(W, H, zone) {
   for (let i = 0; i < N; i++) {
     const t1 = i / N;
     const t2 = (i + 1) / N;
-    const y1 = horizonY + t1 * (H - horizonY);
-    const y2 = horizonY + t2 * (H - horizonY);
+    const y1 = horizonY + t1 * (roadBottom - horizonY);
+    const y2 = horizonY + t2 * (roadBottom - horizonY);
     const depth1 = 0.02 + t1 * 0.98;
     const depth2 = 0.02 + t2 * 0.98;
 
