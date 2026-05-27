@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
 <title>Fahrt nach Zeeland 🌊</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -15,783 +15,1168 @@ body {
   overflow: hidden;
   font-family: 'Segoe UI', Arial, sans-serif;
 }
-canvas {
-  display: block;
-  touch-action: none;
-  image-rendering: pixelated;
-}
+canvas { display: block; touch-action: none; }
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
 <script>
-// ─── Canvas Setup ───────────────────────────────────────────────────────────
-const canvas = document.getElementById('c');
-const ctx = canvas.getContext('2d');
-
-function resize() {
-  const isMobile = window.innerWidth <= 520 || window.innerHeight > window.innerWidth;
-  if (isMobile) {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  } else {
-    const h = window.innerHeight;
-    const w = Math.min(480, window.innerWidth);
-    canvas.width = w;
-    canvas.height = h;
-  }
-}
-resize();
-window.addEventListener('resize', resize);
-
-// ─── Zones ──────────────────────────────────────────────────────────────────
+// ─── Zones ───────────────────────────────────────────────────────────────────
 const ZONES = [
-  { dist: 0,     name: 'Köln',    skyTop: '#1a1a2e', skyBot: '#c0392b', emoji: '⛪', subtitle: 'Kölner Dom · Rheinbrücke · Abfahrt!', grassA: '#2d5a1b', grassB: '#3a7a24' },
-  { dist: 7000,  name: 'Aachen',  skyTop: '#0f3460', skyBot: '#533483', emoji: '🏛️', subtitle: 'Aachener Dom · Grenzstadt', grassA: '#2d5a1b', grassB: '#3a7a24' },
-  { dist: 13000, name: 'Belgien', skyTop: '#0f3460', skyBot: '#e74c3c', emoji: '🇧🇪', subtitle: 'Grenzübergang · Bienvenue en Belgique!', grassA: '#2d5a1b', grassB: '#3a7a24' },
-  { dist: 19000, name: 'Brüssel', skyTop: '#1a1a2e', skyBot: '#0d47a1', emoji: '⚛️', subtitle: 'Atomium · Grand Place · Manneken Pis', grassA: '#2d5a1b', grassB: '#3a7a24' },
-  { dist: 25000, name: 'Gent',    skyTop: '#0d3b00', skyBot: '#1b6ca8', emoji: '🏰', subtitle: 'Gravensteen · Belfort · Graslei', grassA: '#2d5a1b', grassB: '#3a7a24' },
-  { dist: 31000, name: 'Brügge',  skyTop: '#003d00', skyBot: '#0077be', emoji: '🔔', subtitle: 'Belfort · Grachten · Windmühlen', grassA: '#2d5a1b', grassB: '#3a7a24' },
+  { dist: 0,     name: 'Köln',    skyTop: '#1a1a2e', skyBot: '#c0392b', emoji: '⛪', subtitle: 'Kölner Dom · Rheinbrücke · Abfahrt!',              grassA: '#2d5a1b', grassB: '#3a7a24' },
+  { dist: 7000,  name: 'Aachen',  skyTop: '#0f3460', skyBot: '#533483', emoji: '🏛️', subtitle: 'Aachener Dom · Grenzstadt',                        grassA: '#2d5a1b', grassB: '#3a7a24' },
+  { dist: 13000, name: 'Belgien', skyTop: '#0f3460', skyBot: '#e74c3c', emoji: '🇧🇪', subtitle: 'Grenzübergang · Bienvenue en Belgique!',          grassA: '#2d5a1b', grassB: '#3a7a24' },
+  { dist: 19000, name: 'Brüssel', skyTop: '#1a1a2e', skyBot: '#0d47a1', emoji: '⚛️', subtitle: 'Atomium · Grand Place · Manneken Pis',             grassA: '#2d5a1b', grassB: '#3a7a24' },
+  { dist: 25000, name: 'Gent',    skyTop: '#0d3b00', skyBot: '#1b6ca8', emoji: '🏰', subtitle: 'Gravensteen · Belfort · Graslei',                  grassA: '#2d5a1b', grassB: '#3a7a24' },
+  { dist: 31000, name: 'Brügge',  skyTop: '#003d00', skyBot: '#0077be', emoji: '🔔', subtitle: 'Belfort · Grachten · Windmühlen',                  grassA: '#2d5a1b', grassB: '#3a7a24' },
   { dist: 37000, name: 'Zeeland', skyTop: '#0077be', skyBot: '#00b4d8', emoji: '🌊', subtitle: '🎉 Dormio Strand Resort · Ihr habt es geschafft!', grassA: '#e8d5a3', grassB: '#d4c48f' },
 ];
 
-// ─── Obstacle Types ─────────────────────────────────────────────────────────
-const OBS_TYPES = [
-  { emoji: '🚗', damage: true,  score: 0,   width: 0.28, speed: 0.3 },
-  { emoji: '🚕', damage: true,  score: 0,   width: 0.28, speed: 0.6 },
-  { emoji: '🚛', damage: true,  score: 0,   width: 0.45, speed: 0.1 },
-  { emoji: '♻️', damage: false, score: 50,  width: 0.22, speed: 0   },
-  { emoji: '🗑️', damage: true,  score: 0,   width: 0.22, speed: 0   },
-  { emoji: '⭐', damage: false, score: 100, width: 0.20, speed: 0   },
-  { emoji: '🦆', damage: false, score: 10,  width: 0.20, speed: 0   },
+// ─── Obstacle Types (nur Fahrzeuge + Müll = damage) ──────────────────────────
+const DAMAGE_TYPES = [
+  { emoji: '🚗', damage: true,  score: 0, width: 0.28, speed: 0.0 },
+  { emoji: '🚕', damage: true,  score: 0, width: 0.28, speed: 0.0 },
+  { emoji: '🚛', damage: true,  score: 0, width: 0.45, speed: 0.0 },
+  { emoji: '🗑️', damage: true,  score: 0, width: 0.22, speed: 0.0 },
 ];
 
-// ─── Game State ──────────────────────────────────────────────────────────────
-let state = 'menu'; // menu | game | over | win
-let pos, speed, playerX, lives, score, invincible, currentZone, zoneAnnounce;
-let obstacles, particles, clouds;
-let highscore = 0;
-let gyroAvailable = false;
-let gyroValue = 0;
-let touchLeft = false, touchRight = false;
-let keys = {};
-let lastTime = 0;
+// Zonen-spezifische Sammelobjekte: lokale Highlights statt generische Objekte
+const ZONE_COLLECTIBLES = [
+  [{ emoji: '🍺', name: 'Kölsch',          score: 80 }, { emoji: '🥨', name: 'Brezel',           score: 50 }, { emoji: '🎵', name: 'Karneval',         score: 60 }],
+  [{ emoji: '🍪', name: 'Aachener Printen', score: 80 }, { emoji: '☕', name: 'Kaffee',            score: 50 }, { emoji: '🎠', name: 'Weihnachtsmarkt',  score: 60 }],
+  [{ emoji: '🍟', name: 'Pommes Frites',    score: 80 }, { emoji: '🍺', name: 'Trappistenbier',    score: 70 }, { emoji: '🚲', name: 'Fahrrad',          score: 50 }],
+  [{ emoji: '🧇', name: 'Waffeln',          score: 100}, { emoji: '🍫', name: 'Schokolade',        score: 80 }, { emoji: '💎', name: 'Diamant',          score: 120}],
+  [{ emoji: '🚣', name: 'Graslei-Fahrt',    score: 80 }, { emoji: '🍺', name: 'Gentse Strop',      score: 70 }, { emoji: '🎨', name: 'Kunst',            score: 60 }],
+  [{ emoji: '🍫', name: 'Brügger Choco',    score: 100}, { emoji: '🍺', name: 'Straffe Hendrik',   score: 70 }, { emoji: '🚤', name: 'Grachtenfahrt',    score: 80 }],
+  [{ emoji: '🦪', name: 'Muscheln!',        score: 120}, { emoji: '🐟', name: 'Nordsee-Fisch',     score: 80 }, { emoji: '🍦', name: 'Strandeis',        score: 60 }],
+];
 
-// ─── Input ───────────────────────────────────────────────────────────────────
-document.addEventListener('keydown', e => { keys[e.code] = true; });
-document.addEventListener('keyup',   e => { keys[e.code] = false; });
+// ─── Sehenswürdigkeits-Abstecher ─────────────────────────────────────────────
+// Wenn man in die goldene Pannen-Spur fährt, gibt es ein Info-Popup
+const SIGHT_EVENTS = [
+  { zone: 0, emoji: '⛪', name: 'Kölner Dom', side: 1, triggerDist: 3000,
+    color: '#1565c0',
+    facts: [
+      '🏗️ Über 630 Jahre Bauzeit! Grundstein 1248 gelegt — fertig erst 1880.',
+      '📏 Mit 157 Metern war er 4 Jahre lang das höchste Gebäude der Welt.',
+      '🌍 UNESCO-Weltkulturerbe seit 1996. Jedes Jahr 6 Millionen Besucher.',
+      '💎 Beherbergt den Dreikönigsschrein — die größte mittelalterliche Goldschmiedearbeit der Welt.',
+      '🚶 157 Stufen bis zur Turmspitze — wer sie schafft, hat einen Traumblick über Köln!',
+    ] },
+  { zone: 1, emoji: '🏛️', name: 'Aachener Dom', side: -1, triggerDist: 9000,
+    color: '#6a1b9a',
+    facts: [
+      '👑 Krönungskirche von 30 deutschen Königen — von Ludwig dem Frommen bis Karl IV.',
+      '⚔️ Karl der Große ließ ihn um 800 n.Chr. bauen. Er ist dort auch begraben.',
+      '🌍 Erste UNESCO-Weltkulturerbe-Stätte Deutschlands — ausgezeichnet 1978.',
+      '🔑 Der Karlsschrein aus purem Gold enthält die Reliquien Karls des Großen.',
+      '🎭 Alle 7 Jahre findet die Heiligtumsfahrt statt — dann kommen 100.000 Pilger.',
+    ] },
+  { zone: 3, emoji: '⚛️', name: 'Atomium Brüssel', side: 1, triggerDist: 21500,
+    color: '#0d47a1',
+    facts: [
+      '🔬 Stellt einen Eisenkristall dar — 165 Milliarden Mal vergrößert!',
+      '🎪 Gebaut 1958 für die Weltausstellung. Ursprünglich nur für 6 Monate geplant.',
+      '🚡 Alle 9 Kugeln sind begehbar und durch Rolltreppen verbunden.',
+      '📐 102 Meter hoch und wiegt 2.400 Tonnen — ein echtes Ingenieurswunder.',
+      '✨ Nachts leuchtet das Atomium mit 2.970 LED-Lampen — ein Wahrzeichen Brüssels.',
+    ] },
+  { zone: 4, emoji: '🏰', name: 'Gravensteen Gent', side: -1, triggerDist: 27000,
+    color: '#1b5e20',
+    facts: [
+      '🏰 Erbaut 1180 von Philipp von Elsass, Graf von Flandern.',
+      '⚖️ War nacheinander Gefängnis, Münze, Baumwollfabrik und Gerichtssaal.',
+      '🗡️ Im Museum gibt es eine der größten Sammlungen mittelalterlicher Folterinstrumente.',
+      '🔭 Vom Turm habt ihr einen Panoramablick über die gesamte Altstadt von Gent.',
+      '🦁 Der Löwe ist das Wappentier der Grafen — ihr seht ihn überall in Gent.',
+    ] },
+  { zone: 5, emoji: '🔔', name: 'Belfort Brügge', side: 1, triggerDist: 33000,
+    color: '#004d40',
+    facts: [
+      '🔔 47 Glocken — das Carillon läutet täglich und viertelstündlich.',
+      '📐 83 Meter hoch und leicht schief — wie der Turm von Pisa!',
+      '🎶 Die älteste Glocke stammt aus dem Jahr 1608. Der Glöckner spielt von Hand.',
+      '🌇 366 Stufen bis zur Spitze — aber der Ausblick über Brügge ist unvergesslich.',
+      '📜 Im Mittelalter wurden hier Stadtrechte und wichtige Dokumente aufbewahrt.',
+    ] },
+];
 
-// Touch
-canvas.addEventListener('touchstart', e => {
-  e.preventDefault();
-  handleTouches(e.touches);
-  requestGyroPermission();
-}, { passive: false });
-canvas.addEventListener('touchmove', e => {
-  e.preventDefault();
-  handleTouches(e.touches);
-}, { passive: false });
-canvas.addEventListener('touchend', e => {
-  e.preventDefault();
-  touchLeft = false; touchRight = false;
-  handleTouches(e.touches);
-}, { passive: false });
-canvas.addEventListener('click', e => {
-  requestGyroPermission();
-  handleClick(e.clientX, e.clientY);
-});
+// ─── Landmarks ───────────────────────────────────────────────────────────────
+const ZONE_LANDMARKS = [
+  [{ emoji: '⛪', name: 'Kölner Dom', side: 1 }, { emoji: '🌉', name: 'Rheinbrücke', side: -1 }, { emoji: '🍺', name: 'Kölsch', side: 1 }],
+  [{ emoji: '🏛️', name: 'Aachener Dom', side: -1 }, { emoji: '🏺', name: 'Rathaus', side: 1 }, { emoji: '🍪', name: 'Printen', side: -1 }],
+  [{ emoji: '🇧🇪', name: 'Willkommen!', side: 1 }, { emoji: '🍟', name: 'Pommes Frites', side: -1 }],
+  [{ emoji: '⚛️', name: 'Atomium', side: -1 }, { emoji: '🏛️', name: 'Grand Place', side: 1 }, { emoji: '🧇', name: 'Waffeln', side: -1 }],
+  [{ emoji: '🏰', name: 'Gravensteen', side: 1 }, { emoji: '🔔', name: 'Belfort Gent', side: -1 }, { emoji: '🚣', name: 'Graslei', side: 1 }],
+  [{ emoji: '🔔', name: 'Belfort Brügge', side: -1 }, { emoji: '🌬️', name: 'Windmühle', side: 1 }, { emoji: '🍫', name: 'Schokolade', side: -1 }],
+  [{ emoji: '🌊', name: 'Nordsee!', side: -1 }, { emoji: '🏖️', name: 'Dormio Resort', side: 1 }],
+];
 
-function handleTouches(touches) {
-  touchLeft = false; touchRight = false;
-  for (let t of touches) {
-    const rect = canvas.getBoundingClientRect();
-    const x = t.clientX - rect.left;
-    if (x < canvas.width / 2) touchLeft = true;
-    else touchRight = true;
+// Zeeland Urlaubs-Vorschau
+const VACATION_PREVIEW = [
+  { emoji: '🏖️', text: 'Endlose Strände der Nordsee' },
+  { emoji: '🏊', text: 'Schwimmen im Dormio-Pool' },
+  { emoji: '🚲', text: 'Radtouren durch die Dünen' },
+  { emoji: '🦪', text: 'Frische Muscheln & Fisch' },
+  { emoji: '⛵', text: 'Segeln am Veerse Meer' },
+  { emoji: '🌅', text: 'Sonnenuntergänge am Meer' },
+  { emoji: '🏰', text: 'Veere – Mittelalter-Städtchen' },
+  { emoji: '🌬️', text: 'Kitesurfen am Brouwersdam' },
+];
+
+// ─── Spuren (Welt-X-Koordinaten) ─────────────────────────────────────────────
+const LANES = [-0.55, 0, 0.55];
+
+// ─── Object Pool ─────────────────────────────────────────────────────────────
+class Pool {
+  constructor(size, factory) {
+    this.items = Array.from({ length: size }, factory);
+    this.index = 0;
   }
-}
-
-function handleClick(cx, cy) {
-  const rect = canvas.getBoundingClientRect();
-  const x = cx - rect.left;
-  const y = cy - rect.top;
-  const W = canvas.width, H = canvas.height;
-
-  if (state === 'menu') {
-    // Start button roughly center
-    if (y > H * 0.52 && y < H * 0.65 && x > W * 0.2 && x < W * 0.8) {
-      startGame();
+  spawn() {
+    for (let i = 0; i < this.items.length; i++) {
+      const item = this.items[(this.index + i) % this.items.length];
+      if (!item.alive) { this.index = (this.index + i + 1) % this.items.length; item.alive = true; return item; }
     }
-  } else if (state === 'over' || state === 'win') {
-    if (y > H * 0.65 && y < H * 0.80 && x > W * 0.2 && x < W * 0.8) {
-      startGame();
-    }
+    return null;
   }
+  forEach(cb) { for (let i = 0; i < this.items.length; i++) { if (this.items[i].alive) cb(this.items[i]); } }
+  reset() { this.items.forEach(it => it.alive = false); }
 }
 
-// Gyroscope
-function requestGyroPermission() {
-  if (typeof DeviceOrientationEvent !== 'undefined' &&
-      typeof DeviceOrientationEvent.requestPermission === 'function') {
-    DeviceOrientationEvent.requestPermission().then(p => {
-      if (p === 'granted') setupGyro();
-    }).catch(() => {});
-  } else {
-    setupGyro();
+// ─── Input ────────────────────────────────────────────────────────────────────
+class InputManager {
+  constructor(canvas) {
+    this.keys = {}; this.touchLeft = false; this.touchRight = false;
+    this.gyroValue = 0; this.gyroAvailable = false;
+    document.addEventListener('keydown', e => this.keys[e.code] = true);
+    document.addEventListener('keyup',   e => this.keys[e.code] = false);
+    this.handleTouches = (touches) => {
+      this.touchLeft = false; this.touchRight = false;
+      const rect = canvas.getBoundingClientRect();
+      for (const t of touches) {
+        if (t.clientX - rect.left < canvas.width / 2) this.touchLeft = true;
+        else this.touchRight = true;
+      }
+    };
   }
-}
-
-function setupGyro() {
-  window.addEventListener('deviceorientation', e => {
-    if (e.gamma !== null) {
-      gyroAvailable = true;
-      gyroValue = Math.max(-1, Math.min(1, e.gamma / 30));
-    }
-  });
-}
-
-// Gamepad
-function getGamepadSteering() {
-  const pads = navigator.getGamepads ? navigator.getGamepads() : [];
-  for (let pad of pads) {
-    if (pad && pad.axes && pad.axes.length > 0) {
-      const v = pad.axes[0];
-      if (Math.abs(v) > 0.1) return v;
-    }
+  getSteer() {
+    let s = 0;
+    if (this.keys['ArrowLeft'] || this.keys['KeyA']) s -= 1;
+    if (this.keys['ArrowRight'] || this.keys['KeyD']) s += 1;
+    if (this.touchLeft) s -= 1;
+    if (this.touchRight) s += 1;
+    const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+    for (const pad of pads) { if (pad?.axes?.length > 0 && Math.abs(pad.axes[0]) > 0.1) s += pad.axes[0]; }
+    if (this.gyroAvailable && Math.abs(this.gyroValue) > 0.05) s += this.gyroValue;
+    return Math.max(-1, Math.min(1, s));
   }
-  return 0;
-}
-
-// ─── Game Init ───────────────────────────────────────────────────────────────
-function startGame() {
-  pos = 0;
-  speed = 3;
-  playerX = 0;
-  lives = 3;
-  score = 0;
-  invincible = 0;
-  currentZone = 0;
-  zoneAnnounce = null;
-  obstacles = [];
-  particles = [];
-  clouds = [];
-  for (let i = 0; i < 6; i++) spawnCloud();
-  for (let i = 0; i < 5; i++) {
-    spawnObstacle(2000 + i * 800);
-  }
-  state = 'game';
-  // Announce starting zone
-  announceZone(0);
-}
-
-function spawnCloud() {
-  clouds.push({
-    x: Math.random(),
-    y: 0.05 + Math.random() * 0.35,
-    w: 0.15 + Math.random() * 0.20,
-    h: 0.04 + Math.random() * 0.06,
-    speed: 0.00003 + Math.random() * 0.00004,
-  });
-}
-
-function spawnObstacle(zOverride) {
-  const type = OBS_TYPES[Math.floor(Math.random() * OBS_TYPES.length)];
-  const lanes = [-0.6, -0.3, 0, 0.3, 0.6];
-  const x = lanes[Math.floor(Math.random() * lanes.length)];
-  obstacles.push({
-    z: zOverride !== undefined ? pos + zOverride : pos + 4000 + Math.random() * 1000,
-    x: x,
-    type: type,
-    alive: true,
-  });
-}
-
-function announceZone(idx) {
-  zoneAnnounce = { idx, timer: 2.5, alpha: 0 };
-  score += 200;
-}
-
-// ─── Particles ───────────────────────────────────────────────────────────────
-function spawnParticles(x, y, color, count) {
-  for (let i = 0; i < count; i++) {
-    const angle = Math.random() * Math.PI * 2;
-    const spd = 80 + Math.random() * 120;
-    particles.push({
-      x, y,
-      vx: Math.cos(angle) * spd,
-      vy: Math.sin(angle) * spd,
-      life: 0.5 + Math.random() * 0.4,
-      maxLife: 0.9,
-      color,
-      r: 3 + Math.random() * 4,
+  setupGyro() {
+    window.addEventListener('deviceorientation', e => {
+      if (e.gamma !== null) { this.gyroAvailable = true; this.gyroValue = Math.max(-1, Math.min(1, e.gamma / 30)); }
     });
   }
 }
 
-// ─── Update ───────────────────────────────────────────────────────────────────
-function update(dt) {
-  if (state !== 'game') return;
-  dt = Math.min(dt, 0.05);
+// ─── Game ─────────────────────────────────────────────────────────────────────
+class Game {
+  constructor(canvas) {
+    this.canvas = canvas;
+    this.ctx = canvas.getContext('2d');
+    this.input = new InputManager(canvas);
 
-  // Speed ramp
-  speed = Math.min(12, 3 + pos / 4000);
+    this.obstacles = new Pool(80,  () => ({ alive: false, z: 0, laneX: 0, type: null, isSight: false, sightData: null }));
+    this.landmarks = new Pool(100, () => ({ alive: false, z: 0, side: 0, emoji: '', name: '', kind: '' }));
+    this.particles = new Pool(150, () => ({ alive: false, x: 0, y: 0, vx: 0, vy: 0, life: 0, maxLife: 1, color: '', r: 0 }));
+    this.clouds    = new Pool(20,  () => ({ alive: false, x: 0, y: 0, w: 0, h: 0, speed: 0 }));
+    this.comets    = new Pool(15,  () => ({ alive: false, x: 0, y: 0, vx: 0, vy: 0, tailLen: 0, life: 0, size: 0 }));
 
-  // Steering
-  let steer = 0;
-  if (keys['ArrowLeft'] || keys['KeyA']) steer -= 1;
-  if (keys['ArrowRight'] || keys['KeyD']) steer += 1;
-  if (touchLeft) steer -= 1;
-  if (touchRight) steer += 1;
-  const gpSteer = getGamepadSteering();
-  if (Math.abs(gpSteer) > 0.1) steer += gpSteer;
-  if (gyroAvailable && Math.abs(gyroValue) > 0.05) steer += gyroValue;
-  steer = Math.max(-1, Math.min(1, steer));
+    this.state      = 'menu';
+    this.highscore  = 0;
+    this.lastTime   = performance.now();
+    this.cometTimer = 0;
+    this.sightPopup = null;        // aktives Info-Popup für Sehenswürdigkeit
+    this.spawnedSights = new Set();// welche Sight-Events schon gespawnt
 
-  playerX += steer * 2.5 * dt;
-  playerX = Math.max(-1, Math.min(1, playerX));
+    this.player   = { pos: 0, x: 0, speed: 3, lives: 3, score: 0, invincible: 0 };
+    this.gameLogic = { currentZone: 0, zoneAnnounce: null, nextWaveZ: 0,
+                       curveStrength: 0, pitch: 0, drawDistance: 4000 };
 
-  // Move forward
-  pos += speed * 60 * dt;
+    this.resize = () => {
+      const mob = window.innerWidth <= 520 || window.innerHeight > window.innerWidth;
+      this.canvas.width  = mob ? window.innerWidth  : Math.min(480, window.innerWidth);
+      this.canvas.height = window.innerHeight;
+    };
+    window.addEventListener('resize', this.resize);
+    this.resize();
 
-  // Zone check
-  for (let i = ZONES.length - 1; i >= 0; i--) {
-    if (pos >= ZONES[i].dist && currentZone < i) {
-      currentZone = i;
-      announceZone(i);
-      break;
+    // Click
+    this.canvas.addEventListener('click', e => this.handleClick(e));
+
+    // Touch
+    this.canvas.addEventListener('touchstart', e => {
+      e.preventDefault();
+      // Popup: nur über den Weiterfahren-Button schließen
+      if (this.sightPopup) {
+        const t = e.touches[0], rect = this.canvas.getBoundingClientRect();
+        const tx = t.clientX - rect.left, ty = t.clientY - rect.top;
+        const b = this._popupBtn;
+        if (b && tx >= b.x && tx <= b.x+b.w && ty >= b.y && ty <= b.y+b.h) {
+          this.sightPopup = null;
+        }
+        return;
+      }
+      if (this.state === 'menu' || this.state === 'over') { this.startGame(); return; }
+      if (this.state === 'win') {
+        const t = e.touches[0], rect = this.canvas.getBoundingClientRect();
+        const tx = t.clientX - rect.left, ty = t.clientY - rect.top;
+        const H = this.canvas.height, W = this.canvas.width;
+        if (ty > H * 0.86 && ty < H * 0.96 && tx > W * 0.2 && tx < W * 0.8) this.startGame();
+        return;
+      }
+      this.input.handleTouches(e.touches);
+    }, { passive: false });
+    this.canvas.addEventListener('touchmove', e => { e.preventDefault(); this.input.handleTouches(e.touches); }, { passive: false });
+    this.canvas.addEventListener('touchend',  e => {
+      e.preventDefault(); this.input.touchLeft = false; this.input.touchRight = false;
+      this.input.handleTouches(e.touches);
+    }, { passive: false });
+
+    this.loop = this.loop.bind(this);
+    requestAnimationFrame(this.loop);
+  }
+
+  handleClick(e) {
+    const rect = this.canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left, y = e.clientY - rect.top;
+    if (this.sightPopup) {
+      const b = this._popupBtn;
+      if (b && x >= b.x && x <= b.x+b.w && y >= b.y && y <= b.y+b.h) this.sightPopup = null;
+      return;
+    }
+    const W = this.canvas.width, H = this.canvas.height;
+    if (this.state === 'menu' && y > H*0.52 && y < H*0.65 && x > W*0.2 && x < W*0.8) this.startGame();
+    if (this.state === 'over' && y > H*0.65 && y < H*0.80 && x > W*0.2 && x < W*0.8) this.startGame();
+    if (this.state === 'win'  && y > H*0.86 && y < H*0.96 && x > W*0.2 && x < W*0.8) this.startGame();
+  }
+
+  startGame() {
+    this.obstacles.reset(); this.landmarks.reset(); this.particles.reset();
+    this.clouds.reset();    this.comets.reset();
+    this.player    = { pos: 0, x: 0, targetLane: 1, speed: 3, lives: 3, score: 0, invincible: 0 };
+    this.gameLogic.currentZone = 0; this.gameLogic.zoneAnnounce = null; this.gameLogic.nextWaveZ = 4500;
+    this.sightPopup   = null;
+    this.spawnedSights = new Set();
+    this._laneChangeCooldown = 0;
+    this.state = 'game';
+
+    for (let i = 0; i < 6; i++) this.spawnCloud();
+    for (let i = 0; i < 24; i++) {
+      const lm = this.landmarks.spawn();
+      if (lm) { lm.z = 500 + i*400 + Math.random()*200; lm.side = i%2===0?-1:1; lm.emoji = ['🌳','🌲','🌳'][i%3]; lm.kind = 'tree'; }
+    }
+    this.announceZone(0);
+    for (let i = 0; i < 3; i++) this.spawnSingleObstacle(3500 + i * 1200);
+
+    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+      DeviceOrientationEvent.requestPermission().then(p => { if (p === 'granted') this.input.setupGyro(); }).catch(() => {});
+    } else this.input.setupGyro();
+  }
+
+  // ─── Spawn helpers ─────────────────────────────────────────────────────────
+  spawnComet() {
+    const c = this.comets.spawn(); if (!c) return;
+    const fl = Math.random() > 0.5;
+    c.x = fl ? -0.05 : 1.05; c.y = 0.04 + Math.random()*0.38;
+    c.vx = (fl?1:-1)*(0.18+Math.random()*0.22); c.vy = 0.04+Math.random()*0.08;
+    c.tailLen = 0.12+Math.random()*0.12; c.life = 1.0; c.size = 1.5+Math.random()*2;
+  }
+  spawnCloud() {
+    const c = this.clouds.spawn(); if (!c) return;
+    c.x=Math.random(); c.y=0.05+Math.random()*0.35; c.w=0.15+Math.random()*0.20; c.h=0.04+Math.random()*0.06; c.speed=0.00003+Math.random()*0.00004;
+  }
+
+  // Einzelnes Hindernis (Einzel-Spawn beim Start)
+  spawnSingleObstacle(zOff) {
+    const obs = this.obstacles.spawn(); if (!obs) return;
+    obs.type = DAMAGE_TYPES[Math.floor(Math.random()*DAMAGE_TYPES.length)];
+    obs.laneX = [-0.55, 0, 0.55][Math.floor(Math.random()*3)];
+    obs.z = this.player.pos + zOff;
+    obs.isSight = false; obs.sightData = null;
+  }
+
+  // Wellen-basiertes Spawning: max 2/3 Spuren, gestaffelt
+  spawnWave() {
+    const fillCount = Math.random() < 0.6 ? 1 : 2;
+    const indices = [0,1,2].sort(()=>Math.random()-0.5).slice(0, fillCount);
+    const zone = this.gameLogic.currentZone;
+    const zoneCols = ZONE_COLLECTIBLES[zone] || ZONE_COLLECTIBLES[0];
+
+    indices.forEach((idx, wi) => {
+      const obs = this.obstacles.spawn(); if (!obs) return;
+      if (Math.random() < 0.35) {
+        // Zonen-spezifisches Sammelobjekt
+        const col = zoneCols[Math.floor(Math.random()*zoneCols.length)];
+        obs.type = { emoji: col.emoji, damage: false, score: col.score, width: 0.22, speed: 0.0, name: col.name };
+      } else {
+        obs.type = DAMAGE_TYPES[Math.floor(Math.random()*DAMAGE_TYPES.length)];
+      }
+      obs.laneX = [-0.55, 0, 0.55][idx];
+      obs.z = this.player.pos + 5500 + wi * 1400 + Math.random()*300;
+      obs.isSight = false; obs.sightData = null;
+    });
+    this.gameLogic.nextWaveZ = this.player.pos + 5500 + (indices.length-1)*1400 + 1100 + Math.random()*600;
+  }
+
+  // Sehenswürdigkeits-Abstecher auf der Straße spawnen
+  spawnSightEvent(ev) {
+    const obs = this.obstacles.spawn(); if (!obs) return;
+    obs.type = { emoji: ev.emoji, damage: false, score: 150, width: 0.18, speed: 0.0 };
+    obs.laneX = ev.side * 0.78; // Goldene Spur außen
+    obs.z = ev.triggerDist;
+    obs.isSight = true;
+    obs.sightData = ev;
+  }
+
+  spawnParticles(x, y, color, count) {
+    for (let i = 0; i < count; i++) {
+      const p = this.particles.spawn(); if (!p) continue;
+      const a = Math.random()*Math.PI*2, sp = 80+Math.random()*120;
+      p.x=x; p.y=y; p.vx=Math.cos(a)*sp; p.vy=Math.sin(a)*sp;
+      p.life=0.5+Math.random()*0.4; p.maxLife=0.9; p.color=color; p.r=3+Math.random()*4;
     }
   }
 
-  // Score from speed
-  score += speed * dt * 10;
-
-  // Invincibility countdown
-  if (invincible > 0) invincible -= dt * 60;
-
-  // Zone announce timer
-  if (zoneAnnounce) {
-    zoneAnnounce.timer -= dt;
-    if (zoneAnnounce.timer > 2.0) zoneAnnounce.alpha = Math.min(1, (2.5 - zoneAnnounce.timer) * 4);
-    else if (zoneAnnounce.timer < 0.5) zoneAnnounce.alpha = Math.max(0, zoneAnnounce.timer * 2);
-    else zoneAnnounce.alpha = 1;
-    if (zoneAnnounce.timer <= 0) zoneAnnounce = null;
+  announceZone(idx) {
+    this.gameLogic.zoneAnnounce = { idx, timer: 2.5, alpha: 0 };
+    this.player.score += 200;
+    // Schilder
+    (ZONE_LANDMARKS[idx]||[]).forEach((lmData, i) => {
+      const lm = this.landmarks.spawn(); if (!lm) return;
+      lm.z = this.player.pos + 1400 + i*1600; lm.side = lmData.side;
+      lm.emoji = lmData.emoji; lm.name = lmData.name; lm.kind = 'sign';
+    });
+    // Bäume
+    for (let i = 0; i < 14; i++) {
+      const lm = this.landmarks.spawn(); if (!lm) return;
+      lm.z = this.player.pos + 800 + i*480 + Math.random()*200;
+      lm.side = i%2===0?-1:1; lm.emoji = ['🌳','🌲','🌴','🌳','🌲'][Math.floor(Math.random()*5)];
+      lm.kind = 'tree';
+    }
+    // Ziellinie vor Zeeland
+    if (idx === 6) {
+      const fin = this.landmarks.spawn();
+      if (fin) { fin.z = 37800; fin.side = 0; fin.emoji = ''; fin.name = 'ZIEL'; fin.kind = 'finish'; }
+    }
   }
 
-  // Obstacles
-  obstacles.forEach(obs => {
-    // Move obstacle (slower types move toward player slightly)
-    obs.z -= obs.type.speed * speed * 60 * dt;
-  });
+  // ─── Update ────────────────────────────────────────────────────────────────
+  update(dt) {
+    if (this.state !== 'game') return;
+    if (this.sightPopup) {
+      // Spiel im Hintergrund fast eingefroren wenn Popup offen
+      dt = 0; return;
+    }
+    dt = Math.min(dt, 0.05);
 
-  // Spawn new obstacles
-  const maxObs = 8;
-  if (obstacles.filter(o => o.alive).length < maxObs) {
-    spawnObstacle();
-  }
+    this.player.speed = Math.min(9, 2.5 + this.player.pos / 6500);
+    this.gameLogic.curveStrength = Math.sin(this.player.pos/3000)*1.5 + Math.sin(this.player.pos/5000)*1.0;
+    this.gameLogic.pitch = Math.cos(this.player.pos/2500)*50;
 
-  // Collision detection
-  if (invincible <= 0) {
-    obstacles.forEach(obs => {
-      if (!obs.alive) return;
-      const dz = obs.z - pos;
-      if (dz < 0 || dz > 4000) return;
-      const t = 1 - dz / 4000;
-      if (t < 0.75) return; // only check near obstacles
+    // ── Spurwechsel-Steuerung (ein Tastendruck = eine Spur) ──────────────────
+    let steer = this.input.getSteer();
+    this._laneChangeCooldown = Math.max(0, (this._laneChangeCooldown||0) - dt);
 
-      // Simple collision: check playerX vs obs.x
-      const dx = Math.abs(playerX - obs.x);
-      const hitRadius = obs.type.width * 0.8;
-      if (dx < hitRadius) {
-        obs.alive = false;
-        const W = canvas.width, H = canvas.height;
-        const carY = H * 0.78;
-        if (obs.type.damage) {
-          lives--;
-          invincible = 120;
-          spawnParticles(W / 2, carY, '#ff4444', 18);
-          if (lives <= 0) {
-            if (score > highscore) highscore = Math.floor(score);
-            state = 'over';
-          }
-        } else {
-          score += obs.type.score;
-          spawnParticles(W / 2, carY, '#ffd700', 12);
-        }
+    // Sehenswürdigkeit-Spur prüfen: wenn nah, kann man links/rechts rauslenken
+    let nearbySightSide = 0;
+    this.obstacles.forEach(obs => {
+      if (obs.isSight && obs.alive) {
+        const dz = obs.z - this.player.pos;
+        if (dz > 0 && dz < 1400) nearbySightSide = Math.sign(obs.laneX);
       }
     });
-  }
 
-  // Remove dead/passed obstacles
-  obstacles = obstacles.filter(o => o.alive && o.z > pos - 200);
+    const inSightApproach = nearbySightSide !== 0 && Math.sign(steer) === nearbySightSide && Math.abs(steer) > 0.4;
 
-  // Particles
-  particles.forEach(p => {
-    p.x += p.vx * dt;
-    p.y += p.vy * dt;
-    p.vy += 150 * dt; // gravity
-    p.life -= dt;
-  });
-  particles = particles.filter(p => p.life > 0);
-
-  // Clouds
-  clouds.forEach(c => {
-    c.x += c.speed * speed * 60 * dt;
-    if (c.x > 1.3) c.x = -0.3;
-  });
-
-  // Win condition
-  if (pos >= 38000) {
-    score += 1000;
-    if (score > highscore) highscore = Math.floor(score);
-    state = 'win';
-  }
-}
-
-// ─── Draw ─────────────────────────────────────────────────────────────────────
-function draw() {
-  const W = canvas.width, H = canvas.height;
-  const zone = ZONES[currentZone];
-
-  if (state === 'menu') {
-    drawMenu(W, H);
-  } else if (state === 'game' || state === 'over' || state === 'win') {
-    drawGame(W, H, zone);
-    if (state === 'over') drawGameOver(W, H);
-    else if (state === 'win') drawWin(W, H);
-  }
-}
-
-function drawMenu(W, H) {
-  // Sky gradient
-  const sky = ctx.createLinearGradient(0, 0, 0, H * 0.7);
-  sky.addColorStop(0, '#001a40');
-  sky.addColorStop(1, '#0077be');
-  ctx.fillStyle = sky;
-  ctx.fillRect(0, 0, W, H);
-
-  // Ocean at bottom
-  const ocean = ctx.createLinearGradient(0, H * 0.65, 0, H);
-  ocean.addColorStop(0, '#0077be');
-  ocean.addColorStop(1, '#003d6e');
-  ctx.fillStyle = ocean;
-  ctx.fillRect(0, H * 0.65, W, H * 0.35);
-
-  // Waves
-  ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-  ctx.lineWidth = 2;
-  for (let i = 0; i < 5; i++) {
-    const wy = H * (0.68 + i * 0.06);
-    ctx.beginPath();
-    for (let x = 0; x < W; x += 4) {
-      const y = wy + Math.sin(x * 0.04 + i) * 4;
-      if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    if (inSightApproach) {
+      // Manuell zur goldenen Abstecher-Spur lenken
+      this.player.x += steer * 2.2 * dt;
+    } else {
+      // Normaler Spurwechsel: einmal drücken = eine Spur nach links/rechts
+      if (steer < -0.4 && this._laneChangeCooldown <= 0) {
+        this.player.targetLane = Math.max(0, this.player.targetLane - 1);
+        this._laneChangeCooldown = 0.30;
+      } else if (steer > 0.4 && this._laneChangeCooldown <= 0) {
+        this.player.targetLane = Math.min(2, this.player.targetLane + 1);
+        this._laneChangeCooldown = 0.30;
+      }
+      // Sanft zur Ziel-Spur gleiten (kein Wackeln)
+      const targetX = LANES[this.player.targetLane];
+      this.player.x += (targetX - this.player.x) * Math.min(1, dt * 9);
     }
-    ctx.stroke();
-  }
 
-  // Title
-  ctx.textAlign = 'center';
-  ctx.fillStyle = '#fff';
-  ctx.font = `bold ${Math.floor(W * 0.1)}px Segoe UI`;
-  ctx.shadowColor = '#000';
-  ctx.shadowBlur = 8;
-  ctx.fillText('🌊 Fahrt nach', W / 2, H * 0.22);
-  ctx.font = `bold ${Math.floor(W * 0.14)}px Segoe UI`;
-  ctx.fillStyle = '#ffd700';
-  ctx.fillText('Zeeland!', W / 2, H * 0.34);
-  ctx.shadowBlur = 0;
+    // Minimale Kurvendrift (rein optisch, nicht gameplay-relevant)
+    const centrifugalForce = this.gameLogic.curveStrength * (this.player.speed/9) * 0.45 * dt;
+    this.player.x -= centrifugalForce;
+    this.player.x = Math.max(-0.88, Math.min(0.88, this.player.x));
 
-  // Route info
-  ctx.fillStyle = 'rgba(255,255,255,0.85)';
-  ctx.font = `${Math.floor(W * 0.045)}px Segoe UI`;
-  ctx.fillText('Köln → Aachen → Belgien → Brüssel', W / 2, H * 0.41);
-  ctx.fillText('→ Gent → Brügge → Zeeland 🏖️', W / 2, H * 0.46);
+    this.player.pos   += this.player.speed * 60 * dt;
+    this.player.score += this.player.speed * dt * 10;
 
-  // Start button
-  drawButton(W / 2, H * 0.575, W * 0.55, H * 0.09, '🚙 Losfahren!', '#27ae60', '#2ecc71');
+    // Zonen-Wechsel
+    for (let i = ZONES.length-1; i >= 0; i--) {
+      if (this.player.pos >= ZONES[i].dist && this.gameLogic.currentZone < i) {
+        this.gameLogic.currentZone = i; this.announceZone(i); break;
+      }
+    }
+    if (this.player.invincible > 0) this.player.invincible -= dt*60;
 
-  // Controls
-  ctx.fillStyle = 'rgba(255,255,255,0.7)';
-  ctx.font = `${Math.floor(W * 0.036)}px Segoe UI`;
-  ctx.fillText('← → Tasten  |  Touch  |  Gamepad  |  Gyroskop', W / 2, H * 0.70);
+    // Zone-Announce Timer
+    if (this.gameLogic.zoneAnnounce) {
+      const za = this.gameLogic.zoneAnnounce; za.timer -= dt;
+      if (za.timer > 2.0) za.alpha = Math.min(1, (2.5-za.timer)*4);
+      else if (za.timer < 0.5) za.alpha = Math.max(0, za.timer*2);
+      else za.alpha = 1;
+      if (za.timer <= 0) this.gameLogic.zoneAnnounce = null;
+    }
 
-  if (highscore > 0) {
-    ctx.fillStyle = '#ffd700';
-    ctx.font = `bold ${Math.floor(W * 0.042)}px Segoe UI`;
-    ctx.fillText(`⭐ Highscore: ${Math.floor(highscore)}`, W / 2, H * 0.77);
-  }
-}
+    // Sight-Events spawnen (einmalig per Event)
+    SIGHT_EVENTS.forEach(ev => {
+      const key = ev.zone + '_' + ev.triggerDist;
+      if (!this.spawnedSights.has(key) && this.player.pos >= ev.triggerDist - 4000 && this.player.pos < ev.triggerDist) {
+        this.spawnedSights.add(key);
+        this.spawnSightEvent(ev);
+      }
+    });
 
-function drawButton(cx, cy, bw, bh, label, col1, col2) {
-  const x = cx - bw / 2, y = cy - bh / 2;
-  const grad = ctx.createLinearGradient(x, y, x, y + bh);
-  grad.addColorStop(0, col2);
-  grad.addColorStop(1, col1);
-  ctx.fillStyle = grad;
-  ctx.beginPath();
-  ctx.roundRect(x, y, bw, bh, bh * 0.3);
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-  ctx.fillStyle = '#fff';
-  ctx.font = `bold ${Math.floor(bh * 0.45)}px Segoe UI`;
-  ctx.textAlign = 'center';
-  ctx.fillText(label, cx, cy + bh * 0.15);
-}
+    // Hindernisse bewegen
+    this.obstacles.forEach(obs => {
+      obs.z -= obs.type.speed * this.player.speed * 60 * dt;
+      if (obs.z < this.player.pos - 200) obs.alive = false;
+    });
 
-function drawGame(W, H, zone) {
-  const horizonY = H * 0.48;
+    // Wellen-Spawn
+    if (this.player.pos + 5500 >= this.gameLogic.nextWaveZ) this.spawnWave();
 
-  // Sky
-  const sky = ctx.createLinearGradient(0, 0, 0, horizonY);
-  sky.addColorStop(0, zone.skyTop);
-  sky.addColorStop(1, zone.skyBot);
-  ctx.fillStyle = sky;
-  ctx.fillRect(0, 0, W, horizonY);
+    // Kollision
+    if (this.player.invincible <= 0) {
+      this.obstacles.forEach(obs => {
+        const dz = obs.z - this.player.pos;
+        if (dz > -150 && dz < 400) {
+          const dx = Math.abs(this.player.x - obs.laneX);
+          // Sammelobjekte großzügiger, Fahrzeuge/Müll fairer
+          const hitRadius = obs.type.damage ? obs.type.width * 0.55 : obs.type.width * 0.85;
+          if (dx < hitRadius) {
+            obs.alive = false;
+            const carY = this.canvas.height * 0.78;
+            if (obs.isSight) {
+              // Sehenswürdigkeit eingesammelt → Popup
+              this.sightPopup = obs.sightData;
+              this.player.score += obs.type.score;
+              this.spawnParticles(this.canvas.width/2, carY, '#ffd700', 20);
+            } else if (obs.type.damage) {
+              this.player.lives--;
+              this.player.invincible = 120;
+              this.spawnParticles(this.canvas.width/2, carY, '#ff4444', 18);
+              if (this.player.lives <= 0) {
+                if (this.player.score > this.highscore) this.highscore = Math.floor(this.player.score);
+                this.state = 'over';
+              }
+            } else {
+              this.player.score += obs.type.score;
+              this.spawnParticles(this.canvas.width/2, carY, '#ffd700', 12);
+            }
+          }
+        }
+      });
+    }
 
-  // Clouds
-  clouds.forEach(c => {
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.beginPath();
-    const cx = c.x * W, cy = c.y * horizonY;
-    const cw = c.w * W, ch = c.h * horizonY;
-    ctx.ellipse(cx, cy, cw, ch, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(cx - cw * 0.3, cy + ch * 0.1, cw * 0.6, ch * 0.8, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(cx + cw * 0.3, cy + ch * 0.15, cw * 0.5, ch * 0.75, 0, 0, Math.PI * 2);
-    ctx.fill();
-  });
+    // Bäume recyceln
+    this.landmarks.forEach(lm => { if (lm.z < this.player.pos-800) lm.alive = false; });
+    let treesAhead = 0, lastZ = this.player.pos + 2000;
+    this.landmarks.forEach(lm => { if (lm.kind==='tree' && lm.z>this.player.pos+2000) { treesAhead++; if (lm.z>lastZ) lastZ=lm.z; } });
+    if (treesAhead < 8) {
+      for (let i = 0; i < 6; i++) {
+        const lm = this.landmarks.spawn(); if (!lm) continue;
+        lm.z = lastZ+400+i*400+Math.random()*200; lm.side = Math.random()>0.5?-1:1;
+        lm.emoji = ['🌳','🌲','🌳','🌲'][Math.floor(Math.random()*4)]; lm.kind='tree';
+      }
+    }
 
-  // Zone landmark emoji in sky
-  ctx.font = `${Math.floor(H * 0.08)}px serif`;
-  ctx.textAlign = 'center';
-  ctx.globalAlpha = 0.6;
-  ctx.fillText(zone.emoji, W * 0.15, horizonY * 0.55);
-  ctx.globalAlpha = 1;
+    // Partikel / Wolken / Kometen
+    this.particles.forEach(p => { p.x+=p.vx*dt; p.y+=p.vy*dt; p.vy+=150*dt; p.life-=dt; if(p.life<=0) p.alive=false; });
+    this.clouds.forEach(c => { c.x+=c.speed*this.player.speed*60*dt; if(c.x>1.3) c.x=-0.3; });
+    this.cometTimer -= dt;
+    if (this.cometTimer <= 0) { this.spawnComet(); this.cometTimer = 3+Math.random()*6; }
+    this.comets.forEach(c => {
+      c.x+=c.vx*dt; c.y+=c.vy*dt;
+      if (c.x<-0.2||c.x>1.2||c.y>0.5) c.alive=false; else c.life-=dt*0.4;
+      if (c.life<=0) c.alive=false;
+    });
 
-  // Road strips
-  const N = 120;
-  for (let i = 0; i < N; i++) {
-    const t1 = i / N;
-    const t2 = (i + 1) / N;
-    const y1 = horizonY + t1 * (H - horizonY);
-    const y2 = horizonY + t2 * (H - horizonY);
-    const depth1 = 0.02 + t1 * 0.98;
-    const depth2 = 0.02 + t2 * 0.98;
-
-    // Road center offset from player steering
-    const roadCX1 = W / 2 - playerX * W * 0.35 * depth1;
-    const roadCX2 = W / 2 - playerX * W * 0.35 * depth2;
-    const roadW1 = W * 0.65 * depth1;
-    const roadW2 = W * 0.65 * depth2;
-
-    // Grass
-    const alt = Math.floor(t1 * 6) % 2;
-    ctx.fillStyle = alt ? zone.grassA : zone.grassB;
-    ctx.fillRect(0, y1, W, y2 - y1);
-
-    // Road surface
-    const altRoad = Math.floor(t1 * 8) % 2;
-    ctx.fillStyle = altRoad ? '#555' : '#4a4a4a';
-    ctx.beginPath();
-    ctx.moveTo(roadCX1 - roadW1 / 2, y1);
-    ctx.lineTo(roadCX1 + roadW1 / 2, y1);
-    ctx.lineTo(roadCX2 + roadW2 / 2, y2);
-    ctx.lineTo(roadCX2 - roadW2 / 2, y2);
-    ctx.closePath();
-    ctx.fill();
-
-    // Rumble strips (alternating red/white)
-    const rumbleAlt = Math.floor(t1 * 5) % 2;
-    const rumbleW1 = roadW1 * 0.06;
-    const rumbleW2 = roadW2 * 0.06;
-    ctx.fillStyle = rumbleAlt ? '#cc0000' : '#ffffff';
-    // Left rumble
-    ctx.beginPath();
-    ctx.moveTo(roadCX1 - roadW1 / 2, y1);
-    ctx.lineTo(roadCX1 - roadW1 / 2 + rumbleW1, y1);
-    ctx.lineTo(roadCX2 - roadW2 / 2 + rumbleW2, y2);
-    ctx.lineTo(roadCX2 - roadW2 / 2, y2);
-    ctx.closePath();
-    ctx.fill();
-    // Right rumble
-    ctx.beginPath();
-    ctx.moveTo(roadCX1 + roadW1 / 2 - rumbleW1, y1);
-    ctx.lineTo(roadCX1 + roadW1 / 2, y1);
-    ctx.lineTo(roadCX2 + roadW2 / 2, y2);
-    ctx.lineTo(roadCX2 + roadW2 / 2 - rumbleW2, y2);
-    ctx.closePath();
-    ctx.fill();
-
-    // Lane dashes (center line)
-    if (altRoad === 0) {
-      const dashW1 = roadW1 * 0.025;
-      const dashW2 = roadW2 * 0.025;
-      ctx.fillStyle = '#ffff00';
-      ctx.beginPath();
-      ctx.moveTo(roadCX1 - dashW1 / 2, y1);
-      ctx.lineTo(roadCX1 + dashW1 / 2, y1);
-      ctx.lineTo(roadCX2 + dashW2 / 2, y2);
-      ctx.lineTo(roadCX2 - dashW2 / 2, y2);
-      ctx.closePath();
-      ctx.fill();
+    if (this.player.pos >= 38000) {
+      this.player.score += 1000;
+      if (this.player.score > this.highscore) this.highscore = Math.floor(this.player.score);
+      this.state = 'win';
     }
   }
 
-  // Fog near horizon
-  const fog = ctx.createLinearGradient(0, horizonY, 0, horizonY + H * 0.15);
-  fog.addColorStop(0, 'rgba(200,220,255,0.5)');
-  fog.addColorStop(1, 'rgba(200,220,255,0)');
-  ctx.fillStyle = fog;
-  ctx.fillRect(0, horizonY, W, H * 0.15);
+  // ─── Projektion ────────────────────────────────────────────────────────────
+  getProjection(dz, playerX, curve, W, horizonY, roadBottom) {
+    const z = dz/1000 + 0.5;
+    const scale = 1/z;
+    const dx = curve * (dz*dz) * 0.00015;
+    const perspX = (dx - playerX*400) * scale;
+    const camH = (roadBottom - horizonY) * 0.5;
+    return { x: W/2 + perspX*(W/1000), y: horizonY + camH*scale, w: W*0.8*scale, scale };
+  }
 
-  // ── Obstacles ────────────────────────────────────────────────────────────
-  // Sort far to near for proper layering
-  const visObs = obstacles.filter(o => {
-    const dz = o.z - pos;
-    return dz > 0 && dz < 4000;
-  }).sort((a, b) => (b.z - pos) - (a.z - pos));
+  // ─── Draw ──────────────────────────────────────────────────────────────────
+  draw() {
+    const W = this.canvas.width, H = this.canvas.height;
+    if (this.state === 'menu') { this.drawMenu(W, H); return; }
+    this.drawGameScene(W, H);
+    if (this.state === 'over') this.drawGameOver(W, H);
+    else if (this.state === 'win') this.drawWin(W, H);
+    // Popup über alles
+    if (this.sightPopup) this.drawSightPopup(W, H);
+  }
 
-  visObs.forEach(obs => {
-    const dz = obs.z - pos;
-    const t = 1 - dz / 4000;
-    if (t < 0 || t > 1) return;
-    const depth = 0.02 + t * 0.98;
-    const screenY = horizonY + t * (H - horizonY);
-    const roadW = W * 0.65 * depth;
-    const roadCX = W / 2 - playerX * W * 0.35 * depth;
-    const screenX = roadCX + obs.x * roadW / 2;
-    const fontSize = Math.max(10, t * H * 0.12);
-    ctx.font = `${fontSize}px serif`;
-    ctx.textAlign = 'center';
-    ctx.fillText(obs.type.emoji, screenX, screenY);
-  });
+  drawGameScene(W, H) {
+    const zone = ZONES[this.gameLogic.currentZone];
+    const horizonY = H*0.45 - this.gameLogic.pitch*(H/800);
+    const roadBottom = H;
+    const zMax = this.gameLogic.drawDistance;
 
-  // ── Player Car ────────────────────────────────────────────────────────────
-  const carY = H * 0.78;
-  const carSize = Math.floor(W * 0.16);
-  const flash = invincible > 0 && Math.floor(invincible / 6) % 2 === 0;
-  if (!flash) {
+    // Himmel
+    const sky = this.ctx.createLinearGradient(0, 0, 0, Math.max(0, horizonY));
+    sky.addColorStop(0, zone.skyTop); sky.addColorStop(1, zone.skyBot);
+    this.ctx.fillStyle = sky; this.ctx.fillRect(0, 0, W, horizonY);
+
+    // Wolken
+    this.clouds.forEach(c => {
+      this.ctx.globalAlpha = 0.6;
+      const cx=c.x*W, cy=c.y*H*0.45, cw=c.w*W, ch=c.h*H*0.45;
+      this.ctx.fillStyle = '#fff';
+      [[0,0,1,1],[-.3,.1,.6,.8],[.3,.15,.5,.75]].forEach(([ox,oy,sw,sh]) => {
+        this.ctx.beginPath(); this.ctx.ellipse(cx+ox*cw, cy+oy*ch, cw*sw, ch*sh, 0, 0, Math.PI*2); this.ctx.fill();
+      });
+      this.ctx.globalAlpha = 1;
+    });
+
+    // Zonen-Emoji am Himmel
+    this.ctx.font = `${Math.floor(H*0.08)}px serif`; this.ctx.textAlign='center'; this.ctx.globalAlpha=0.5;
+    this.ctx.fillText(zone.emoji, W*0.15, horizonY*0.55); this.ctx.globalAlpha=1;
+
+    // Gebäude-Silhouette
+    const silOff = (-this.player.pos*0.05 - this.gameLogic.curveStrength*W*0.1) % W;
+    this.ctx.fillStyle = 'rgba(0,0,0,0.30)'; this.ctx.save(); this.ctx.translate(silOff, 0);
+    for (let i=0; i<2; i++) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(i*W, horizonY); this.ctx.lineTo(i*W+W*0.1, horizonY-H*0.08);
+      this.ctx.lineTo(i*W+W*0.3, horizonY-H*0.03); this.ctx.lineTo(i*W+W*0.5, horizonY-H*0.1);
+      this.ctx.lineTo(i*W+W*0.8, horizonY-H*0.04); this.ctx.lineTo(i*W+W, horizonY); this.ctx.fill();
+    }
+    this.ctx.restore();
+
+    // ── Abstecher-Spur Vorschau (goldener Streifen, wenn Sight-Event nah) ──
+    let nearSight = null;
+    this.obstacles.forEach(obs => {
+      if (obs.isSight && obs.alive) {
+        const dz = obs.z - this.player.pos;
+        if (dz > 0 && dz < 3000) nearSight = obs;
+      }
+    });
+
+    // 3D Straße
+    const segs = 45;
+    for (let i = segs-1; i >= 0; i--) {
+      const dz1 = (i/segs)*zMax, dz2 = ((i+1)/segs)*zMax;
+      const p1 = this.getProjection(dz1, this.player.x, this.gameLogic.curveStrength, W, horizonY, roadBottom);
+      const p2 = this.getProjection(dz2, this.player.x, this.gameLogic.curveStrength, W, horizonY, roadBottom);
+      const gZ = this.player.pos + dz1;
+      const dk = Math.floor(gZ/200)%2===0;
+
+      // Gras
+      this.ctx.fillStyle = dk ? zone.grassA : zone.grassB;
+      this.ctx.fillRect(0, p2.y-1, W, p1.y-p2.y+2);
+
+      // Asphalt
+      this.ctx.fillStyle = dk ? '#555' : '#4a4a4a';
+      this.ctx.beginPath();
+      this.ctx.moveTo(p1.x-p1.w/2,p1.y); this.ctx.lineTo(p1.x+p1.w/2,p1.y);
+      this.ctx.lineTo(p2.x+p2.w/2,p2.y); this.ctx.lineTo(p2.x-p2.w/2,p2.y); this.ctx.fill();
+
+      // Rüttelstreifen
+      const rW1=p1.w*0.08, rW2=p2.w*0.08;
+      this.ctx.fillStyle = dk ? '#cc0000' : '#ffffff';
+      [[p1.x-p1.w/2, p2.x-p2.w/2, rW1, rW2, 1],[p1.x+p1.w/2-rW1, p2.x+p2.w/2-rW2, rW1, rW2, -1]].forEach(([x1,x2,w1,w2,dir]) => {
+        this.ctx.beginPath();
+        this.ctx.moveTo(x1,p1.y); this.ctx.lineTo(x1+w1,p1.y);
+        this.ctx.lineTo(x2+w2,p2.y); this.ctx.lineTo(x2,p2.y); this.ctx.fill();
+      });
+
+      // Spurmarkierungen
+      if (!dk) {
+        this.ctx.fillStyle='#fff';
+        const lW1=p1.w*0.02, lW2=p2.w*0.02;
+        [-1/6, 1/6].forEach(rel => {
+          const x1=p1.x+p1.w*rel, x2=p2.x+p2.w*rel;
+          this.ctx.beginPath();
+          this.ctx.moveTo(x1-lW1/2,p1.y); this.ctx.lineTo(x1+lW1/2,p1.y);
+          this.ctx.lineTo(x2+lW2/2,p2.y); this.ctx.lineTo(x2-lW2/2,p2.y); this.ctx.fill();
+        });
+      }
+
+      // Goldene Abstecher-Spur (wenn Sight-Event nah) ────────────────────────
+      if (nearSight) {
+        const evDz = nearSight.z - this.player.pos;
+        if (dz1 < evDz) { // nur bis zur Sight-Position zeichnen
+          const side = nearSight.laneX > 0 ? 1 : -1;
+          const sW1 = p1.w * 0.14, sW2 = p2.w * 0.14;
+          // Goldener Streifen außen neben dem Rüttelstreifen
+          const sX1 = side > 0 ? p1.x + p1.w/2 : p1.x - p1.w/2 - sW1;
+          const sX2 = side > 0 ? p2.x + p2.w/2 : p2.x - p2.w/2 - sW2;
+          const pulse = 0.4 + 0.3 * Math.sin(Date.now()/250 + dz1*0.01);
+          this.ctx.fillStyle = `rgba(255,200,0,${pulse})`;
+          this.ctx.beginPath();
+          this.ctx.moveTo(sX1, p1.y); this.ctx.lineTo(sX1 + sW1*side, p1.y);
+          this.ctx.lineTo(sX2 + sW2*side, p2.y); this.ctx.lineTo(sX2, p2.y);
+          this.ctx.fill();
+        }
+      }
+    }
+
+    // ── Objekte sortieren & zeichnen ─────────────────────────────────────────
+    const drawList = [];
+    this.obstacles.forEach(obs => { const dz=obs.z-this.player.pos; if(dz>0&&dz<zMax) drawList.push({type:'obs',item:obs,dz}); });
+    this.landmarks.forEach(lm  => { const dz=lm.z -this.player.pos; if(dz>0&&dz<zMax) drawList.push({type:'lm', item:lm, dz}); });
+    drawList.sort((a,b)=>b.dz-a.dz);
+
+    drawList.forEach(obj => {
+      const p = this.getProjection(obj.dz, this.player.x, this.gameLogic.curveStrength, W, horizonY, roadBottom);
+
+      if (obj.type === 'obs') {
+        const o = obj.item;
+        const screenX = p.x + o.laneX * (p.w/2);
+        const baseSize = Math.max(12, 120*(p.scale/2)*(H/600));
+
+        if (o.isSight) {
+          // ── Sehenswürdigkeit-Abstecher: goldenes Glühen ─────────────────
+          const pulse = 0.6 + 0.4*Math.sin(Date.now()/300);
+          // Äußerer Glow-Ring
+          this.ctx.save();
+          this.ctx.globalAlpha = 0.35 * pulse;
+          this.ctx.fillStyle = '#ffd700';
+          this.ctx.beginPath();
+          this.ctx.arc(screenX, p.y - baseSize*0.5, baseSize*0.9, 0, Math.PI*2);
+          this.ctx.fill();
+          this.ctx.globalAlpha = 1;
+          // Goldene Pille
+          const bW = baseSize*1.4, bH = baseSize*1.3;
+          this.ctx.fillStyle = `rgba(180,130,0,0.85)`;
+          this.ctx.strokeStyle = `rgba(255,220,0,${pulse})`;
+          this.ctx.lineWidth = Math.max(2, baseSize*0.07);
+          this.ctx.beginPath();
+          this.ctx.roundRect(screenX-bW/2, p.y-baseSize-bH*0.15, bW, bH, bH*0.3);
+          this.ctx.fill(); this.ctx.stroke();
+          // Pfeil-Label oben
+          if (baseSize > 20) {
+            const arrowSide = o.laneX > 0 ? '→' : '←';
+            this.ctx.fillStyle = '#fff';
+            this.ctx.font = `bold ${Math.max(10, baseSize*0.38)}px Segoe UI`;
+            this.ctx.textAlign = 'center'; this.ctx.textBaseline = 'bottom';
+            this.ctx.fillText(`${arrowSide} ABSTECHER`, screenX, p.y - baseSize*1.1);
+            const ev = o.sightData;
+            if (ev && baseSize > 26) {
+              this.ctx.fillStyle = '#ffd700';
+              this.ctx.font = `${Math.max(8, baseSize*0.32)}px Segoe UI`;
+              this.ctx.fillText(ev.name, screenX, p.y - baseSize*1.45);
+            }
+          }
+          this.ctx.restore();
+          // Emoji
+          this.ctx.font = `${baseSize}px serif`;
+          this.ctx.textAlign='center'; this.ctx.textBaseline='bottom';
+          this.ctx.fillText(o.type.emoji, screenX, p.y);
+
+        } else {
+          // ── Normales Hindernis / Sammelobjekt ───────────────────────────
+          const bgAlpha = Math.min(0.78, p.scale*1.4);
+          const pad = baseSize*0.16;
+          const boxW = baseSize*1.12 + pad*2, boxH = baseSize + pad*1.7;
+          if (o.type.damage) {
+            this.ctx.fillStyle = `rgba(180,40,0,${bgAlpha*0.72})`;
+            this.ctx.strokeStyle = `rgba(255,110,20,${bgAlpha})`;
+          } else {
+            // Sammelobjekt: Farbe passend zur Zone
+            this.ctx.fillStyle = `rgba(0,120,70,${bgAlpha*0.65})`;
+            this.ctx.strokeStyle = `rgba(0,220,120,${bgAlpha})`;
+          }
+          this.ctx.lineWidth = Math.max(1.2, baseSize*0.05);
+          this.ctx.beginPath();
+          this.ctx.roundRect(screenX-boxW/2, p.y-baseSize-pad, boxW, boxH, boxH*0.26);
+          this.ctx.fill(); this.ctx.stroke();
+          // Sammelobjekt: Name klein darunter
+          if (!o.type.damage && o.type.name && baseSize > 22) {
+            this.ctx.fillStyle = '#fff';
+            this.ctx.font = `bold ${Math.max(8, baseSize*0.28)}px Segoe UI`;
+            this.ctx.textAlign = 'center'; this.ctx.textBaseline = 'top';
+            this.ctx.fillText(o.type.name, screenX, p.y + 2);
+          }
+          // Schatten + Emoji
+          this.ctx.font = `${baseSize}px serif`;
+          this.ctx.textAlign='center'; this.ctx.textBaseline='bottom';
+          this.ctx.fillStyle='rgba(0,0,0,0.3)';
+          this.ctx.beginPath(); this.ctx.ellipse(screenX, p.y+2, baseSize*0.38, baseSize*0.09, 0, 0, Math.PI*2); this.ctx.fill();
+          this.ctx.fillText(o.type.emoji, screenX, p.y);
+        }
+
+      } else {
+        // ── Landmarks ──────────────────────────────────────────────────────
+        const lm = obj.item;
+        const side = lm.kind==='tree'?0.75:0.85;
+        const screenX = p.x + lm.side*(p.w*side);
+        this.ctx.globalAlpha = obj.dz > zMax-500 ? (zMax-obj.dz)/500 : 1;
+
+        if (lm.kind==='tree') {
+          const sz = Math.max(16, 280*p.scale*(H/800));
+          this.ctx.font=`${sz}px serif`; this.ctx.textAlign='center'; this.ctx.textBaseline='bottom';
+          this.ctx.fillText(lm.emoji, screenX, p.y+sz*0.05);
+
+        } else if (lm.kind==='finish') {
+          const banH = Math.max(20, 240*p.scale*(H/800));
+          const banW = p.w*1.4;
+          const banY = p.y - banH*2.0;
+          // Pfähle
+          this.ctx.fillStyle='#222';
+          const pw = Math.max(3, p.scale*10);
+          this.ctx.fillRect(p.x-banW/2, p.y-banH*2.2, pw, banH*2.2);
+          this.ctx.fillRect(p.x+banW/2-pw, p.y-banH*2.2, pw, banH*2.2);
+          // Schachbrett
+          const cells=10, cW=banW/cells, cH=banH*0.45;
+          for (let c=0;c<cells;c++) for (let r=0;r<2;r++) {
+            this.ctx.fillStyle = (c+r)%2===0?'#000':'#fff';
+            this.ctx.fillRect(p.x-banW/2+c*cW, banY+r*cH, cW, cH);
+          }
+          // Text
+          this.ctx.fillStyle='#ffd700'; this.ctx.strokeStyle='#000';
+          this.ctx.lineWidth=Math.max(1,p.scale*2);
+          this.ctx.font=`bold ${Math.max(14,banH*0.55)}px Segoe UI`;
+          this.ctx.textAlign='center'; this.ctx.textBaseline='middle';
+          this.ctx.strokeText('🏁 ZIEL 🏁', p.x, banY+banH*1.25);
+          this.ctx.fillText('🏁 ZIEL 🏁',   p.x, banY+banH*1.25);
+
+        } else {
+          // Sehenswürdigkeits-Schild
+          const sH = Math.max(22, 240*p.scale*(H/800)), sW = sH*2.6;
+          const col = lm.side>0 ? '#1565c0' : '#2e7d32';
+          this.ctx.fillStyle='#555';
+          const pw=Math.max(2,p.scale*7);
+          this.ctx.fillRect(screenX-sW*0.30, p.y-sH*1.4, pw, sH*1.4);
+          this.ctx.fillRect(screenX+sW*0.30, p.y-sH*1.4, pw, sH*1.4);
+          this.ctx.fillStyle='rgba(0,0,0,0.4)';
+          this.ctx.beginPath(); this.ctx.roundRect(screenX-sW/2+3, p.y-sH*2.6+3, sW, sH, 5); this.ctx.fill();
+          this.ctx.fillStyle=col;
+          this.ctx.beginPath(); this.ctx.roundRect(screenX-sW/2, p.y-sH*2.6, sW, sH, 5); this.ctx.fill();
+          this.ctx.strokeStyle='#fff'; this.ctx.lineWidth=Math.max(1.5,p.scale*4); this.ctx.stroke();
+          // Emoji
+          this.ctx.font=`${sH*0.68}px serif`; this.ctx.textAlign='center'; this.ctx.textBaseline='middle';
+          this.ctx.fillText(lm.emoji, screenX-sW*0.30, p.y-sH*2.1);
+          // Name
+          const fS=sH*0.30;
+          if (fS>6) {
+            this.ctx.fillStyle='#fff'; this.ctx.font=`bold ${fS}px Segoe UI`;
+            this.ctx.textAlign='left'; this.ctx.textBaseline='middle';
+            this.ctx.fillText(lm.name, screenX-sW*0.08, p.y-sH*2.1);
+          }
+        }
+        this.ctx.globalAlpha=1;
+      }
+    });
+    this.ctx.textBaseline='alphabetic';
+
+    // ── Spielerposition-Pfeil ─────────────────────────────────────────────────
+    {
+      const arP = this.getProjection(200, this.player.x, this.gameLogic.curveStrength, W, horizonY, roadBottom);
+      const arX = arP.x + this.player.x*(arP.w/2);
+      const arH = arP.w*0.10, arW = arH*0.75;
+      const flash = this.player.invincible>0 ? (Math.floor(this.player.invincible/6)%2===0) : false;
+      this.ctx.save();
+      this.ctx.globalAlpha = flash ? 0.25 : 0.85;
+      this.ctx.fillStyle = this.player.invincible>0 ? '#ff4444' : '#44ffaa';
+      this.ctx.strokeStyle = '#fff'; this.ctx.lineWidth = Math.max(1.5, arH*0.08);
+      this.ctx.beginPath();
+      this.ctx.moveTo(arX, arP.y);
+      this.ctx.lineTo(arX-arW/2, arP.y-arH);
+      this.ctx.lineTo(arX-arW*0.15, arP.y-arH*0.65);
+      this.ctx.lineTo(arX-arW*0.15, arP.y-arH*1.55);
+      this.ctx.lineTo(arX+arW*0.15, arP.y-arH*1.55);
+      this.ctx.lineTo(arX+arW*0.15, arP.y-arH*0.65);
+      this.ctx.lineTo(arX+arW/2, arP.y-arH);
+      this.ctx.closePath(); this.ctx.fill(); this.ctx.stroke();
+      this.ctx.restore();
+    }
+
+    // ── Cockpit ────────────────────────────────────────────────────────────────
+    const hoodTop = roadBottom - H*0.005;
+    const hG = this.ctx.createLinearGradient(0,hoodTop,0,H);
+    hG.addColorStop(0,'#0d0d0d'); hG.addColorStop(0.5,'#2a2a2a'); hG.addColorStop(1,'#0a0a0a');
+    this.ctx.fillStyle=hG;
+    this.ctx.beginPath(); this.ctx.moveTo(0,H); this.ctx.lineTo(0,hoodTop);
+    this.ctx.quadraticCurveTo(W/2, roadBottom-H*0.06, W, hoodTop);
+    this.ctx.lineTo(W,H); this.ctx.fill();
+
+    // Lenkrad
+    const wY=roadBottom-H*0.02, wR=W*0.18;
+    this.ctx.fillStyle='#111'; this.ctx.beginPath(); this.ctx.arc(W/2,wY,wR,Math.PI,0); this.ctx.fill();
+    this.ctx.strokeStyle='#333'; this.ctx.lineWidth=W*0.04; this.ctx.stroke();
+    const steer=this.input.getSteer();
+    const wA=-Math.PI/2+steer*1.5;
+    this.ctx.fillStyle='#ff4444';
+    this.ctx.beginPath(); this.ctx.arc(W/2+Math.cos(wA)*wR, wY+Math.sin(wA)*wR, W*0.012, 0, Math.PI*2); this.ctx.fill();
+
+    // Dashboard-Overlay
+    {
+      const nl = this.player.targetLane;
+      const liY=H-H*0.085, liCX=W*0.18;
+      this.ctx.fillStyle='rgba(255,255,255,0.55)';
+      this.ctx.font=`bold ${Math.floor(W*0.022)}px Segoe UI`; this.ctx.textAlign='center';
+      this.ctx.fillText('SPUR', liCX, liY-W*0.028);
+      [-1,0,1].forEach((off,i)=>{
+        const dx=liCX+off*W*0.045, act=(i===nl);
+        if (act) {
+          this.ctx.save(); this.ctx.globalAlpha=0.35;
+          this.ctx.fillStyle=this.player.invincible>0?'#ff4444':'#00ff99';
+          this.ctx.beginPath(); this.ctx.arc(dx,liY,W*0.030,0,Math.PI*2); this.ctx.fill();
+          this.ctx.restore();
+        }
+        this.ctx.fillStyle=act?(this.player.invincible>0?'#ff5555':'#00ff99'):'rgba(255,255,255,0.14)';
+        this.ctx.beginPath(); this.ctx.arc(dx,liY,W*0.015,0,Math.PI*2); this.ctx.fill();
+      });
+      // Mini-Tacho
+      const sx=W*0.82, sy=H-H*0.07, sr=W*0.06;
+      this.ctx.strokeStyle='rgba(255,255,255,0.18)'; this.ctx.lineWidth=sr*0.30; this.ctx.lineCap='round';
+      this.ctx.beginPath(); this.ctx.arc(sx,sy,sr,Math.PI*0.75,Math.PI*2.25); this.ctx.stroke();
+      const frac=this.player.speed/9;
+      this.ctx.strokeStyle=frac>0.8?'#ff3333':frac>0.55?'#ffaa00':'#00dd88';
+      this.ctx.beginPath(); this.ctx.arc(sx,sy,sr,Math.PI*0.75,Math.PI*0.75+frac*Math.PI*1.5); this.ctx.stroke();
+      this.ctx.lineCap='butt';
+      this.ctx.fillStyle='#fff'; this.ctx.font=`bold ${Math.floor(W*0.028)}px Segoe UI`; this.ctx.textAlign='center';
+      this.ctx.fillText(`${Math.floor(this.player.speed*20)}`,sx,sy+W*0.010);
+      this.ctx.fillStyle='rgba(255,255,255,0.55)'; this.ctx.font=`${Math.floor(W*0.016)}px Segoe UI`;
+      this.ctx.fillText('km/h',sx,sy+W*0.030);
+    }
+
+    if (this.player.invincible>0 && Math.floor(this.player.invincible/6)%2===0) {
+      this.ctx.fillStyle='rgba(255,0,0,0.18)'; this.ctx.fillRect(0,0,W,H);
+    }
+
+    // Partikel
+    this.particles.forEach(p=>{
+      this.ctx.globalAlpha=p.life/p.maxLife; this.ctx.fillStyle=p.color;
+      this.ctx.beginPath(); this.ctx.arc(p.x,p.y,p.r,0,Math.PI*2); this.ctx.fill();
+    });
+    this.ctx.globalAlpha=1;
+
+    // ── HUD ────────────────────────────────────────────────────────────────────
+    this.ctx.fillStyle='rgba(0,0,0,0.5)'; this.ctx.fillRect(0,0,W,H*0.08);
+    let ls=''; for(let i=0;i<this.player.lives;i++) ls+='❤️';
+    this.ctx.font=`${Math.floor(H*0.045)}px serif`; this.ctx.textAlign='left'; this.ctx.fillText(ls,8,H*0.062);
+    this.ctx.fillStyle='#ffd700'; this.ctx.font=`bold ${Math.floor(H*0.042)}px Segoe UI`; this.ctx.textAlign='center';
+    this.ctx.fillText(Math.floor(this.player.score).toLocaleString('de-DE'),W/2,H*0.062);
+    this.ctx.font=`${Math.floor(H*0.038)}px serif`; this.ctx.textAlign='right'; this.ctx.fillStyle='#fff';
+    this.ctx.fillText(zone.emoji+' '+zone.name, W-8, H*0.062);
+    // Fortschrittsbalken
+    const prog=Math.min(1,this.player.pos/38000);
+    this.ctx.fillStyle='rgba(255,255,255,0.3)'; this.ctx.fillRect(0,H-6,W,6);
+    this.ctx.fillStyle='#27ae60'; this.ctx.fillRect(0,H-6,W*prog,6);
+
+    // Abstecher-Hinweis oben (wenn Sight-Event sichtbar)
+    if (nearSight) {
+      const ev = nearSight.sightData;
+      const side = nearSight.laneX > 0 ? 'rechts' : 'links';
+      const dz = nearSight.z - this.player.pos;
+      const alpha = Math.min(1, (3000-dz)/800);
+      this.ctx.save();
+      this.ctx.globalAlpha = alpha;
+      this.ctx.fillStyle = 'rgba(180,130,0,0.85)';
+      this.ctx.strokeStyle = '#ffd700'; this.ctx.lineWidth = 2;
+      this.ctx.beginPath(); this.ctx.roundRect(W*0.05, H*0.10, W*0.90, H*0.062, 8);
+      this.ctx.fill(); this.ctx.stroke();
+      this.ctx.fillStyle = '#fff'; this.ctx.font=`bold ${Math.floor(H*0.028)}px Segoe UI`; this.ctx.textAlign='center';
+      this.ctx.fillText(`${ev.emoji}  Abstecher ${side}: ${ev.name}  ${nearSight.laneX>0?'→':'←'}`, W/2, H*0.138);
+      this.ctx.restore();
+    }
+
+    // Zone-Announcement
+    if (this.gameLogic.zoneAnnounce) {
+      const za=this.gameLogic.zoneAnnounce;
+      this.ctx.globalAlpha=za.alpha;
+      this.ctx.fillStyle='rgba(0,0,0,0.6)'; this.ctx.fillRect(0,H*0.35,W,H*0.25);
+      this.ctx.textAlign='center';
+      this.ctx.font=`${Math.floor(H*0.08)}px serif`; this.ctx.fillText(zone.emoji,W/2,H*0.44);
+      this.ctx.font=`bold ${Math.floor(H*0.055)}px Segoe UI`; this.ctx.fillStyle='#fff'; this.ctx.fillText(zone.name,W/2,H*0.52);
+      this.ctx.font=`${Math.floor(H*0.030)}px Segoe UI`; this.ctx.fillStyle='#ddd'; this.ctx.fillText(zone.subtitle,W/2,H*0.57);
+      this.ctx.globalAlpha=1;
+    }
+  }
+
+  // ─── Hilfsfunktion: Text mit Zeilenumbruch ────────────────────────────────
+  wrapText(text, x, y, maxW, lineH) {
+    const words = text.split(' ');
+    let line = '';
+    let lineY = y;
+    for (const word of words) {
+      const test = line ? line + ' ' + word : word;
+      if (this.ctx.measureText(test).width > maxW && line) {
+        this.ctx.fillText(line, x, lineY);
+        line = word; lineY += lineH;
+      } else line = test;
+    }
+    if (line) { this.ctx.fillText(line, x, lineY); lineY += lineH; }
+    return lineY;
+  }
+
+  // ─── Sehenswürdigkeits-Popup ───────────────────────────────────────────────
+  drawSightPopup(W, H) {
+    const ev = this.sightPopup;
+    const ctx = this.ctx;
+
+    // Dunkler Hintergrund
+    ctx.fillStyle = 'rgba(0,0,0,0.88)';
+    ctx.fillRect(0, 0, W, H);
+
+    const pad  = W * 0.05;
+    const boxW = W * 0.92;
+    const boxX = (W - boxW) / 2;
+    const boxY = H * 0.04;
+    const boxH = H * 0.92;
+    const radius = 14;
+    const c1 = ev.color || '#1565c0';
+
+    // ── Box mit clip ──────────────────────────────────────────────────────
     ctx.save();
-    ctx.translate(W / 2, carY);
-    // Steer tilt based on key input
-    let steerTilt = 0;
-    if (keys['ArrowLeft'] || keys['KeyA'] || touchLeft) steerTilt = -0.12;
-    if (keys['ArrowRight'] || keys['KeyD'] || touchRight) steerTilt = 0.12;
-    const gpS = getGamepadSteering();
-    if (Math.abs(gpS) > 0.1) steerTilt = gpS * 0.12;
-    if (gyroAvailable) steerTilt = gyroValue * 0.12;
-    ctx.rotate(steerTilt);
-    ctx.font = `${carSize}px serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('🚙', 0, 0);
-    ctx.restore();
+    ctx.beginPath(); ctx.roundRect(boxX, boxY, boxW, boxH, radius); ctx.clip();
+
+    // Dunkler Box-Hintergrund
+    const bgGrad = ctx.createLinearGradient(boxX, boxY, boxX, boxY+boxH);
+    bgGrad.addColorStop(0, '#0d1526'); bgGrad.addColorStop(1, '#060c18');
+    ctx.fillStyle = bgGrad; ctx.fillRect(boxX, boxY, boxW, boxH);
+
+    // ── Farbiger Header-Streifen ──────────────────────────────────────────
+    const hdrH = boxH * 0.175;
+    const hdrGrad = ctx.createLinearGradient(boxX, boxY, boxX+boxW, boxY);
+    hdrGrad.addColorStop(0, c1);
+    hdrGrad.addColorStop(1, this.darkenColor(c1, 0.6));
+    ctx.fillStyle = hdrGrad; ctx.fillRect(boxX, boxY, boxW, hdrH);
+
+    // Emoji groß im Header
+    const emojiSz = Math.floor(hdrH * 0.62);
+    ctx.font = `${emojiSz}px serif`;
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ctx.fillText(ev.emoji, boxX + pad, boxY + hdrH * 0.5);
+
+    // Titel-Text im Header
+    ctx.fillStyle = '#fff';
+    ctx.font = `bold ${Math.floor(hdrH * 0.34)}px Segoe UI`;
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ctx.fillText(ev.name, boxX + pad + emojiSz * 1.1, boxY + hdrH * 0.40);
+    // "ABSTECHER" klein darunter
+    ctx.fillStyle = 'rgba(255,255,255,0.65)';
+    ctx.font = `${Math.floor(hdrH * 0.22)}px Segoe UI`;
+    ctx.fillText('🗺️  Abstecher · +150 Punkte', boxX + pad + emojiSz * 1.1, boxY + hdrH * 0.72);
+
+    // ── Fakten-Bereich ────────────────────────────────────────────────────
+    const txtX  = boxX + pad;
+    const txtW  = boxW - pad * 2;
+    const factFs = Math.max(13, Math.floor(H * 0.030)); // lesbare Mindestgröße
+    const lineH  = factFs * 1.55;
+
+    ctx.font = `bold ${Math.floor(hdrH*0.22)}px Segoe UI`;
+    ctx.fillStyle = 'rgba(255,215,0,0.70)';
+    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+    ctx.fillText('— Wusstest du das?', txtX, boxY + hdrH + factFs * 1.4);
+
+    ctx.font = `${factFs}px Segoe UI`;
+    ctx.fillStyle = '#d8eeff';
+    let factY = boxY + hdrH + factFs * 2.8;
+
+    ev.facts.forEach(fact => {
+      factY = this.wrapText(fact, txtX, factY, txtW, lineH) + factFs * 0.6;
+    });
+
+    // ── Weiterfahren-Button ───────────────────────────────────────────────
+    const bH   = Math.max(44, H * 0.075);
+    const bW   = boxW - pad * 2;
+    const bX   = boxX + pad;
+    const bY   = boxY + boxH - bH - H * 0.025;
+
+    // Button-Position speichern (für Klick-Erkennung)
+    this._popupBtn = { x: bX, y: bY, w: bW, h: bH };
+
+    const bGrad = ctx.createLinearGradient(bX, bY, bX, bY+bH);
+    bGrad.addColorStop(0, '#2ecc71'); bGrad.addColorStop(1, '#1e8449');
+    ctx.fillStyle = bGrad;
+    ctx.beginPath(); ctx.roundRect(bX, bY, bW, bH, bH*0.28); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.35)'; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.font = `bold ${Math.floor(bH * 0.42)}px Segoe UI`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('🚗  Weiterfahren →', bX + bW/2, bY + bH/2);
+
+    // Trennlinie über Button
+    ctx.strokeStyle = 'rgba(255,215,0,0.20)'; ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(bX, bY - H*0.012); ctx.lineTo(bX+bW, bY - H*0.012);
+    ctx.stroke();
+
+    ctx.restore(); // clip aufheben
+
+    // Äußerer goldener Rand
+    ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.roundRect(boxX, boxY, boxW, boxH, radius); ctx.stroke();
+
     ctx.textBaseline = 'alphabetic';
   }
 
-  // ── Particles ─────────────────────────────────────────────────────────────
-  particles.forEach(p => {
-    const alpha = p.life / p.maxLife;
-    ctx.globalAlpha = alpha;
-    ctx.fillStyle = p.color;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.r * alpha, 0, Math.PI * 2);
-    ctx.fill();
-  });
-  ctx.globalAlpha = 1;
-
-  // ── HUD ───────────────────────────────────────────────────────────────────
-  // Top bar background
-  ctx.fillStyle = 'rgba(0,0,0,0.5)';
-  ctx.fillRect(0, 0, W, H * 0.08);
-
-  // Lives
-  ctx.font = `${Math.floor(H * 0.045)}px serif`;
-  ctx.textAlign = 'left';
-  let livesStr = '';
-  for (let i = 0; i < lives; i++) livesStr += '❤️';
-  ctx.fillText(livesStr, 8, H * 0.062);
-
-  // Score
-  ctx.fillStyle = '#ffd700';
-  ctx.font = `bold ${Math.floor(H * 0.042)}px Segoe UI`;
-  ctx.textAlign = 'center';
-  ctx.fillText(Math.floor(score).toLocaleString('de-DE'), W / 2, H * 0.062);
-
-  // Zone name (right)
-  ctx.font = `${Math.floor(H * 0.038)}px serif`;
-  ctx.textAlign = 'right';
-  ctx.fillStyle = '#fff';
-  ctx.fillText(zone.emoji + ' ' + zone.name, W - 8, H * 0.062);
-
-  // Progress bar (bottom)
-  const progress = Math.min(1, pos / 38000);
-  ctx.fillStyle = 'rgba(0,0,0,0.5)';
-  ctx.fillRect(0, H - 6, W, 6);
-  ctx.fillStyle = '#0099ff';
-  ctx.fillRect(0, H - 6, W * progress, 6);
-
-  // Speed indicator
-  ctx.fillStyle = 'rgba(0,0,0,0.5)';
-  ctx.textAlign = 'right';
-  ctx.fillStyle = '#adf';
-  ctx.font = `${Math.floor(H * 0.032)}px Segoe UI`;
-  ctx.fillText(`${Math.floor(speed * 20)} km/h`, W - 8, H - 12);
-
-  // Touch hints (if no gyro and touch device)
-  const isTouch = ('ontouchstart' in window);
-  if (isTouch && !gyroAvailable) {
-    ctx.fillStyle = 'rgba(255,255,255,0.25)';
-    ctx.font = `bold ${Math.floor(H * 0.06)}px Segoe UI`;
-    ctx.textAlign = 'left';
-    ctx.fillText('◀', 8, H * 0.88);
-    ctx.textAlign = 'right';
-    ctx.fillText('▶', W - 8, H * 0.88);
+  // Farbe abdunkeln (für Gradient)
+  darkenColor(hex, factor) {
+    const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+    return `rgb(${Math.floor(r*factor)},${Math.floor(g*factor)},${Math.floor(b*factor)})`;
   }
 
-  // Zone announce overlay
-  if (zoneAnnounce) {
-    const za = ZONES[zoneAnnounce.idx];
-    ctx.globalAlpha = zoneAnnounce.alpha;
-    ctx.fillStyle = 'rgba(0,0,0,0.75)';
-    ctx.fillRect(0, H * 0.3, W, H * 0.38);
-    ctx.textAlign = 'center';
-    ctx.font = `${Math.floor(H * 0.10)}px serif`;
-    ctx.fillStyle = '#fff';
-    ctx.fillText(za.emoji, W / 2, H * 0.435);
-    ctx.font = `bold ${Math.floor(H * 0.058)}px Segoe UI`;
-    ctx.fillStyle = '#ffd700';
-    ctx.fillText(za.name, W / 2, H * 0.52);
-    ctx.font = `${Math.floor(H * 0.030)}px Segoe UI`;
-    ctx.fillStyle = '#ddd';
-    // Wrap subtitle
-    wrapText(za.subtitle, W / 2, H * 0.57, W * 0.85, H * 0.034);
-    ctx.globalAlpha = 1;
-  }
-}
-
-function wrapText(text, cx, y, maxW, lineH) {
-  const words = text.split(' ');
-  let line = '';
-  let lines = [];
-  for (let w of words) {
-    const test = line + (line ? ' ' : '') + w;
-    if (ctx.measureText(test).width > maxW && line) {
-      lines.push(line);
-      line = w;
-    } else line = test;
-  }
-  if (line) lines.push(line);
-  lines.forEach((l, i) => ctx.fillText(l, cx, y + i * lineH));
-}
-
-function drawGameOver(W, H) {
-  ctx.fillStyle = 'rgba(0,0,0,0.75)';
-  ctx.fillRect(0, 0, W, H);
-
-  ctx.textAlign = 'center';
-  ctx.font = `${Math.floor(H * 0.10)}px serif`;
-  ctx.fillText('💥', W / 2, H * 0.28);
-
-  ctx.font = `bold ${Math.floor(H * 0.07)}px Segoe UI`;
-  ctx.fillStyle = '#ff4444';
-  ctx.fillText('Crash!', W / 2, H * 0.37);
-
-  ctx.font = `bold ${Math.floor(H * 0.05)}px Segoe UI`;
-  ctx.fillStyle = '#ffd700';
-  ctx.fillText(`Punkte: ${Math.floor(score).toLocaleString('de-DE')}`, W / 2, H * 0.45);
-
-  if (score >= highscore && highscore > 0) {
-    ctx.fillStyle = '#ffd700';
-    ctx.font = `bold ${Math.floor(H * 0.042)}px Segoe UI`;
-    ctx.fillText('🏆 Neuer Highscore!', W / 2, H * 0.52);
-  } else if (highscore > 0) {
-    ctx.fillStyle = '#aaa';
-    ctx.font = `${Math.floor(H * 0.036)}px Segoe UI`;
-    ctx.fillText(`Highscore: ${Math.floor(highscore).toLocaleString('de-DE')}`, W / 2, H * 0.52);
-  }
-
-  ctx.fillStyle = '#fff';
-  ctx.font = `${Math.floor(H * 0.038)}px Segoe UI`;
-  ctx.fillText(`Zone erreicht: ${ZONES[currentZone].emoji} ${ZONES[currentZone].name}`, W / 2, H * 0.58);
-
-  drawButton(W / 2, H * 0.71, W * 0.55, H * 0.09, '🔄 Nochmal!', '#c0392b', '#e74c3c');
-}
-
-function drawWin(W, H) {
-  const bg = ctx.createLinearGradient(0, 0, 0, H);
-  bg.addColorStop(0, '#0077be');
-  bg.addColorStop(0.5, '#00b4d8');
-  bg.addColorStop(1, '#003d6e');
-  ctx.fillStyle = bg;
-  ctx.fillRect(0, 0, W, H);
-
-  // Waves
-  ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-  ctx.lineWidth = 3;
-  for (let i = 0; i < 6; i++) {
-    const wy = H * (0.55 + i * 0.07);
-    ctx.beginPath();
-    for (let x = 0; x < W; x += 4) {
-      const y = wy + Math.sin(x * 0.04 + i + Date.now() * 0.001) * 5;
-      if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  // ─── Menü / Game Over / Win ────────────────────────────────────────────────
+  drawMenu(W, H) {
+    const sky=this.ctx.createLinearGradient(0,0,0,H*0.7);
+    sky.addColorStop(0,'#001a40'); sky.addColorStop(1,'#0077be');
+    this.ctx.fillStyle=sky; this.ctx.fillRect(0,0,W,H);
+    const sea=this.ctx.createLinearGradient(0,H*0.65,0,H);
+    sea.addColorStop(0,'#0077be'); sea.addColorStop(1,'#003d6e');
+    this.ctx.fillStyle=sea; this.ctx.fillRect(0,H*0.65,W,H*0.35);
+    this.ctx.strokeStyle='rgba(255,255,255,0.3)'; this.ctx.lineWidth=2;
+    for (let i=0;i<5;i++) {
+      const wy=H*(0.68+i*0.06);
+      this.ctx.beginPath();
+      for (let x=0;x<W;x+=4) { const y=wy+Math.sin(x*0.04+i)*4; x===0?this.ctx.moveTo(x,y):this.ctx.lineTo(x,y); }
+      this.ctx.stroke();
     }
-    ctx.stroke();
+    this.ctx.textAlign='center'; this.ctx.fillStyle='#fff';
+    this.ctx.font=`bold ${Math.floor(W*0.1)}px Segoe UI`;
+    this.ctx.shadowColor='#000'; this.ctx.shadowBlur=8;
+    this.ctx.fillText('🌊 Fahrt nach', W/2, H*0.22);
+    this.ctx.font=`bold ${Math.floor(W*0.14)}px Segoe UI`; this.ctx.fillStyle='#ffd700';
+    this.ctx.fillText('Zeeland!', W/2, H*0.34); this.ctx.shadowBlur=0;
+    this.ctx.fillStyle='rgba(255,255,255,0.85)'; this.ctx.font=`${Math.floor(W*0.040)}px Segoe UI`;
+    this.ctx.fillText('Köln → Aachen → Belgien → Brüssel', W/2, H*0.41);
+    this.ctx.fillText('→ Gent → Brügge → Zeeland 🏖️', W/2, H*0.46);
+    // Start-Button
+    const bw=W*0.55,bh=H*0.09,bx=W/2-bw/2,by=H*0.575-bh/2;
+    const bg=this.ctx.createLinearGradient(bx,by,bx,by+bh);
+    bg.addColorStop(0,'#2ecc71'); bg.addColorStop(1,'#27ae60');
+    this.ctx.fillStyle=bg; this.ctx.beginPath(); this.ctx.roundRect(bx,by,bw,bh,bh*0.3); this.ctx.fill();
+    this.ctx.strokeStyle='rgba(255,255,255,0.4)'; this.ctx.lineWidth=2; this.ctx.stroke();
+    this.ctx.fillStyle='#fff'; this.ctx.font=`bold ${Math.floor(bh*0.45)}px Segoe UI`;
+    this.ctx.fillText('🚙 Losfahren!', W/2, H*0.575+bh*0.15);
+    this.ctx.fillStyle='rgba(255,255,255,0.7)'; this.ctx.font=`${Math.floor(W*0.034)}px Segoe UI`;
+    this.ctx.fillText('← → Tasten | Touch | Gamepad | Gyroskop', W/2, H*0.70);
+    if (this.highscore>0) {
+      this.ctx.fillStyle='#ffd700'; this.ctx.font=`bold ${Math.floor(W*0.042)}px Segoe UI`;
+      this.ctx.fillText(`⭐ Highscore: ${Math.floor(this.highscore)}`, W/2, H*0.77);
+    }
+    // Erklärung Abstecher
+    this.ctx.fillStyle='rgba(255,210,0,0.75)'; this.ctx.font=`${Math.floor(W*0.033)}px Segoe UI`;
+    this.ctx.fillText('🏛️ Goldene Spur = Sehenswürdigkeit!', W/2, H*0.83);
   }
 
-  ctx.textAlign = 'center';
-  ctx.font = `${Math.floor(H * 0.12)}px serif`;
-  ctx.fillText('🎉', W / 2, H * 0.18);
-
-  ctx.font = `bold ${Math.floor(H * 0.09)}px Segoe UI`;
-  ctx.fillStyle = '#ffd700';
-  ctx.shadowColor = '#000';
-  ctx.shadowBlur = 10;
-  ctx.fillText('Zeeland!', W / 2, H * 0.30);
-  ctx.shadowBlur = 0;
-
-  ctx.font = `${Math.floor(H * 0.048)}px Segoe UI`;
-  ctx.fillStyle = '#fff';
-  ctx.fillText('Dormio Strand Resort 🏖️', W / 2, H * 0.39);
-
-  ctx.font = `bold ${Math.floor(H * 0.055)}px Segoe UI`;
-  ctx.fillStyle = '#ffd700';
-  ctx.fillText(`⭐ ${Math.floor(score).toLocaleString('de-DE')} Punkte`, W / 2, H * 0.48);
-
-  if (score >= highscore) {
-    ctx.font = `bold ${Math.floor(H * 0.042)}px Segoe UI`;
-    ctx.fillStyle = '#ffd700';
-    ctx.fillText('🏆 Highscore!', W / 2, H * 0.55);
+  drawGameOver(W, H) {
+    this.ctx.fillStyle='rgba(0,0,0,0.75)'; this.ctx.fillRect(0,0,W,H);
+    this.ctx.textAlign='center';
+    this.ctx.font=`${Math.floor(H*0.10)}px serif`; this.ctx.fillText('💥',W/2,H*0.28);
+    this.ctx.font=`bold ${Math.floor(H*0.07)}px Segoe UI`; this.ctx.fillStyle='#ff4444'; this.ctx.fillText('Crash!',W/2,H*0.37);
+    this.ctx.font=`bold ${Math.floor(H*0.05)}px Segoe UI`; this.ctx.fillStyle='#ffd700';
+    this.ctx.fillText(`⭐ ${Math.floor(this.player.score)} Punkte`,W/2,H*0.47);
+    const bw=W*0.55,bh=H*0.09,bx=W/2-bw/2,by=H*0.725-bh/2;
+    this.ctx.fillStyle='#444'; this.ctx.beginPath(); this.ctx.roundRect(bx,by,bw,bh,bh*0.3); this.ctx.fill();
+    this.ctx.strokeStyle='#fff'; this.ctx.lineWidth=2; this.ctx.stroke();
+    this.ctx.fillStyle='#fff'; this.ctx.font=`bold ${Math.floor(bh*0.45)}px Segoe UI`;
+    this.ctx.fillText('🔄 Noch mal!',W/2,H*0.725+bh*0.15);
   }
 
-  ctx.font = `${Math.floor(H * 0.035)}px Segoe UI`;
-  ctx.fillStyle = 'rgba(255,255,255,0.8)';
-  ctx.fillText('Köln → Aachen → Belgien → Brüssel', W / 2, H * 0.62);
-  ctx.fillText('→ Gent → Brügge → Zeeland ✓', W / 2, H * 0.67);
+  drawWin(W, H) {
+    // Strand-Hintergrund
+    const sky=this.ctx.createLinearGradient(0,0,0,H*0.50);
+    sky.addColorStop(0,'#ff9966'); sky.addColorStop(0.6,'#ffcc99'); sky.addColorStop(1,'#87ceeb');
+    this.ctx.fillStyle=sky; this.ctx.fillRect(0,0,W,H*0.50);
+    this.ctx.fillStyle='rgba(255,230,150,0.95)';
+    this.ctx.beginPath(); this.ctx.arc(W*0.78,H*0.18,W*0.07,0,Math.PI*2); this.ctx.fill();
+    const sea=this.ctx.createLinearGradient(0,H*0.50,0,H*0.72);
+    sea.addColorStop(0,'#0077be'); sea.addColorStop(1,'#00b4d8');
+    this.ctx.fillStyle=sea; this.ctx.fillRect(0,H*0.50,W,H*0.22);
+    this.ctx.strokeStyle='rgba(255,255,255,0.5)'; this.ctx.lineWidth=2;
+    for (let i=0;i<4;i++) {
+      const wy=H*(0.54+i*0.04);
+      this.ctx.beginPath();
+      for (let x=0;x<W;x+=4) { const y=wy+Math.sin(x*0.05+i+Date.now()*0.001)*3; x===0?this.ctx.moveTo(x,y):this.ctx.lineTo(x,y); }
+      this.ctx.stroke();
+    }
+    const sand=this.ctx.createLinearGradient(0,H*0.72,0,H);
+    sand.addColorStop(0,'#e8d5a3'); sand.addColorStop(1,'#d4c48f');
+    this.ctx.fillStyle=sand; this.ctx.fillRect(0,H*0.72,W,H*0.28);
+    // Overlay
+    this.ctx.fillStyle='rgba(0,0,0,0.55)'; this.ctx.fillRect(0,0,W,H);
+    this.ctx.textAlign='center';
+    // Titel
+    this.ctx.font=`${Math.floor(H*0.07)}px serif`; this.ctx.fillText('🎉 🏖️ 🌊',W/2,H*0.09);
+    this.ctx.font=`bold ${Math.floor(H*0.060)}px Segoe UI`; this.ctx.fillStyle='#ffd700';
+    this.ctx.shadowColor='#000'; this.ctx.shadowBlur=8;
+    this.ctx.fillText('Angekommen in Zeeland!',W/2,H*0.15); this.ctx.shadowBlur=0;
+    this.ctx.font=`${Math.floor(H*0.030)}px Segoe UI`; this.ctx.fillStyle='#fff';
+    this.ctx.fillText('Dormio Strand Resort',W/2,H*0.195);
+    // Punkte
+    this.ctx.fillStyle='rgba(255,215,0,0.15)'; this.ctx.strokeStyle='#ffd700'; this.ctx.lineWidth=2;
+    this.ctx.beginPath(); this.ctx.roundRect(W*0.18,H*0.215,W*0.64,H*0.07,8); this.ctx.fill(); this.ctx.stroke();
+    this.ctx.font=`bold ${Math.floor(H*0.038)}px Segoe UI`; this.ctx.fillStyle='#ffd700';
+    this.ctx.fillText(`⭐ ${Math.floor(this.player.score).toLocaleString('de-DE')} Punkte`,W/2,H*0.262);
+    // Route
+    this.ctx.font=`bold ${Math.floor(H*0.026)}px Segoe UI`; this.ctx.fillStyle='#aef0ff'; this.ctx.textAlign='left';
+    this.ctx.fillText('🚗 Eure Reise:', W*0.06, H*0.322);
+    this.ctx.font=`${Math.floor(H*0.022)}px Segoe UI`; this.ctx.fillStyle='#fff';
+    ['⛪ Köln → 🏛️ Aachen → 🇧🇪 Belgien →','⚛️ Brüssel → 🏰 Gent → 🔔 Brügge → 🌊 Zeeland'].forEach((l,i)=>{
+      this.ctx.fillText(l, W*0.06, H*0.355+i*H*0.028);
+    });
+    // Vorschau
+    this.ctx.font=`bold ${Math.floor(H*0.028)}px Segoe UI`; this.ctx.fillStyle='#ffcc66';
+    this.ctx.fillText('🏖️ Jetzt wartet der Urlaub auf euch:', W*0.06, H*0.44);
+    this.ctx.font=`${Math.floor(H*0.021)}px Segoe UI`; this.ctx.fillStyle='#fff';
+    VACATION_PREVIEW.forEach((act,i)=>{
+      const col=i%2, row=Math.floor(i/2);
+      this.ctx.fillText(`${act.emoji}  ${act.text}`, W*(0.06+col*0.47), H*(0.475+row*0.032));
+    });
+    // Button
+    const bw=W*0.55,bh=H*0.072,bx=W/2-bw/2,by=H*0.91-bh/2;
+    const bg=this.ctx.createLinearGradient(bx,by,bx,by+bh);
+    bg.addColorStop(0,'#2ecc71'); bg.addColorStop(1,'#27ae60');
+    this.ctx.fillStyle=bg; this.ctx.beginPath(); this.ctx.roundRect(bx,by,bw,bh,bh*0.3); this.ctx.fill();
+    this.ctx.strokeStyle='#fff'; this.ctx.lineWidth=2; this.ctx.stroke();
+    this.ctx.fillStyle='#fff'; this.ctx.font=`bold ${Math.floor(bh*0.45)}px Segoe UI`; this.ctx.textAlign='center';
+    this.ctx.fillText('🔄 Nochmal fahren',W/2,H*0.91+bh*0.15);
+  }
 
-  drawButton(W / 2, H * 0.77, W * 0.55, H * 0.09, '🔄 Nochmal!', '#27ae60', '#2ecc71');
+  loop(timestamp) {
+    const dt = (timestamp - this.lastTime) / 1000;
+    this.lastTime = timestamp;
+    try {
+      this.update(dt);
+      this.draw();
+    } catch(e) {
+      console.error('Game loop error:', e);
+    }
+    requestAnimationFrame(this.loop);
+  }
 }
 
-// ─── Game Loop ────────────────────────────────────────────────────────────────
-function loop(ts) {
-  const dt = lastTime ? Math.min((ts - lastTime) / 1000, 0.05) : 0.016;
-  lastTime = ts;
-  update(dt);
-  draw();
-  requestAnimationFrame(loop);
-}
-
-// Start
-state = 'menu';
-currentZone = 0;
-clouds = [];
-for (let i = 0; i < 6; i++) spawnCloud();
-requestAnimationFrame(loop);
+const game = new Game(document.getElementById('c'));
 </script>
 </body>
 </html>
