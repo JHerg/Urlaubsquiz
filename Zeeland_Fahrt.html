@@ -56,19 +56,49 @@ const ZONE_COLLECTIBLES = [
 const SIGHT_EVENTS = [
   { zone: 0, emoji: '⛪', name: 'Kölner Dom', side: 1, triggerDist: 3000,
     color: '#1565c0',
-    facts: ['🏗️ Seit 1248 gebaut — Fertigstellung erst 1880!', '📏 Mit 157m war er das höchste Gebäude der Welt.', '🌍 UNESCO-Weltkulturerbe seit 1996.'] },
+    facts: [
+      '🏗️ Über 630 Jahre Bauzeit! Grundstein 1248 gelegt — fertig erst 1880.',
+      '📏 Mit 157 Metern war er 4 Jahre lang das höchste Gebäude der Welt.',
+      '🌍 UNESCO-Weltkulturerbe seit 1996. Jedes Jahr 6 Millionen Besucher.',
+      '💎 Beherbergt den Dreikönigsschrein — die größte mittelalterliche Goldschmiedearbeit der Welt.',
+      '🚶 157 Stufen bis zur Turmspitze — wer sie schafft, hat einen Traumblick über Köln!',
+    ] },
   { zone: 1, emoji: '🏛️', name: 'Aachener Dom', side: -1, triggerDist: 9000,
     color: '#6a1b9a',
-    facts: ['👑 Krönungskirche von 30 deutschen Königen.', '⚔️ Karl der Große ließ ihn um 800 n.Chr. bauen.', '🌍 Älteste UNESCO-Stätte in Deutschland.'] },
+    facts: [
+      '👑 Krönungskirche von 30 deutschen Königen — von Ludwig dem Frommen bis Karl IV.',
+      '⚔️ Karl der Große ließ ihn um 800 n.Chr. bauen. Er ist dort auch begraben.',
+      '🌍 Erste UNESCO-Weltkulturerbe-Stätte Deutschlands — ausgezeichnet 1978.',
+      '🔑 Der Karlsschrein aus purem Gold enthält die Reliquien Karls des Großen.',
+      '🎭 Alle 7 Jahre findet die Heiligtumsfahrt statt — dann kommen 100.000 Pilger.',
+    ] },
   { zone: 3, emoji: '⚛️', name: 'Atomium Brüssel', side: 1, triggerDist: 21500,
     color: '#0d47a1',
-    facts: ['🔬 Stellt einen Eisenkristall dar — 165 Mrd. mal vergrößert!', '🎪 1958 für die Weltausstellung gebaut.', '🚡 Alle 9 Kugeln sind begehbar.'] },
+    facts: [
+      '🔬 Stellt einen Eisenkristall dar — 165 Milliarden Mal vergrößert!',
+      '🎪 Gebaut 1958 für die Weltausstellung. Ursprünglich nur für 6 Monate geplant.',
+      '🚡 Alle 9 Kugeln sind begehbar und durch Rolltreppen verbunden.',
+      '📐 102 Meter hoch und wiegt 2.400 Tonnen — ein echtes Ingenieurswunder.',
+      '✨ Nachts leuchtet das Atomium mit 2.970 LED-Lampen — ein Wahrzeichen Brüssels.',
+    ] },
   { zone: 4, emoji: '🏰', name: 'Gravensteen Gent', side: -1, triggerDist: 27000,
     color: '#1b5e20',
-    facts: ['🏰 Erbaut 1180 von den Grafen von Flandern.', '⚖️ War Gefängnis, Münze & Baumwollfabrik.', '🔭 Heute Museum mit Panorama über Gent.'] },
+    facts: [
+      '🏰 Erbaut 1180 von Philipp von Elsass, Graf von Flandern.',
+      '⚖️ War nacheinander Gefängnis, Münze, Baumwollfabrik und Gerichtssaal.',
+      '🗡️ Im Museum gibt es eine der größten Sammlungen mittelalterlicher Folterinstrumente.',
+      '🔭 Vom Turm habt ihr einen Panoramablick über die gesamte Altstadt von Gent.',
+      '🦁 Der Löwe ist das Wappentier der Grafen — ihr seht ihn überall in Gent.',
+    ] },
   { zone: 5, emoji: '🔔', name: 'Belfort Brügge', side: 1, triggerDist: 33000,
     color: '#004d40',
-    facts: ['🔔 47 Glocken — Carillon läutet viertelstündlich.', '📐 83 Meter hoch, gebaut im Mittelalter.', '🌇 Traumblick über das märchenhafte Brügge.'] },
+    facts: [
+      '🔔 47 Glocken — das Carillon läutet täglich und viertelstündlich.',
+      '📐 83 Meter hoch und leicht schief — wie der Turm von Pisa!',
+      '🎶 Die älteste Glocke stammt aus dem Jahr 1608. Der Glöckner spielt von Hand.',
+      '🌇 366 Stufen bis zur Spitze — aber der Ausblick über Brügge ist unvergesslich.',
+      '📜 Im Mittelalter wurden hier Stadtrechte und wichtige Dokumente aufbewahrt.',
+    ] },
 ];
 
 // ─── Landmarks ───────────────────────────────────────────────────────────────
@@ -186,8 +216,16 @@ class Game {
     // Touch
     this.canvas.addEventListener('touchstart', e => {
       e.preventDefault();
-      // Popup schließen — irgendwo tippen
-      if (this.sightPopup) { this.sightPopup = null; return; }
+      // Popup: nur über den Weiterfahren-Button schließen
+      if (this.sightPopup) {
+        const t = e.touches[0], rect = this.canvas.getBoundingClientRect();
+        const tx = t.clientX - rect.left, ty = t.clientY - rect.top;
+        const b = this._popupBtn;
+        if (b && tx >= b.x && tx <= b.x+b.w && ty >= b.y && ty <= b.y+b.h) {
+          this.sightPopup = null;
+        }
+        return;
+      }
       if (this.state === 'menu' || this.state === 'over') { this.startGame(); return; }
       if (this.state === 'win') {
         const t = e.touches[0], rect = this.canvas.getBoundingClientRect();
@@ -209,9 +247,13 @@ class Game {
   }
 
   handleClick(e) {
-    if (this.sightPopup) { this.sightPopup = null; return; }
     const rect = this.canvas.getBoundingClientRect();
     const x = e.clientX - rect.left, y = e.clientY - rect.top;
+    if (this.sightPopup) {
+      const b = this._popupBtn;
+      if (b && x >= b.x && x <= b.x+b.w && y >= b.y && y <= b.y+b.h) this.sightPopup = null;
+      return;
+    }
     const W = this.canvas.width, H = this.canvas.height;
     if (this.state === 'menu' && y > H*0.52 && y < H*0.65 && x > W*0.2 && x < W*0.8) this.startGame();
     if (this.state === 'over' && y > H*0.65 && y < H*0.80 && x > W*0.2 && x < W*0.8) this.startGame();
@@ -899,131 +941,103 @@ class Game {
   // ─── Sehenswürdigkeits-Popup ───────────────────────────────────────────────
   drawSightPopup(W, H) {
     const ev = this.sightPopup;
+    const ctx = this.ctx;
 
-    // Abdunkeln
-    this.ctx.fillStyle='rgba(0,0,0,0.82)'; this.ctx.fillRect(0,0,W,H);
+    // Dunkler Hintergrund
+    ctx.fillStyle = 'rgba(0,0,0,0.88)';
+    ctx.fillRect(0, 0, W, H);
 
-    const boxW = W*0.90, boxH = H*0.72;
-    const boxX = (W-boxW)/2, boxY = (H-boxH)/2 - H*0.02;
-    const radius = 16;
-
-    // Äußere Box
-    this.ctx.save();
-    this.ctx.beginPath(); this.ctx.roundRect(boxX, boxY, boxW, boxH, radius);
-    this.ctx.clip(); // alles innerhalb der Box
-
-    // ── Linke Bild-Seite (40%) ─────────────────────────────────────────────
-    const imgW = boxW * 0.40;
-    const imgX = boxX;
-
-    // Hintergrund-Gradient passend zur Sehenswürdigkeit
-    const imgGrad = this.ctx.createLinearGradient(imgX, boxY, imgX+imgW, boxY+boxH);
+    const pad  = W * 0.05;
+    const boxW = W * 0.92;
+    const boxX = (W - boxW) / 2;
+    const boxY = H * 0.04;
+    const boxH = H * 0.92;
+    const radius = 14;
     const c1 = ev.color || '#1565c0';
-    imgGrad.addColorStop(0, c1);
-    imgGrad.addColorStop(1, this.darkenColor(c1, 0.5));
-    this.ctx.fillStyle = imgGrad;
-    this.ctx.fillRect(imgX, boxY, imgW, boxH);
 
-    // Dekoratives Muster (Rauten-Gitter)
-    this.ctx.save();
-    this.ctx.globalAlpha = 0.10;
-    this.ctx.strokeStyle = '#fff'; this.ctx.lineWidth = 1;
-    for (let gy = boxY-20; gy < boxY+boxH+20; gy += 22) {
-      this.ctx.beginPath(); this.ctx.moveTo(imgX, gy); this.ctx.lineTo(imgX+imgW, gy); this.ctx.stroke();
-    }
-    for (let gx = imgX-20; gx < imgX+imgW+20; gx += 22) {
-      this.ctx.beginPath(); this.ctx.moveTo(gx, boxY); this.ctx.lineTo(gx, boxY+boxH); this.ctx.stroke();
-    }
-    this.ctx.restore();
+    // ── Box mit clip ──────────────────────────────────────────────────────
+    ctx.save();
+    ctx.beginPath(); ctx.roundRect(boxX, boxY, boxW, boxH, radius); ctx.clip();
 
-    // Großes Emoji als "Bild"
-    const emojiSize = Math.floor(boxH * 0.28);
-    this.ctx.font = `${emojiSize}px serif`;
-    this.ctx.textAlign = 'center'; this.ctx.textBaseline = 'middle';
-    this.ctx.globalAlpha = 0.95;
-    this.ctx.fillText(ev.emoji, imgX + imgW/2, boxY + boxH * 0.38);
-    this.ctx.globalAlpha = 1;
+    // Dunkler Box-Hintergrund
+    const bgGrad = ctx.createLinearGradient(boxX, boxY, boxX, boxY+boxH);
+    bgGrad.addColorStop(0, '#0d1526'); bgGrad.addColorStop(1, '#060c18');
+    ctx.fillStyle = bgGrad; ctx.fillRect(boxX, boxY, boxW, boxH);
 
-    // "Postkarten"-Stempel oben
-    this.ctx.fillStyle = 'rgba(255,255,255,0.15)';
-    this.ctx.beginPath(); this.ctx.roundRect(imgX+imgW*0.12, boxY+boxH*0.06, imgW*0.76, boxH*0.10, 4); this.ctx.fill();
-    this.ctx.fillStyle = 'rgba(255,255,255,0.80)';
-    this.ctx.font = `bold ${Math.floor(boxH*0.040)}px Segoe UI`;
-    this.ctx.textAlign = 'center'; this.ctx.textBaseline = 'middle';
-    this.ctx.fillText('ABSTECHER', imgX+imgW/2, boxY+boxH*0.11);
+    // ── Farbiger Header-Streifen ──────────────────────────────────────────
+    const hdrH = boxH * 0.175;
+    const hdrGrad = ctx.createLinearGradient(boxX, boxY, boxX+boxW, boxY);
+    hdrGrad.addColorStop(0, c1);
+    hdrGrad.addColorStop(1, this.darkenColor(c1, 0.6));
+    ctx.fillStyle = hdrGrad; ctx.fillRect(boxX, boxY, boxW, hdrH);
 
-    // Punkte-Badge unten links
-    this.ctx.fillStyle = '#ffd700';
-    this.ctx.beginPath(); this.ctx.arc(imgX+imgW/2, boxY+boxH*0.80, imgW*0.22, 0, Math.PI*2); this.ctx.fill();
-    this.ctx.fillStyle = '#000';
-    this.ctx.font = `bold ${Math.floor(imgW*0.15)}px Segoe UI`;
-    this.ctx.textAlign = 'center'; this.ctx.textBaseline = 'middle';
-    this.ctx.fillText('+150', imgX+imgW/2, boxY+boxH*0.785);
-    this.ctx.font = `${Math.floor(imgW*0.10)}px Segoe UI`;
-    this.ctx.fillText('Punkte', imgX+imgW/2, boxY+boxH*0.835);
+    // Emoji groß im Header
+    const emojiSz = Math.floor(hdrH * 0.62);
+    ctx.font = `${emojiSz}px serif`;
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ctx.fillText(ev.emoji, boxX + pad, boxY + hdrH * 0.5);
 
-    // Trennlinie links/rechts
-    this.ctx.fillStyle = 'rgba(255,215,0,0.4)';
-    this.ctx.fillRect(imgX+imgW, boxY+boxH*0.05, 2, boxH*0.90);
+    // Titel-Text im Header
+    ctx.fillStyle = '#fff';
+    ctx.font = `bold ${Math.floor(hdrH * 0.34)}px Segoe UI`;
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ctx.fillText(ev.name, boxX + pad + emojiSz * 1.1, boxY + hdrH * 0.40);
+    // "ABSTECHER" klein darunter
+    ctx.fillStyle = 'rgba(255,255,255,0.65)';
+    ctx.font = `${Math.floor(hdrH * 0.22)}px Segoe UI`;
+    ctx.fillText('🗺️  Abstecher · +150 Punkte', boxX + pad + emojiSz * 1.1, boxY + hdrH * 0.72);
 
-    // ── Rechte Text-Seite (60%) ───────────────────────────────────────────
-    const txtX = imgX + imgW + boxW*0.05;
-    const txtW = boxW*0.90 - imgW - boxW*0.08; // max Textbreite
+    // ── Fakten-Bereich ────────────────────────────────────────────────────
+    const txtX  = boxX + pad;
+    const txtW  = boxW - pad * 2;
+    const factFs = Math.max(13, Math.floor(H * 0.030)); // lesbare Mindestgröße
+    const lineH  = factFs * 1.55;
 
-    // Dunkler Hintergrund rechts
-    const txtGrad = this.ctx.createLinearGradient(imgX+imgW, boxY, boxX+boxW, boxY+boxH);
-    txtGrad.addColorStop(0, 'rgba(15,25,45,1)');
-    txtGrad.addColorStop(1, 'rgba(8,15,28,1)');
-    this.ctx.fillStyle = txtGrad;
-    this.ctx.fillRect(imgX+imgW+2, boxY, boxW - imgW - 2, boxH);
+    ctx.font = `bold ${Math.floor(hdrH*0.22)}px Segoe UI`;
+    ctx.fillStyle = 'rgba(255,215,0,0.70)';
+    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+    ctx.fillText('— Wusstest du das?', txtX, boxY + hdrH + factFs * 1.4);
 
-    // Name der Sehenswürdigkeit
-    this.ctx.fillStyle = '#ffd700';
-    this.ctx.font = `bold ${Math.floor(boxH*0.072)}px Segoe UI`;
-    this.ctx.textAlign = 'left'; this.ctx.textBaseline = 'alphabetic';
-    // Mit Zeilenumbruch falls Name lang
-    this.wrapText(ev.name, txtX, boxY + boxH*0.15, txtW, boxH*0.080);
+    ctx.font = `${factFs}px Segoe UI`;
+    ctx.fillStyle = '#d8eeff';
+    let factY = boxY + hdrH + factFs * 2.8;
 
-    // Goldene Trennlinie unter dem Titel
-    this.ctx.strokeStyle = 'rgba(255,215,0,0.35)'; this.ctx.lineWidth = 1;
-    this.ctx.beginPath();
-    this.ctx.moveTo(txtX, boxY+boxH*0.21); this.ctx.lineTo(boxX+boxW-boxW*0.04, boxY+boxH*0.21);
-    this.ctx.stroke();
-
-    // Fakten mit automatischem Zeilenumbruch
-    const factFontSize = Math.floor(boxH * 0.046);
-    this.ctx.font = `${factFontSize}px Segoe UI`;
-    this.ctx.fillStyle = '#d8e8f8';
-    let factY = boxY + boxH * 0.29;
-    ev.facts.forEach((fact) => {
-      factY = this.wrapText(fact, txtX, factY, txtW, factFontSize * 1.45) + factFontSize * 0.55;
+    ev.facts.forEach(fact => {
+      factY = this.wrapText(fact, txtX, factY, txtW, lineH) + factFs * 0.6;
     });
 
-    // "Wusstest du?" Label
-    this.ctx.fillStyle = 'rgba(255,215,0,0.55)';
-    this.ctx.font = `italic ${Math.floor(boxH*0.036)}px Segoe UI`;
-    this.ctx.fillText('— Wusstest du das?', txtX, boxY+boxH*0.83);
+    // ── Weiterfahren-Button ───────────────────────────────────────────────
+    const bH   = Math.max(44, H * 0.075);
+    const bW   = boxW - pad * 2;
+    const bX   = boxX + pad;
+    const bY   = boxY + boxH - bH - H * 0.025;
 
-    // Weiter-Button rechts unten
-    const bW2 = txtW*0.90, bH2 = boxH*0.090;
-    const bX2 = txtX, bY2 = boxY + boxH*0.875;
-    const bGrad = this.ctx.createLinearGradient(bX2, bY2, bX2, bY2+bH2);
-    bGrad.addColorStop(0,'#2ecc71'); bGrad.addColorStop(1,'#27ae60');
-    this.ctx.fillStyle = bGrad;
-    this.ctx.beginPath(); this.ctx.roundRect(bX2, bY2, bW2, bH2, bH2*0.30); this.ctx.fill();
-    this.ctx.strokeStyle = 'rgba(255,255,255,0.40)'; this.ctx.lineWidth = 1.5; this.ctx.stroke();
-    this.ctx.fillStyle = '#fff';
-    this.ctx.font = `bold ${Math.floor(bH2*0.46)}px Segoe UI`;
-    this.ctx.textAlign = 'center'; this.ctx.textBaseline = 'middle';
-    this.ctx.fillText('Weiterfahren →', bX2+bW2/2, bY2+bH2/2);
+    // Button-Position speichern (für Klick-Erkennung)
+    this._popupBtn = { x: bX, y: bY, w: bW, h: bH };
 
-    this.ctx.restore(); // clip aufheben
+    const bGrad = ctx.createLinearGradient(bX, bY, bX, bY+bH);
+    bGrad.addColorStop(0, '#2ecc71'); bGrad.addColorStop(1, '#1e8449');
+    ctx.fillStyle = bGrad;
+    ctx.beginPath(); ctx.roundRect(bX, bY, bW, bH, bH*0.28); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.35)'; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.font = `bold ${Math.floor(bH * 0.42)}px Segoe UI`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('🚗  Weiterfahren →', bX + bW/2, bY + bH/2);
 
-    // Äußerer Rand
-    this.ctx.strokeStyle = '#ffd700'; this.ctx.lineWidth = 2.5;
-    this.ctx.beginPath(); this.ctx.roundRect(boxX, boxY, boxW, boxH, radius); this.ctx.stroke();
+    // Trennlinie über Button
+    ctx.strokeStyle = 'rgba(255,215,0,0.20)'; ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(bX, bY - H*0.012); ctx.lineTo(bX+bW, bY - H*0.012);
+    ctx.stroke();
 
-    this.ctx.textBaseline = 'alphabetic';
+    ctx.restore(); // clip aufheben
+
+    // Äußerer goldener Rand
+    ctx.strokeStyle = '#ffd700'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.roundRect(boxX, boxY, boxW, boxH, radius); ctx.stroke();
+
+    ctx.textBaseline = 'alphabetic';
   }
 
   // Farbe abdunkeln (für Gradient)
