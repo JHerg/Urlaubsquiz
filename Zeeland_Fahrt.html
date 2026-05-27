@@ -94,6 +94,9 @@ const VACATION_PREVIEW = [
   { emoji: '🌬️', text: 'Kitesurfen am Brouwersdam' },
 ];
 
+// ─── Spuren (Welt-X-Koordinaten) ─────────────────────────────────────────────
+const LANES = [-0.55, 0, 0.55];
+
 // ─── Object Pool ─────────────────────────────────────────────────────────────
 class Pool {
   constructor(size, factory) {
@@ -1137,8 +1140,12 @@ class Game {
   loop(timestamp) {
     const dt = (timestamp - this.lastTime) / 1000;
     this.lastTime = timestamp;
-    this.update(dt);
-    this.draw();
+    try {
+      this.update(dt);
+      this.draw();
+    } catch(e) {
+      console.error('Game loop error:', e);
+    }
     requestAnimationFrame(this.loop);
   }
 }
