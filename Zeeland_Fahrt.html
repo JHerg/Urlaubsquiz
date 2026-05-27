@@ -221,10 +221,11 @@ class Game {
   startGame() {
     this.obstacles.reset(); this.landmarks.reset(); this.particles.reset();
     this.clouds.reset();    this.comets.reset();
-    this.player    = { pos: 0, x: 0, speed: 3, lives: 3, score: 0, invincible: 0 };
+    this.player    = { pos: 0, x: 0, targetLane: 1, speed: 3, lives: 3, score: 0, invincible: 0 };
     this.gameLogic.currentZone = 0; this.gameLogic.zoneAnnounce = null; this.gameLogic.nextWaveZ = 4500;
     this.sightPopup   = null;
     this.spawnedSights = new Set();
+    this._laneChangeCooldown = 0;
     this.state = 'game';
 
     for (let i = 0; i < 6; i++) this.spawnCloud();
@@ -340,31 +341,42 @@ class Game {
     this.gameLogic.curveStrength = Math.sin(this.player.pos/3000)*1.5 + Math.sin(this.player.pos/5000)*1.0;
     this.gameLogic.pitch = Math.cos(this.player.pos/2500)*50;
 
-    const centrifugalForce = this.gameLogic.curveStrength * (this.player.speed/9) * 1.6 * dt;
+    // ── Spurwechsel-Steuerung (ein Tastendruck = eine Spur) ──────────────────
     let steer = this.input.getSteer();
-    this.player.x += steer * 3.6 * dt;
-    this.player.x -= centrifugalForce;
-    if (Math.abs(steer) < 0.05) {
-      // Lane-Snap: sanft zur nächsten Spur einrasten (wie OutRun)
-      // Bei x > 0.65 zur Abstecher-Spur: erst prüfen ob Sight-Event in Reichweite
-      let hasNearbySight = false;
-      this.obstacles.forEach(obs => {
-        if (obs.isSight && obs.alive) {
-          const dz = obs.z - this.player.pos;
-          if (dz > 0 && dz < 1200 && Math.sign(obs.laneX) === Math.sign(this.player.x)) hasNearbySight = true;
-        }
-      });
-      if (hasNearbySight && Math.abs(this.player.x) > 0.62) {
-        // Nah an Sight-Event: Position halten, leichte Dämpfung
-        this.player.x *= Math.pow(0.97, dt*60);
-      } else {
-        // Zur nächsten der 3 Spuren einrasten
-        const snapTarget = LANES.reduce((b, lx) =>
-          Math.abs(this.player.x - lx) < Math.abs(this.player.x - b) ? lx : b, LANES[1]);
-        this.player.x += (snapTarget - this.player.x) * Math.min(1, dt * 4.5);
+    this._laneChangeCooldown = Math.max(0, (this._laneChangeCooldown||0) - dt);
+
+    // Sehenswürdigkeit-Spur prüfen: wenn nah, kann man links/rechts rauslenken
+    let nearbySightSide = 0;
+    this.obstacles.forEach(obs => {
+      if (obs.isSight && obs.alive) {
+        const dz = obs.z - this.player.pos;
+        if (dz > 0 && dz < 1400) nearbySightSide = Math.sign(obs.laneX);
       }
+    });
+
+    const inSightApproach = nearbySightSide !== 0 && Math.sign(steer) === nearbySightSide && Math.abs(steer) > 0.4;
+
+    if (inSightApproach) {
+      // Manuell zur goldenen Abstecher-Spur lenken
+      this.player.x += steer * 2.2 * dt;
+    } else {
+      // Normaler Spurwechsel: einmal drücken = eine Spur nach links/rechts
+      if (steer < -0.4 && this._laneChangeCooldown <= 0) {
+        this.player.targetLane = Math.max(0, this.player.targetLane - 1);
+        this._laneChangeCooldown = 0.30;
+      } else if (steer > 0.4 && this._laneChangeCooldown <= 0) {
+        this.player.targetLane = Math.min(2, this.player.targetLane + 1);
+        this._laneChangeCooldown = 0.30;
+      }
+      // Sanft zur Ziel-Spur gleiten (kein Wackeln)
+      const targetX = LANES[this.player.targetLane];
+      this.player.x += (targetX - this.player.x) * Math.min(1, dt * 9);
     }
-    this.player.x = Math.max(-0.85, Math.min(0.85, this.player.x));
+
+    // Minimale Kurvendrift (rein optisch, nicht gameplay-relevant)
+    const centrifugalForce = this.gameLogic.curveStrength * (this.player.speed/9) * 0.45 * dt;
+    this.player.x -= centrifugalForce;
+    this.player.x = Math.max(-0.88, Math.min(0.88, this.player.x));
 
     this.player.pos   += this.player.speed * 60 * dt;
     this.player.score += this.player.speed * dt * 10;
@@ -784,7 +796,7 @@ class Game {
 
     // Dashboard-Overlay
     {
-      const nl = [-.55,0,.55].reduce((b,lx,i)=>Math.abs(this.player.x-lx)<Math.abs(this.player.x-[-.55,0,.55][b])?i:b, 0);
+      const nl = this.player.targetLane;
       const liY=H-H*0.085, liCX=W*0.18;
       this.ctx.fillStyle='rgba(255,255,255,0.55)';
       this.ctx.font=`bold ${Math.floor(W*0.022)}px Segoe UI`; this.ctx.textAlign='center';
